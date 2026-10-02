@@ -47,3 +47,11 @@ rewards:
   8: []
   9: []
   10: []
+
+party:
+  # teammates within join-radius of whoever opens the keystone join the run automatically
+  enabled: true
+  join-radius: 30
+  max-size: 5
+  # extra mobs per additional party member (0.5 = +50% each)
+  size-scale-per-extra-member: 0.5

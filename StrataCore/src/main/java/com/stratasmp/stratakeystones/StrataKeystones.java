@@ -2,9 +2,13 @@ package com.stratasmp.stratakeystones;
 
 import com.stratasmp.stratacore.StrataCore;
 import com.stratasmp.stratacore.StrataModule;
+import com.stratasmp.stratateams.StrataTeams;
+import com.stratasmp.stratateams.Team;
+import com.stratasmp.stratateams.TeamManager;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -45,7 +49,9 @@ import org.bukkit.persistence.PersistentDataType;
 /** Overworld keystone drops and the 3-wave runs they unlock. */
 public final class StrataKeystones extends StrataModule implements Listener {
     private final NamespacedKey runMob = new NamespacedKey("stratasmp", "keystone_mob");
-    private final Map<UUID, KeystoneRun> runs = new HashMap<>();
+    private final Map<UUID, KeystoneRun> runs = new HashMap<>(); // every participant -> their run
+    private final Set<KeystoneRun> active = new LinkedHashSet<>();
+    private TeamManager teams;
     private final Map<EntityType, Integer> mobPool = new java.util.LinkedHashMap<>();
     private List<Integer> waveSizes;
 
@@ -57,6 +63,8 @@ public final class StrataKeystones extends StrataModule implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         loadSettings();
+        StrataTeams teamModule = core().module(StrataTeams.class);
+        if (teamModule != null) teams = teamModule.getTeamManager();
         getServer().getPluginManager().registerEvents(this, this);
         if (getCommand("keystone") != null) getCommand("keystone").setExecutor(this);
         getServer().getScheduler().runTaskTimer(this, this::tick, 10L, 10L);
@@ -64,7 +72,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     @Override
     public void onDisable() {
-        for (KeystoneRun run : new ArrayList<>(runs.values())) end(run, false, "The server is restarting.");
+        for (KeystoneRun run : new ArrayList<>(active)) end(run, false, "The server is restarting.");
         super.onDisable();
     }
 
@@ -127,44 +135,82 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        KeystoneRun run = runs.get(event.getEntity().getUniqueId());
-        if (run != null) end(run, false, "You died.");
+        drop(event.getEntity().getUniqueId(), "You died.");
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        KeystoneRun run = runs.get(event.getPlayer().getUniqueId());
-        if (run != null) end(run, false, "You left the server.");
+        drop(event.getPlayer().getUniqueId(), "You left the server.");
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
-        KeystoneRun run = runs.get(event.getPlayer().getUniqueId());
-        if (run != null) end(run, false, "You left the keystone area.");
+        drop(event.getPlayer().getUniqueId(), "You left the keystone area.");
     }
 
     private void start(Player player, int level) {
         long deadline = System.currentTimeMillis() + getConfig().getLong("run.time-limit-seconds", 300) * 1000L;
         KeystoneRun run = new KeystoneRun(player.getUniqueId(), level, player.getLocation().clone(), deadline);
-        runs.put(player.getUniqueId(), run);
-        player.showTitle(Title.title(Component.text("Keystone Lv. " + level, NamedTextColor.LIGHT_PURPLE),
-                Component.text("Prepare yourself", NamedTextColor.GRAY)));
+        run.players.addAll(partyAround(player));
+        active.add(run);
+        for (UUID id : run.players) {
+            runs.put(id, run);
+            Player member = Bukkit.getPlayer(id);
+            if (member == null) continue;
+            member.showTitle(Title.title(Component.text("Keystone Lv. " + level, NamedTextColor.LIGHT_PURPLE),
+                    Component.text(id.equals(run.owner) ? "Prepare yourself" : player.getName() + "'s keystone - fight!", NamedTextColor.GRAY)));
+        }
         run.nextWaveAt = System.currentTimeMillis() + 3000L;
     }
 
+    /** Teammates close enough to the opener, not already in a run, join automatically. */
+    private Set<UUID> partyAround(Player opener) {
+        Set<UUID> party = new LinkedHashSet<>();
+        if (teams == null || !getConfig().getBoolean("party.enabled", true)) return party;
+        Team team = teams.getTeam(opener.getUniqueId());
+        if (team == null) return party;
+        double radius = getConfig().getDouble("party.join-radius", 30);
+        int max = getConfig().getInt("party.max-size", 5);
+        for (UUID id : team.members) {
+            if (party.size() + 1 >= max) break;
+            Player member = Bukkit.getPlayer(id);
+            if (member == null || member.equals(opener) || runs.containsKey(id)) continue;
+            if (!member.getWorld().equals(opener.getWorld()) || member.isDead()) continue;
+            if (member.getLocation().distanceSquared(opener.getLocation()) <= radius * radius) party.add(id);
+        }
+        return party;
+    }
+
+    /** A participant died, left or strayed. The run only ends once nobody is left in it. */
+    private void drop(UUID id, String reason) {
+        KeystoneRun run = runs.remove(id);
+        if (run == null) return;
+        run.players.remove(id);
+        Player player = Bukkit.getPlayer(id);
+        if (player != null && player.isOnline()) {
+            player.sendMessage(Component.text("You are out of the keystone run: " + reason, NamedTextColor.RED));
+        }
+        if (run.players.isEmpty()) end(run, false, null);
+    }
+
     private void tick() {
-        if (runs.isEmpty()) return;
+        if (active.isEmpty()) return;
         long now = System.currentTimeMillis();
-        for (KeystoneRun run : new ArrayList<>(runs.values())) {
-            Player player = Bukkit.getPlayer(run.player);
-            if (player == null || !player.isOnline()) { end(run, false, null); continue; }
+        double leash = getConfig().getDouble("run.leash-radius", 40);
+        for (KeystoneRun run : new ArrayList<>(active)) {
             if (now > run.deadline) { end(run, false, "Time ran out."); continue; }
-            double leash = getConfig().getDouble("run.leash-radius", 40);
-            if (!player.getWorld().equals(run.origin.getWorld())
-                    || player.getLocation().distanceSquared(run.origin) > leash * leash) {
-                end(run, false, "You strayed too far from the keystone.");
-                continue;
+            Player lead = null;
+            for (UUID id : new ArrayList<>(run.players)) {
+                Player member = Bukkit.getPlayer(id);
+                if (member == null || !member.isOnline()) { drop(id, "You left the server."); continue; }
+                if (!member.getWorld().equals(run.origin.getWorld())
+                        || member.getLocation().distanceSquared(run.origin) > leash * leash) {
+                    drop(id, "You strayed too far from the keystone.");
+                    continue;
+                }
+                if (lead == null) lead = member;
             }
+            if (!active.contains(run) || lead == null) continue;
             run.alive.removeIf(id -> {
                 Entity e = Bukkit.getEntity(id);
                 return e == null || !e.isValid() || e.isDead();
@@ -176,13 +222,14 @@ public final class StrataKeystones extends StrataModule implements Listener {
             }
             if (now < run.nextWaveAt) continue;
             if (run.wave >= 3) { end(run, true, null); continue; }
-            spawnWave(run, player);
+            spawnWave(run, lead);
         }
     }
 
     private void spawnWave(KeystoneRun run, Player player) {
         run.wave++;
-        double scale = 1 + getConfig().getDouble("run.size-scale-per-level", 0.25) * (run.level - 1);
+        double scale = (1 + getConfig().getDouble("run.size-scale-per-level", 0.25) * (run.level - 1))
+                * (1 + getConfig().getDouble("party.size-scale-per-extra-member", 0.5) * (run.players.size() - 1));
         int count = (int) Math.round(waveSizes.get(run.wave - 1) * scale);
         List<EntityType> eligible = new ArrayList<>();
         for (Map.Entry<EntityType, Integer> entry : mobPool.entrySet()) {
@@ -205,12 +252,18 @@ public final class StrataKeystones extends StrataModule implements Listener {
             scaleAttribute(mob, Attribute.MAX_HEALTH, health);
             mob.setHealth(mob.getAttribute(Attribute.MAX_HEALTH).getValue());
             scaleAttribute(mob, Attribute.ATTACK_DAMAGE, damage);
-            mob.setTarget(player);
+            Player target = Bukkit.getPlayer(new ArrayList<>(run.players).get(rng.nextInt(run.players.size())));
+            mob.setTarget(target != null ? target : player);
             run.alive.add(mob.getUniqueId());
         }
         run.nextWaveAt = -1;
-        player.showTitle(Title.title(Component.text("Wave " + run.wave + "/3", NamedTextColor.GOLD),
-                Component.text(count + " mobs", NamedTextColor.GRAY)));
+        for (UUID id : run.players) {
+            Player member = Bukkit.getPlayer(id);
+            if (member != null) {
+                member.showTitle(Title.title(Component.text("Wave " + run.wave + "/3", NamedTextColor.GOLD),
+                        Component.text(count + " mobs", NamedTextColor.GRAY)));
+            }
+        }
     }
 
     private void scaleAttribute(Mob mob, Attribute attribute, double multiplier) {
@@ -243,29 +296,37 @@ public final class StrataKeystones extends StrataModule implements Listener {
     }
 
     private void end(KeystoneRun run, boolean success, String reason) {
-        runs.remove(run.player);
+        active.remove(run);
         for (UUID id : run.alive) {
             Entity e = Bukkit.getEntity(id);
             if (e != null) e.remove();
         }
         run.alive.clear();
-        Player player = Bukkit.getPlayer(run.player);
+        List<UUID> members = new ArrayList<>(run.players);
+        for (UUID id : members) runs.remove(id);
+        run.players.clear();
+        Player owner = Bukkit.getPlayer(run.owner);
         if (success) {
             int next = Math.min(run.level + 1, maxLevel());
-            if (player != null) {
-                player.sendMessage(Component.text("Keystone cleared! Reached level " + next + ".", NamedTextColor.GREEN));
-                give(player, KeystoneItem.create(next));
+            if (owner != null) give(owner, KeystoneItem.create(next));
+            for (UUID id : members) {
+                Player member = Bukkit.getPlayer(id);
+                if (member == null) continue;
+                member.sendMessage(Component.text("Keystone cleared! Level " + next + " unlocked.", NamedTextColor.GREEN));
                 for (String command : getConfig().getStringList("rewards." + run.level)) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                            command.replace("%player%", player.getName()).replace("%level%", String.valueOf(run.level)));
+                            command.replace("%player%", member.getName()).replace("%level%", String.valueOf(run.level)));
                 }
             }
         } else {
-            if (player != null && reason != null) {
-                player.sendMessage(Component.text("Keystone failed: " + reason, NamedTextColor.RED));
+            if (reason != null) {
+                for (UUID id : members) {
+                    Player member = Bukkit.getPlayer(id);
+                    if (member != null) member.sendMessage(Component.text("Keystone failed: " + reason, NamedTextColor.RED));
+                }
             }
-            if (player != null && getConfig().getBoolean("run.return-on-fail", true)) {
-                give(player, KeystoneItem.create(run.level));
+            if (owner != null && getConfig().getBoolean("run.return-on-fail", true)) {
+                give(owner, KeystoneItem.create(run.level));
             }
         }
     }

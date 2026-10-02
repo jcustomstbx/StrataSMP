@@ -10,6 +10,11 @@ public class StrataTeams extends StrataModule {
    }
 
    private CombatTracker combat;
+   private TeamManager teamManager;
+
+   public TeamManager getTeamManager() {
+      return this.teamManager;
+   }
 
    public CombatTracker getCombatTracker() {
       return this.combat;
@@ -18,6 +23,7 @@ public class StrataTeams extends StrataModule {
    public void onEnable() {
       this.saveDefaultConfig();
       TeamManager teams = new TeamManager(this);
+      this.teamManager = teams;
       this.combat = new CombatTracker(this.getConfig().getLong("combat-tag-seconds", 10L));
       HomeTeleporter teleporter = new HomeTeleporter(this, teams, this.combat);
       TeamGUI gui = new TeamGUI(teams, teleporter);
