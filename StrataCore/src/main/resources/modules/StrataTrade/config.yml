@@ -1,0 +1,29 @@
+# Seconds the Accept button stays locked after every change and on the confirmation screen.
+accept-delay-seconds: 5
+
+# How long a trade request stays open. Set max-distance to 0 for no distance limit.
+request-expire-seconds: 30
+max-distance: 0
+
+# Maximum Stratas that can go into one side of a trade.
+max-stratas: 10000000
+
+# Creative players can spawn items, so they can't trade.
+block-creative: true
+
+# Items that can never be traded. Kit and faction items (the soulbound flag) are always blocked.
+blocked-materials:
+  - BEDROCK
+  - BARRIER
+  - COMMAND_BLOCK
+  - CHAIN_COMMAND_BLOCK
+  - REPEATING_COMMAND_BLOCK
+  - STRUCTURE_BLOCK
+  - JIGSAW
+  - DEBUG_STICK
+
+# Keep player trading in survival. Hub and duel arenas stay excluded.
+enabled-worlds:
+  - world
+  - world_nether
+  - world_the_end

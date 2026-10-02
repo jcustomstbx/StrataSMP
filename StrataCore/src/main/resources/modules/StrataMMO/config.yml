@@ -4,6 +4,9 @@ level-curve:
   base: 100
   per-level: 40
 
+# multiplier applied to all skill xp earned from gameplay (1.10 = +10%). Quest rewards are paid exactly as listed.
+xp-multiplier: 1.10
+
 # skills stop levelling at this number. Set to 0 for uncapped - levelling just
 # keeps going forever. Milestone perks still unlock at 25/50/75/100 either way,
 # since those only ever check "level >= X", not an exact match.

@@ -5,12 +5,14 @@ api-version: '1.21'
 author: JCustoms
 description: Unified StrataSMP plugin suite.
 load: POSTWORLD
-depend: [Vault]
-softdepend: [PlaceholderAPI, LuckPerms, RankEssentials]
+depend: [Vault, Citizens]
+softdepend: [ModelEngine, Multiverse-Core, AntiFloodGuard, PlaceholderAPI, RankEssentials, LuckPerms, CrazyCrates]
 commands:
+  spawnboss: {description: Spawn a boss for testing, usage: '/spawnboss <boss>'}
+  cratevault: {description: Open and claim your Crate Vault, usage: /cratevault, aliases: [cvault]}
   stratas: {description: Check your Stratas balance, usage: '/stratas [player]', aliases: [bal, balance, money, strata]}
   pay: {description: Pay Stratas to another player, usage: '/pay <player> <amount>'}
-  baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop]}
+  baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop, croptop]}
   eco: {description: Manage Stratas balances, usage: '/eco <give|take|set|reset> <player> [amount]', permission: strataeconomy.admin}
   ah: {description: Stratas auction house, usage: '/ah [sell <price>|mine]', aliases: [auctionhouse, auction]}
   sell: {description: Sell items for Stratas, usage: /sell, aliases: [sellgui]}
@@ -25,19 +27,28 @@ commands:
   killmsg: {description: Manage custom kill messages, usage: '/killmsg <help|set|reset|preview|clear>'}
   transferenchants: {description: Transfer donor enchantments to a catalog weapon, usage: /transferenchants, permission: strataweapons.transferenchants}
   skinpurge: {description: Purge a skin from server items, usage: '/skinpurge <skin>', permission: strataweapons.purge}
+  stratahub: {description: Manage hub NPCs and lockdown, usage: '/stratahub <addentry|removeentry|list|reload|lockdown|dressnpc>', permission: stratahub.admin}
   kit: {description: Open and claim your 72-hour rank kit, usage: '/kit [preview <rank>]', aliases: [kits]}
   rankpreview: {description: Preview rank benefits, usage: '/rankpreview <rank>'}
   rankstyle: {description: Choose paid-rank cosmetic styles, usage: '/rankstyle <name|chat|particle|join> <choice>'}
   name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
   repair: {description: Repair the item in hand with Regal, usage: /repair}
   mmo: {description: RPG stats and leaderboards, usage: '/mmo [stats|top]', aliases: [stratammo]}
-  strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [perks, strataperk]}
+  strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [sov, strataperk]}
   givestrataperks: {description: Grant StrataPerks, usage: '/givestrataperks <player> <amount>', permission: strataperks.admin}
-  strataperkshop: {description: Open the premium shop, usage: /strataperkshop, aliases: [perkshop, pshop]}
+  strataperkshop: {description: Open the premium shop, usage: /strataperkshop, aliases: [sovshop, godshop]}
   store: {description: Get the StrataSMP store link, usage: /store}
+  myteam: {description: Manage your team, usage: '/myteam <create|invite|accept|deny|kick|rename|disband|leave|ff>'}
+  thome: {description: Teleport to your team home, usage: '/thome [set]', aliases: [tmhome]}
+  trade: {description: Safely trade items and Stratas, usage: '/trade <player|accept|deny|cancel>', aliases: [trading]}
+  stratatrade: {description: Review a player's recent trades, usage: '/stratatrade history <player>', aliases: [tradeadmin], permission: stratatrade.admin}
+  leaderboard: {description: Place and manage the floating leaderboards, usage: '/leaderboard create <kills|streak|deaths|playtime|stratas> [scale] | remove <id> | move <id> | resize <id> <scale> | list | refresh', aliases: [lb, leaderboards], permission: strataleaderboards.admin}
   keystone: {description: Keystone admin, usage: '/keystone <give|stop|reload>', permission: stratakeystones.admin}
 permissions:
   stratakeystones.admin: {description: Manage keystones, default: op}
+  stratabosses.admin: {description: Spawn bosses, default: op}
+  stratacratevault.use: {description: Open your Crate Vault, default: true}
+  stratacratevault.admin: {description: Deposit items into a player's Crate Vault, default: op}
   strataeconomy.admin: {description: Administer Stratas and auctions, default: op}
   strataeconomy.auction.use: {description: Use the auction house, default: true}
   strataeconomy.shop.use: {description: Use Stratas shop and sell, default: true}
@@ -48,8 +59,14 @@ permissions:
   strataweapons.killmessage.admin: {description: Moderate custom kill messages, default: op}
   strataweapons.transferenchants: {description: Transfer donor enchantments, default: true}
   strataskins.*: {description: Unlock every weapon skin, default: op}
+  stratahub.admin: {description: Manage hub NPCs and lockdown, default: op}
+  stratahub.lockdown.bypass: {description: Enter SMP worlds during lockdown, default: false}
+  stratahub.closedworld.bypass: {description: Enter closed worlds, default: op}
+  stratahub.hubcommands.bypass: {description: Bypass hub command restrictions, default: op}
   stratakits.admin: {description: Reload kits and reset cooldowns, default: op}
   stratammo.use: {description: Use MMO commands, default: true}
   stratammo.admin: {description: Administer MMO data, default: op}
   strataperks.use: {description: Use StrataPerks and the shop, default: true}
   strataperks.admin: {description: Grant StrataPerks, default: op}
+  stratatrade.admin: {default: op}
+  strataleaderboards.admin: {description: Place and manage floating leaderboards, default: op}

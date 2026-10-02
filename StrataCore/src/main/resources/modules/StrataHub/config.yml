@@ -1,0 +1,146 @@
+# the world random-teleport lands players in and "where you were" tracks them in
+smp-world: world
+
+# the hub/lobby world itself - used by the command guard below
+hub-world: hub
+
+# true = a minecraft:barrier block can never be crossed by walking, gliding, an ender pearl, a portal or
+# any other teleport, for anyone including ops - the straight line of every move/teleport is checked for
+# a barrier in the way and undone if one's there, rather than trusting the block to stop things on its
+# own. Applies server-wide, not just to duel arenas.
+barrier-noclip: true
+
+# true = a boat only moves while its vanilla status is in/under water - on land, ice or in the air
+# it's frozen in place instead (checked on every VehicleMoveEvent, teleported back to where it was).
+# Stops boats being used to skate across land or nudge through gaps faster than walking. Server-wide.
+boats-water-only: true
+
+# true = AntiFloodGuard's "Flood/dupe activity blocked and drained near <world> x,y,z" alerts get a
+# clickable [TP] follow-up for anyone who already sees the alert (antifloodguard.alerts, default op).
+# Has no effect if AntiFloodGuard isn't installed.
+antiflood-clickable: true
+
+# true = every click on an entry NPC random-teleports the player into the SMP.
+# false = returning players go back to where they last were in the SMP instead
+# (first-timers are always random-teleported either way).
+entry-always-rtp: true
+
+# worlds nobody (except ops / stratahub.closedworld.bypass) can enter by portal or teleport.
+# Stays in force across restarts. Remove a world from this list and run /stratahub reload to open it.
+# (Deleting the key isn't enough - a missing key falls back to this default.)
+closed-worlds:
+  - factions
+
+# anyone who drops below this height in the hub is put back at the hub's world spawn
+# (players are invincible there, so a fall off the island would otherwise never end)
+void-rescue-below-y: 60
+
+# commands (base label or alias, no leading /) blocked while a player is standing
+# in hub-world - covers the SMP economy (shop/auction/vault/homes/kits/tpa) so it
+# can't be touched or exploited from the hub. Duels, chat, and /msg still work.
+# Ordinary hub restrictions can be bypassed by stratahub.hubcommands.bypass (default: op).
+# The market and player-trade commands below are always blocked, including for ops.
+hub-command-block:
+  - shop
+  - sell
+  - sellgui
+  - ah
+  - auctionhouse
+  - auction
+  - trade
+  - trading
+  - stratas
+  - bal
+  - balance
+  - money
+  - strata
+  - pay
+  - baltop
+  - stratatop
+  - moneytop
+  - croptop
+  - eco
+  - exchange
+  - pv
+  - strataeconomy
+  - sethome
+  - home
+  - homes
+  - delhome
+  - kit
+  - kits
+  - createkit
+  - delkit
+  - rtp
+  - tpa
+  - tpahere
+  - tpaccept
+  - tpyes
+  - tpdeny
+  - tpno
+  - sethubspawn
+  - setspawn
+  - spawnrg
+  - portcurrency
+  - endlock
+  - rankgive
+
+# worlds blocked from non-bypassing players while /stratahub lockdown on is active
+lockdown:
+  worlds: [world, world_nether, world_the_end]
+  # these players (by name, case-insensitive) can enter the locked worlds regardless
+  # of rank/permissions - independent of stratahub.lockdown.bypass so a group wildcard
+  # (e.g. the owner group) can't accidentally let anyone else through
+  bypass-players: [_Denton_, Strataonsnuffy]
+
+# true = a beacon an op places keeps a coloured beam shooting straight up to the build limit for as long as the beacon
+# is there (a marker for pointing a spot out from far away), also after a restart. Only ops' beacons get one, and breaking
+# the beacon ends it. false stops the beams being drawn and new ones being recorded.
+op-beacon-beam: true
+# the beam's colour: a hex RGB like "#FF2020", or rainbow for a colour that cycles up the beam. /stratahub reload to apply.
+op-beacon-beam-color: "#33C8FF"
+
+# A red particle outline drawn around each safe zone, so anyone stepping out of it can see they have left the
+# safe area. The WorldGuard region (safezone in the SMP world) does the actual protecting; these numbers are its
+# block corners, edges included. Shown at the player's own height to players within 40 blocks. Add more entries
+# for more zones, /stratahub reload to apply. color is a hex RGB.
+safe-zone-outlines:
+  - world: world
+    min-x: -6
+    max-x: 4
+    min-z: -5
+    max-z: 5
+    color: "#FF2020"
+
+# Same boxes as safe-zone-outlines above, but enforced: a tagged (in-combat) player crossing in from
+# outside is bounced back with a shove instead of being let through, and a PvP hit that lands at 0 final
+# damage because either player is standing in one of these zones no longer starts a combat timer at all.
+# Everywhere else combat tagging is untouched (still RankEssentials' normal 30 second timer).
+safe-zone-combat-guard: true
+
+# Hostile mobs (anything that counts as an Enemy) can't target or hurt players inside the same boxes, and one
+# that wanders in is moved back out to the nearest edge about twice a second. Spawning inside is already denied
+# by the WorldGuard region; this covers mobs walking in from outside.
+safe-zone-mob-guard: true
+
+# RankEssentials' own /rtp cooldown is a fixed 5 minutes, not configurable there - this pulls any running
+# cooldown back down to this many seconds instead (still blocks /rtp for that long, just shorter). Only
+# applies to a player typing /rtp themselves; the hub entry NPC already bypasses the cooldown entirely.
+rtp-cooldown-cap-seconds: 120
+ornate-rtp-cooldown-seconds: 90
+messages:
+  entry: "&6Off to the SMP! &7Randomly teleporting you in..."
+  first-entry: "&6Welcome to the SMP! &7Randomly teleporting you in..."
+  returning: "&7Welcome back - teleporting you to where you left off."
+  not-an-entry-npc: "&cThat NPC isn't set up as an SMP entry point."
+  no-npc-selected: "&cSelect an NPC first (look at it and run /npc select, or right-click it while holding nothing)."
+  entry-added: "&aNPC #%id% is now an SMP entry point."
+  entry-removed: "&aNPC #%id% is no longer an SMP entry point."
+  entry-list-header: "&6SMP entry NPCs:"
+  entry-list-empty: "&7No SMP entry NPCs configured yet - select one with Citizens and run /stratahub addentry."
+  closed-world: "&cThe End is closed for now - it opens when the time is right!"
+  lockdown-blocked: "&cThe SMP is closed for a build event right now - stick around the hub!"
+  comingsoon-added: "&aNPC #%id% now shows the coming-soon message."
+  comingsoon-removed: "&aNPC #%id% no longer shows the coming-soon message."
+  factions-coming-soon: "&6Factions &7is coming soon! Check back later."
+  hub-command-blocked: "&cThat command is only available on the SMP, not here in the hub."

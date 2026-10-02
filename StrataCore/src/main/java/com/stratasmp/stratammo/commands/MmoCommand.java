@@ -40,8 +40,11 @@ public class MmoCommand implements CommandExecutor, TabCompleter {
    private final LevelCurve levelCurve;
    private final UltimatePerks ultimatePerks;
    private final SalvageArtist salvageArtist;
+   private final com.stratasmp.stratammo.quests.QuestManager quests;
 
-   public MmoCommand(DataManager dataManager, LevelCurve levelCurve, UltimatePerks ultimatePerks, SalvageArtist salvageArtist) {
+   public MmoCommand(DataManager dataManager, LevelCurve levelCurve, UltimatePerks ultimatePerks, SalvageArtist salvageArtist,
+                     com.stratasmp.stratammo.quests.QuestManager quests) {
+      this.quests = quests;
       this.dataManager = dataManager;
       this.levelCurve = levelCurve;
       this.ultimatePerks = ultimatePerks;
@@ -58,6 +61,14 @@ public class MmoCommand implements CommandExecutor, TabCompleter {
          } else if (sub.equals("top")) {
             String skillArg = args.length > 1 ? args[1] : null;
             return this.showTop(sender, skillArg);
+         } else if (sub.equals("quests") || sub.equals("quest")) {
+            if (sender instanceof Player player) {
+               this.quests.show(player);
+            } else {
+               sender.sendMessage(Component.text("Only players have quests.", NamedTextColor.RED));
+            }
+
+            return true;
          } else if (sub.equals("help")) {
             return this.showHelp(sender);
          } else if (sub.equals("ultimate")) {
@@ -108,6 +119,7 @@ public class MmoCommand implements CommandExecutor, TabCompleter {
       sender.sendMessage(
          Component.text("/mmo stats <player>", NamedTextColor.YELLOW).append(Component.text(" - someone else's skill levels", NamedTextColor.WHITE))
       );
+      sender.sendMessage(Component.text("/mmo quests", NamedTextColor.YELLOW).append(Component.text(" - your daily quests", NamedTextColor.WHITE)));
       sender.sendMessage(Component.text("/mmo top", NamedTextColor.YELLOW).append(Component.text(" - top 10 by total levels", NamedTextColor.WHITE)));
       sender.sendMessage(Component.text("/mmo top <skill>", NamedTextColor.YELLOW).append(Component.text(" - top 10 for one skill", NamedTextColor.WHITE)));
       sender.sendMessage(
@@ -253,6 +265,7 @@ public class MmoCommand implements CommandExecutor, TabCompleter {
          options.add("stats");
          options.add("top");
          options.add("help");
+         options.add("quests");
          options.add("ultimate");
          options.add("salvage");
       } else if (args.length == 2 && args[0].equalsIgnoreCase("top")) {

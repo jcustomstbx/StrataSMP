@@ -1,0 +1,190 @@
+# Custom visuals use the bundled ModelEngine blueprints. Missing models fall back
+# to the original mob appearance. Empty model-id disables a specific boss model.
+models:
+  enabled: true
+
+# StrataBosses configuration
+# Every check-interval-minutes, each enabled boss independently rolls
+# spawn-chance. On a hit, it spawns near a random online player (in an
+# overworld-type world, not in excluded-worlds) as its base mob dressed up as
+# the boss - this does NOT rely on that mob's own vanilla natural spawning
+# (Piglin Brute/Wither Skeleton only spawn inside Bastions/Fortresses, and
+# Ravager doesn't naturally spawn at all outside of raids, so hooking vanilla
+# spawns directly meant 3 of the 5 bosses could basically never appear).
+# respawn-cooldown-seconds blocks that boss type from spawning again anywhere
+# for a while after one dies. max-concurrent-per-world caps how many copies of
+# that boss can be alive in the same world at once.
+#
+# idle-despawn-minutes: a live boss that has neither dealt nor taken combat
+# damage for this long fades away on its own (0 = never). Stops unkilled bosses
+# roaming the map forever and ambushing players who never engaged them.
+spawn-checks:
+  interval-minutes: 15
+  idle-despawn-minutes: 15
+  # bosses only ever spawn in these worlds (the SMP)
+  allowed-worlds: [world]
+  excluded-worlds: [duelworld, hub, duels, testworld]
+
+# The arena a boss builds around its spawn point is put back when the boss dies, fades, or after this long
+# even if the fight is still going (it is also written to arenas/ so a restart or crash can't leave it standing).
+arena:
+  max-lifetime-minutes: 20
+
+# Death loot - same table for all 5 bosses. Each line under "supplies" is rolled
+# independently (so a kill can drop several of these at once, or none at all).
+# To add another item, just add another entry keyed by its Bukkit Material name.
+# The signature weapon is deliberately rare - most kills should NOT get it.
+loot:
+  weapon-drop-chance: 0.08
+  # 2026-09-20: amounts bumped up (chances left exactly as they were) for the bigger boss fights.
+  # 2026-09-23: table expanded with more realistic materials, and every existing item's min/max
+  # raised ~20% on top of that (chances unchanged again) - request was "up quantity by 20%" after
+  # adding the new entries, so the newly-added items below are fresh baselines, not scaled.
+  supplies:
+    GOLDEN_APPLE:
+      chance: 0.6
+      min: 2
+      max: 4
+    DIAMOND:
+      chance: 0.5
+      min: 4
+      max: 7
+    EMERALD:
+      chance: 0.5
+      min: 6
+      max: 11
+    IRON_INGOT:
+      chance: 0.7
+      min: 6
+      max: 11
+    GOLD_INGOT:
+      chance: 0.5
+      min: 5
+      max: 8
+    ENDER_PEARL:
+      chance: 0.35
+      min: 2
+      max: 4
+    EXPERIENCE_BOTTLE:
+      chance: 0.4
+      min: 5
+      max: 10
+    NETHERITE_SCRAP:
+      chance: 0.08
+      min: 1
+      max: 2
+    NETHER_STAR:
+      chance: 0.03
+      min: 1
+      max: 1
+    AMETHYST_SHARD:
+      chance: 0.45
+      min: 4
+      max: 7
+    BLAZE_ROD:
+      chance: 0.4
+      min: 2
+      max: 4
+    ANCIENT_DEBRIS:
+      chance: 0.25
+      min: 1
+      max: 2
+    SHULKER_SHELL:
+      chance: 0.2
+      min: 1
+      max: 1
+    DIAMOND_BLOCK:
+      chance: 0.15
+      min: 1
+      max: 1
+    ENCHANTED_GOLDEN_APPLE:
+      chance: 0.12
+      min: 1
+      max: 1
+    NETHERITE_INGOT:
+      chance: 0.05
+      min: 1
+      max: 1
+    TOTEM_OF_UNDYING:
+      chance: 0.04
+      min: 1
+      max: 1
+
+# Scales every ability hit and the Coilfang trident (melee is each boss's attack-damage below). Lower = easier.
+ability-damage-multiplier: 0.75
+
+bosses:
+  zekka:
+    model-id: zekka
+    weapon-model-id: zekka_weapon
+    # Zekka the Brute - Piglin Brute base, golden axe reskin
+    enabled: true
+    max-health: 1000
+    attack-damage: 6
+    knockback-resistance: 0.85
+    knockback-taken-multiplier: 0.2
+    spawn-chance: 0.15
+    max-concurrent-per-world: 1
+    respawn-cooldown-seconds: 3600
+    ability-cooldown-seconds: 9
+    stratas-reward: 22500
+
+  vaelspire:
+    model-id: vaelspire
+    weapon-model-id: vaelspire_weapon
+    # Vaelspire the Hollow - Wither Skeleton base, iron sword reskin
+    enabled: true
+    max-health: 1000
+    attack-damage: 6
+    knockback-resistance: 0.85
+    knockback-taken-multiplier: 0.2
+    spawn-chance: 0.15
+    max-concurrent-per-world: 1
+    respawn-cooldown-seconds: 3600
+    ability-cooldown-seconds: 10
+    stratas-reward: 22500
+
+  thornmaw:
+    model-id: thornmaw
+    weapon-model-id: ""
+    # Thornmaw - Ravager base (no armor slots, gets a color-tell passenger instead), stone axe reskin
+    enabled: true
+    max-health: 1000
+    attack-damage: 6
+    knockback-resistance: 0.85
+    knockback-taken-multiplier: 0.2
+    spawn-chance: 0.15
+    max-concurrent-per-world: 1
+    respawn-cooldown-seconds: 3600
+    ability-cooldown-seconds: 8
+    stratas-reward: 22500
+
+  abyssal_coilfang:
+    model-id: abyssal_coilfang
+    weapon-model-id: abyssal_coilfang_weapon
+    # Abyssal Coilfang - Drowned base, trident reskin
+    enabled: true
+    max-health: 1000
+    attack-damage: 6
+    knockback-resistance: 0.85
+    knockback-taken-multiplier: 0.2
+    spawn-chance: 0.15
+    max-concurrent-per-world: 1
+    respawn-cooldown-seconds: 3600
+    ability-cooldown-seconds: 10
+    stratas-reward: 22500
+
+  cinderjaw:
+    model-id: cinderjaw
+    weapon-model-id: cinderjaw_weapon
+    # Cinderjaw - Husk base, iron axe reskin
+    enabled: true
+    max-health: 1000
+    attack-damage: 6
+    knockback-resistance: 0.85
+    knockback-taken-multiplier: 0.2
+    spawn-chance: 0.15
+    max-concurrent-per-world: 1
+    respawn-cooldown-seconds: 3600
+    ability-cooldown-seconds: 9
+    stratas-reward: 22500

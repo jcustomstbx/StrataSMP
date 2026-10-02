@@ -3,6 +3,8 @@ package com.stratasmp.stratammo;
 import com.stratasmp.stratacore.StrataCore;
 import com.stratasmp.stratacore.StrataModule;
 import com.stratasmp.stratammo.commands.MmoCommand;
+import com.stratasmp.stratammo.quests.QuestListener;
+import com.stratasmp.stratammo.quests.QuestManager;
 import com.stratasmp.stratammo.listeners.AlchemyListener;
 import com.stratasmp.stratammo.listeners.CombatListener;
 import com.stratasmp.stratammo.listeners.EnchantingListener;
@@ -29,6 +31,7 @@ public class StrataMMO extends StrataModule {
 
    private DataManager smpData;
    private Set<String> smpWorlds;
+   private QuestManager questManager;
 
    @Override
    public void onEnable() {
@@ -72,12 +75,16 @@ public class StrataMMO extends StrataModule {
                                        PerkSettings settings,PlacedBlockTracker placed,boolean antiFarm,int milestoneInterval,
                                        boolean stratas,int stratasInterval,long stratasAmount){
       XpNotifier notifier=new XpNotifier(dataManager,curve,milestoneInterval,stratas,stratasInterval,stratasAmount,profile,worlds);
+      notifier.setXpMultiplier(getConfig().getDouble("xp-multiplier",1.10));
+      questManager=new QuestManager(this,notifier,curve);
+      notifier.setQuests(questManager);
       PerkCooldowns cooldowns=new PerkCooldowns();
       ActiveUltimates ultimates=new ActiveUltimates();
       UltimatePerks perks=new UltimatePerks(notifier,cooldowns,settings,ultimates);
       SalvageArtist salvage=new SalvageArtist(notifier,settings,cooldowns);
       PluginManager manager=getServer().getPluginManager();
       manager.registerEvents(new JoinQuitListener(dataManager,worlds),this);
+      manager.registerEvents(new QuestListener(questManager,notifier,placed),this);
       manager.registerEvents(new MiningListener(xp,notifier,placed,antiFarm,settings,cooldowns,ultimates,this),this);
       manager.registerEvents(new WoodcuttingListener(xp,notifier,placed,antiFarm,settings,cooldowns,ultimates,this),this);
       manager.registerEvents(new FarmingListener(xp,notifier,settings,cooldowns,ultimates,this),this);
@@ -87,7 +94,8 @@ public class StrataMMO extends StrataModule {
       manager.registerEvents(new RepairListener(xp,notifier,settings,ultimates,this),this);
       manager.registerEvents(new AlchemyListener(xp,notifier,settings,cooldowns,ultimates,this),this);
       for(Player player:getServer().getOnlinePlayers())if(inProfile(worlds,player))dataManager.load(player);
-      return new ProfileContext(new MmoCommand(dataManager,curve,perks,salvage));
+      for(Player player:getServer().getOnlinePlayers())questManager.load(player);
+      return new ProfileContext(new MmoCommand(dataManager,curve,perks,salvage,questManager));
    }
 
    private Set<String> worldSet(String path,List<String> defaults){
@@ -101,6 +109,7 @@ public class StrataMMO extends StrataModule {
    @Override
    public void onDisable(){
       if(smpData!=null)smpData.saveAll();
+      if(questManager!=null)questManager.saveAllNow();
    }
 
    private record ProfileContext(MmoCommand command){}

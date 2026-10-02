@@ -1,0 +1,10 @@
+# StrataCrateVault - crate prizes are deposited here instead of straight into the
+# player's inventory, so a prize won in the Hub can only ever be claimed (and
+# worn / used) on the SMP.
+
+# worlds where the vault can be opened and claimed from. Anywhere else (the
+# Hub, Duels...) just gets a "SMP only" message.
+allowed-worlds:
+  - world
+  - world_nether
+  - world_the_end

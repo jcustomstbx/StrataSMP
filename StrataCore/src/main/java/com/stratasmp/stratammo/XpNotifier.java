@@ -21,6 +21,8 @@ public class XpNotifier {
    private final long stratasRewardAmount;
    private final String profile;
    private final Set<String> worlds;
+   private double xpMultiplier = 1.0;
+   private com.stratasmp.stratammo.quests.QuestManager quests;
 
    public XpNotifier(DataManager dataManager, LevelCurve levelCurve, int milestoneInterval,
                       boolean stratasRewardEnabled, int stratasRewardInterval, long stratasRewardAmount,
@@ -41,7 +43,24 @@ public class XpNotifier {
       return data == null ? 0 : this.levelCurve.levelFromTotalXp(data.getXp(skill))[0];
    }
 
+   public void setXpMultiplier(double xpMultiplier) {
+      this.xpMultiplier = xpMultiplier;
+   }
+
+   public void setQuests(com.stratasmp.stratammo.quests.QuestManager quests) {
+      this.quests = quests;
+   }
+
+   public void quest(Player player, com.stratasmp.stratammo.quests.ObjectiveType type, String key, int amount) {
+      if (this.quests != null) this.quests.progress(player, type, key, amount);
+   }
+
    public void award(Player player, Skill skill, int amount) {
+      this.awardExact(player, skill, amount > 0 ? Math.max(1, (int) Math.round(amount * this.xpMultiplier)) : amount);
+   }
+
+   /** Awards xp without the global multiplier (quest rewards pay out exactly what they advertise). */
+   public void awardExact(Player player, Skill skill, int amount) {
       if (amount > 0 && this.accepts(player)) {
          PlayerData data = this.dataManager.get(player.getUniqueId());
          if (data != null) {

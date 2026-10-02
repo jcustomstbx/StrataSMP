@@ -1,11 +1,18 @@
 package com.stratasmp.stratacore;
 
 import com.stratasmp.strataeconomy.StrataEconomy;
+import com.stratasmp.stratabosses.StrataBosses;
+import com.stratasmp.stratacratevault.StrataCrateVault;
+import com.stratasmp.stratateams.StrataTeams;
 import com.stratasmp.strataweapons.StrataWeapons;
-import com.stratasmp.stratammo.StrataMMO;
+import com.stratasmp.stratahub.StrataHub;
+import com.stratasmp.stratakits.StrataKits;
 import com.stratasmp.strataranks.StrataRanks;
+import com.stratasmp.stratammo.StrataMMO;
 import com.stratasmp.strataperks.StrataPerks;
+import com.stratasmp.stratatrade.StrataTradePlugin;
 import com.stratasmp.stratastore.StrataStore;
+import com.stratasmp.strataleaderboards.StrataLeaderboards;
 import com.stratasmp.stratakeystones.StrataKeystones;
 import java.io.File;
 import java.util.ArrayList;
@@ -30,11 +37,18 @@ public final class StrataCore extends JavaPlugin {
         // Economy starts first; MMO and others consume its API.
         List<StrataModule> startupOrder = List.of(
                 new StrataEconomy(this),
+                new StrataBosses(this),
+                new StrataCrateVault(this),
+                new StrataTeams(this),
                 new StrataWeapons(this),
+                new StrataHub(this),
+                new StrataKits(this),
                 new StrataRanks(this),
                 new StrataMMO(this),
                 new StrataPerks(this),
+                new StrataTradePlugin(this),
                 new StrataStore(this),
+                new StrataLeaderboards(this),
                 new StrataKeystones(this));
 
         try {

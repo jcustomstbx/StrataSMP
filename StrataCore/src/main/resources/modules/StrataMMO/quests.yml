@@ -1,0 +1,80 @@
+# Daily quests. Each player is dealt `daily-count` random quests at the daily reset.
+# type: BREW_POTION, MINE_BLOCK, CHOP_LOG, HARVEST_CROP, KILL_MOB, CATCH_FISH, ENCHANT_ITEM
+# targets: names to match (potion type, material or entity type); leave empty to match anything of that type.
+#   potions ignore LONG_/STRONG_ prefixes, so SWIFTNESS also counts strong and extended swiftness.
+# skill: the skill that receives the xp. xp is paid exactly as written (no multiplier).
+settings:
+  daily-count: 3
+  timezone: "UTC"        # reset happens at midnight in this zone
+
+pool:
+  swift_brewer:
+    name: "Swift Brewer"
+    type: BREW_POTION
+    targets: [SWIFTNESS]
+    amount: 12
+    skill: ALCHEMY
+    xp: 500
+  healers_round:
+    name: "Healer's Round"
+    type: BREW_POTION
+    targets: [HEALING]
+    amount: 9
+    skill: ALCHEMY
+    xp: 450
+  deep_digger:
+    name: "Deep Digger"
+    type: MINE_BLOCK
+    targets: [DEEPSLATE, DEEPSLATE_IRON_ORE, DEEPSLATE_COAL_ORE, DEEPSLATE_COPPER_ORE]
+    amount: 64
+    skill: MINING
+    xp: 450
+  diamond_hunter:
+    name: "Diamond Hunter"
+    type: MINE_BLOCK
+    targets: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE]
+    amount: 6
+    skill: MINING
+    xp: 600
+  lumberjack:
+    name: "Lumberjack"
+    type: CHOP_LOG
+    targets: []
+    amount: 80
+    skill: WOODCUTTING
+    xp: 450
+  harvest_time:
+    name: "Harvest Time"
+    type: HARVEST_CROP
+    targets: [WHEAT, CARROTS, POTATOES, BEETROOTS]
+    amount: 100
+    skill: FARMING
+    xp: 450
+  zombie_slayer:
+    name: "Zombie Slayer"
+    type: KILL_MOB
+    targets: [ZOMBIE, HUSK, DROWNED]
+    amount: 30
+    skill: SWORDS
+    xp: 400
+  archer_trial:
+    name: "Archer's Trial"
+    type: KILL_MOB
+    targets: [SKELETON, STRAY]
+    amount: 20
+    skill: ARCHERY
+    xp: 400
+  angler:
+    name: "Daily Catch"
+    type: CATCH_FISH
+    targets: []
+    amount: 15
+    skill: FISHING
+    xp: 400
+  scholar:
+    name: "Scholar"
+    type: ENCHANT_ITEM
+    targets: []
+    amount: 5
+    skill: ENCHANTING
+    xp: 450

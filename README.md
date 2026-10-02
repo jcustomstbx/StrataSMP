@@ -10,6 +10,7 @@
 | StrataMMO | MillyMMO | skills/RPG stats, to be reworked |
 | StrataRanks | MillyRanks | rank cosmetics, required by the economy |
 | StrataStore | MillyStore | `/store` link (URL in `StrataStore.java` is a placeholder) |
+| StrataBosses, StrataCrateVault, StrataTeams, StrataHub, StrataKits, StrataTrade, StrataLeaderboards | MillyBosses, CrateVault, Teams, Hub, Kits, Trade, Leaderboards | renamed ports; Hub needs Citizens |
 | StrataKeystones | new | overworld keystone drops, 3-wave runs, level 1-10 |
 
 Module defaults live in `src/main/resources/modules/<Module>/`; runtime data in `plugins/<Module>/`.

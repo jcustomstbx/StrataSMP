@@ -1,0 +1,12 @@
+# How often each board reads its data again, in seconds.
+refresh-seconds: 60
+
+# How many players each board lists.
+rows: 10
+
+# Font from the resource pack. Leave empty for the normal Minecraft font - StrataSMP doesn't ship
+# a custom pixel font for this yet.
+font: ""
+
+# Size of a new board. A board can be given its own size when it is created.
+default-scale: 1.0

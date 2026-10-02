@@ -1,0 +1,400 @@
+# One kit per ladder rank, lowest rank first. The id (monarch, adorned...) is the LuckPerms
+# group that unlocks it. 'items' go into the inventory; 'rewards' run as console commands,
+# with {player} replaced by the claimer's name. Restart or /kit reload to pick up edits.
+kits:
+  monarch:
+    display-name: "&#4498DB&lMonarch"
+    icon: IRON_CHESTPLATE
+    items:
+      - material: IRON_HELMET
+        name: "&#4498DB&lMonarch Helmet"
+        lore: ["&7Monarch Kit"]
+        enchants: { protection: 1, unbreaking: 2 }
+      - material: IRON_CHESTPLATE
+        name: "&#4498DB&lMonarch Chestplate"
+        lore: ["&7Monarch Kit"]
+        enchants: { protection: 1, unbreaking: 2 }
+      - material: IRON_LEGGINGS
+        name: "&#4498DB&lMonarch Leggings"
+        lore: ["&7Monarch Kit"]
+        enchants: { protection: 1, unbreaking: 2 }
+      - material: IRON_BOOTS
+        name: "&#4498DB&lMonarch Boots"
+        lore: ["&7Monarch Kit"]
+        enchants: { protection: 1, unbreaking: 2 }
+      - material: IRON_SWORD
+        enchants: { sharpness: 2 }
+      - material: IRON_PICKAXE
+        enchants: { efficiency: 2, unbreaking: 1 }
+      - material: IRON_AXE
+        enchants: { efficiency: 2, unbreaking: 1 }
+      - material: IRON_SHOVEL
+        enchants: { efficiency: 2, unbreaking: 1 }
+      - material: IRON_HOE
+        enchants: { efficiency: 2, unbreaking: 1 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+  adorned:
+    display-name: "&#B22424&lAdorned"
+    icon: IRON_CHESTPLATE
+    items:
+      - material: IRON_HELMET
+        name: "&#B22424&lAdorned Helmet"
+        lore: ["&7Adorned Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: IRON_CHESTPLATE
+        name: "&#B22424&lAdorned Chestplate"
+        lore: ["&7Adorned Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: IRON_LEGGINGS
+        name: "&#B22424&lAdorned Leggings"
+        lore: ["&7Adorned Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: IRON_BOOTS
+        name: "&#B22424&lAdorned Boots"
+        lore: ["&7Adorned Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: IRON_SWORD
+        enchants: { fire_aspect: 1, sharpness: 3, unbreaking: 2 }
+      - material: IRON_PICKAXE
+        enchants: { efficiency: 3, unbreaking: 2 }
+      - material: IRON_AXE
+        enchants: { efficiency: 3, unbreaking: 2 }
+      - material: IRON_SHOVEL
+        enchants: { efficiency: 3, unbreaking: 2 }
+      - material: IRON_HOE
+        enchants: { efficiency: 3, unbreaking: 2 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 2 }
+  gilded:
+    display-name: "&#DBC330&lGilded"
+    icon: DIAMOND_CHESTPLATE
+    items:
+      - material: DIAMOND_HELMET
+        name: "&#DBC330&lGilded Helmet"
+        lore: ["&7Gilded Kit"]
+        enchants: { protection: 2, unbreaking: 1 }
+      - material: DIAMOND_CHESTPLATE
+        name: "&#DBC330&lGilded Chestplate"
+        lore: ["&7Gilded Kit"]
+        enchants: { protection: 2, unbreaking: 1 }
+      - material: DIAMOND_LEGGINGS
+        name: "&#DBC330&lGilded Leggings"
+        lore: ["&7Gilded Kit"]
+        enchants: { protection: 2, unbreaking: 1 }
+      - material: DIAMOND_BOOTS
+        name: "&#DBC330&lGilded Boots"
+        lore: ["&7Gilded Kit"]
+        enchants: { protection: 2, unbreaking: 1 }
+      - material: DIAMOND_SWORD
+        enchants: { fire_aspect: 1, sharpness: 2, unbreaking: 2 }
+      - material: DIAMOND_PICKAXE
+        enchants: { efficiency: 2, unbreaking: 2 }
+      - material: DIAMOND_AXE
+        enchants: { efficiency: 2, unbreaking: 2 }
+      - material: DIAMOND_SHOVEL
+        enchants: { efficiency: 2, unbreaking: 2 }
+      - material: DIAMOND_HOE
+        enchants: { efficiency: 2, unbreaking: 2 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 3 }
+      - { material: TOTEM_OF_UNDYING, amount: 1 }
+  noble:
+    display-name: "&#D446C8&lNoble"
+    icon: DIAMOND_CHESTPLATE
+    items:
+      - material: DIAMOND_HELMET
+        name: "&#D446C8&lNoble Helmet"
+        lore: ["&7Noble Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: DIAMOND_CHESTPLATE
+        name: "&#D446C8&lNoble Chestplate"
+        lore: ["&7Noble Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: DIAMOND_LEGGINGS
+        name: "&#D446C8&lNoble Leggings"
+        lore: ["&7Noble Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: DIAMOND_BOOTS
+        name: "&#D446C8&lNoble Boots"
+        lore: ["&7Noble Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: DIAMOND_SWORD
+        enchants: { fire_aspect: 2, sharpness: 3, unbreaking: 2 }
+      - material: DIAMOND_PICKAXE
+        enchants: { efficiency: 3, unbreaking: 3 }
+      - material: DIAMOND_AXE
+        enchants: { efficiency: 3, unbreaking: 3 }
+      - material: DIAMOND_SHOVEL
+        enchants: { efficiency: 3, unbreaking: 3 }
+      - material: DIAMOND_HOE
+        enchants: { efficiency: 3, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 3 }
+      - { material: TOTEM_OF_UNDYING, amount: 3 }
+      - { material: ENDER_PEARL, amount: 16 }
+      - { material: OBSIDIAN, amount: 64 }
+      - { material: WIND_CHARGE, amount: 16 }
+      - { material: BLAZE_ROD, amount: 4 }
+      - { material: ENCHANTED_GOLDEN_APPLE, amount: 1 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+  enchanted:
+    display-name: "&#A160E3&lEnchanted"
+    icon: DIAMOND_CHESTPLATE
+    items:
+      - material: DIAMOND_HELMET
+        name: "&#A160E3&lEnchanted Helmet"
+        lore: ["&7Enchanted Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_CHESTPLATE
+        name: "&#A160E3&lEnchanted Chestplate"
+        lore: ["&7Enchanted Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_LEGGINGS
+        name: "&#A160E3&lEnchanted Leggings"
+        lore: ["&7Enchanted Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_BOOTS
+        name: "&#A160E3&lEnchanted Boots"
+        lore: ["&7Enchanted Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_SWORD
+        enchants: { fire_aspect: 2, sharpness: 4, unbreaking: 3 }
+      - material: DIAMOND_PICKAXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_AXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_SHOVEL
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_HOE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 6 }
+      - { material: TOTEM_OF_UNDYING, amount: 4 }
+      - { material: ENDER_PEARL, amount: 16 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+  imperial:
+    display-name: "&#3758C9&lImperial"
+    icon: DIAMOND_CHESTPLATE
+    items:
+      - material: DIAMOND_HELMET
+        name: "&#3758C9&lImperial Helmet"
+        lore: ["&7Imperial Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_CHESTPLATE
+        name: "&#3758C9&lImperial Chestplate"
+        lore: ["&7Imperial Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_LEGGINGS
+        name: "&#3758C9&lImperial Leggings"
+        lore: ["&7Imperial Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_BOOTS
+        name: "&#3758C9&lImperial Boots"
+        lore: ["&7Imperial Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: DIAMOND_SWORD
+        enchants: { fire_aspect: 2, sharpness: 4, unbreaking: 3 }
+      - material: DIAMOND_PICKAXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_AXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_SHOVEL
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: DIAMOND_HOE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 6 }
+      - { material: TOTEM_OF_UNDYING, amount: 4 }
+      - { material: ENDER_PEARL, amount: 16 }
+      - { material: OBSIDIAN, amount: 32 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+  strataed:
+    display-name: "&#F4BB54&lStrataed"
+    icon: NETHERITE_CHESTPLATE
+    items:
+      - material: NETHERITE_HELMET
+        name: "&#F4BB54&lStrataed Helmet"
+        lore: ["&7Strataed Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_CHESTPLATE
+        name: "&#F4BB54&lStrataed Chestplate"
+        lore: ["&7Strataed Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_LEGGINGS
+        name: "&#F4BB54&lStrataed Leggings"
+        lore: ["&7Strataed Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_BOOTS
+        name: "&#F4BB54&lStrataed Boots"
+        lore: ["&7Strataed Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_SWORD
+        enchants: { fire_aspect: 2, sharpness: 4, unbreaking: 3 }
+      - material: NETHERITE_PICKAXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_AXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_SHOVEL
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_HOE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 6 }
+      - { material: TOTEM_OF_UNDYING, amount: 4 }
+      - { material: ENDER_PEARL, amount: 16 }
+      - { material: OBSIDIAN, amount: 128 }
+      - { material: WIND_CHARGE, amount: 32 }
+      - { material: BLAZE_ROD, amount: 8 }
+      - { material: ENCHANTED_GOLDEN_APPLE, amount: 3 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+      - { display: "&6250,000 Stratas", icon: GOLD_INGOT, command: "eco give {player} 250000" }
+  ornate:
+    display-name: "&#42BEB0&lOrnate"
+    icon: NETHERITE_CHESTPLATE
+    items:
+      - material: NETHERITE_HELMET
+        name: "&#42BEB0&lOrnate Helmet"
+        lore: ["&7Ornate Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_CHESTPLATE
+        name: "&#42BEB0&lOrnate Chestplate"
+        lore: ["&7Ornate Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_LEGGINGS
+        name: "&#42BEB0&lOrnate Leggings"
+        lore: ["&7Ornate Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_BOOTS
+        name: "&#42BEB0&lOrnate Boots"
+        lore: ["&7Ornate Kit"]
+        enchants: { protection: 3, unbreaking: 2 }
+      - material: NETHERITE_SWORD
+        enchants: { fire_aspect: 2, sharpness: 4, unbreaking: 3 }
+      - material: NETHERITE_PICKAXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_AXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_SHOVEL
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_HOE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 32 }
+      - { material: GOLDEN_APPLE, amount: 8 }
+      - { material: TOTEM_OF_UNDYING, amount: 4 }
+      - { material: ENDER_PEARL, amount: 16 }
+      - { material: OBSIDIAN, amount: 128 }
+      - { material: WIND_CHARGE, amount: 32 }
+      - { material: BLAZE_ROD, amount: 8 }
+      - { material: ENCHANTED_GOLDEN_APPLE, amount: 3 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+  jeweled:
+    display-name: "&#F4548A&lJeweled"
+    icon: NETHERITE_CHESTPLATE
+    items:
+      - material: NETHERITE_HELMET
+        name: "&#F4548A&lJeweled Helmet"
+        lore: ["&7Jeweled Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: NETHERITE_CHESTPLATE
+        name: "&#F4548A&lJeweled Chestplate"
+        lore: ["&7Jeweled Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: NETHERITE_LEGGINGS
+        name: "&#F4548A&lJeweled Leggings"
+        lore: ["&7Jeweled Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: NETHERITE_BOOTS
+        name: "&#F4548A&lJeweled Boots"
+        lore: ["&7Jeweled Kit"]
+        enchants: { protection: 4, unbreaking: 3 }
+      - material: NETHERITE_SWORD
+        enchants: { fire_aspect: 2, sharpness: 5, unbreaking: 3 }
+      - material: NETHERITE_PICKAXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_AXE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_SHOVEL
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - material: NETHERITE_HOE
+        enchants: { efficiency: 4, unbreaking: 3 }
+      - { material: GOLDEN_CARROT, amount: 16 }
+      - { material: GOLDEN_APPLE, amount: 8 }
+      - { material: TOTEM_OF_UNDYING, amount: 6 }
+      - { material: ENDER_PEARL, amount: 32 }
+      - { material: OBSIDIAN, amount: 256 }
+      - { material: WIND_CHARGE, amount: 64 }
+      - { material: BLAZE_ROD, amount: 16 }
+      - { material: ENCHANTED_GOLDEN_APPLE, amount: 5 }
+    rewards:
+      - { display: "&6Resource Key &7x2", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 2 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
+      - { display: "&6500,000 Stratas", icon: GOLD_INGOT, command: "eco give {player} 500000" }
+  regal:
+    display-name: "&#8E44ED&lRegal"
+    icon: NETHERITE_CHESTPLATE
+    items:
+      - material: NETHERITE_SWORD
+        name: "&#8E44ED&lRegal Netherite Sword"
+        lore: ["&7Regal Kit"]
+        enchants: { sharpness: 5, looting: 3, fire_aspect: 2, sweeping_edge: 3, unbreaking: 3, mending: 1 }
+      - material: NETHERITE_AXE
+        name: "&#8E44ED&lRegal Netherite Axe"
+        lore: ["&7Regal Kit"]
+        enchants: { sharpness: 5, efficiency: 5, unbreaking: 3, mending: 1 }
+      - material: MACE
+        name: "&#8E44ED&lRegal Mace"
+        lore: ["&7Regal Kit"]
+        enchants: { density: 5, breach: 4, wind_burst: 3, unbreaking: 3, mending: 1 }
+      - material: NETHERITE_HELMET
+        name: "&#8E44ED&lRegal Netherite Helmet"
+        lore: ["&7Regal Kit"]
+        enchants: { protection: 4, unbreaking: 3, mending: 1, respiration: 3, aqua_affinity: 1, thorns: 3 }
+      - material: NETHERITE_CHESTPLATE
+        name: "&#8E44ED&lRegal Netherite Chestplate"
+        lore: ["&7Regal Kit"]
+        enchants: { protection: 4, unbreaking: 3, mending: 1, thorns: 3 }
+      - material: NETHERITE_LEGGINGS
+        name: "&#8E44ED&lRegal Netherite Leggings"
+        lore: ["&7Regal Kit"]
+        enchants: { protection: 4, unbreaking: 3, mending: 1, thorns: 3, swift_sneak: 3 }
+      - material: NETHERITE_BOOTS
+        name: "&#8E44ED&lRegal Netherite Boots"
+        lore: ["&7Regal Kit"]
+        enchants: { protection: 4, unbreaking: 3, mending: 1, feather_falling: 4, depth_strider: 3, soul_speed: 3, thorns: 3 }
+      - material: NETHERITE_PICKAXE
+        name: "&#8E44ED&lRegal StrataPerk Fortune Pickaxe"
+        lore: ["&7Regal Kit"]
+        enchants: { efficiency: 5, fortune: 3, unbreaking: 3, mending: 1 }
+      - material: NETHERITE_PICKAXE
+        name: "&#8E44ED&lRegal StrataPerk Silk Pickaxe"
+        lore: ["&7Regal Kit"]
+        enchants: { efficiency: 5, silk_touch: 1, unbreaking: 3, mending: 1 }
+      - material: TRIDENT
+        name: "&#8E44ED&lRegal Stormcaller Trident"
+        lore: ["&7Regal Kit"]
+        enchants: { riptide: 3, unbreaking: 3, mending: 1 }
+      - material: ELYTRA
+        name: "&#8E44ED&lRegal Royal Elytra"
+        lore: ["&7Regal Kit"]
+        enchants: { unbreaking: 4, mending: 1 }
+      - { material: GOLDEN_CARROT, amount: 32 }
+      - { material: GOLDEN_APPLE, amount: 10 }
+      - { material: TOTEM_OF_UNDYING, amount: 6 }
+      - { material: ENDER_PEARL, amount: 32 }
+      - { material: OBSIDIAN, amount: 256 }
+      - { material: WIND_CHARGE, amount: 64 }
+      - { material: BLAZE_ROD, amount: 16 }
+      - { material: ENCHANTED_GOLDEN_APPLE, amount: 5 }
+    rewards:
+      - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
+      - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }

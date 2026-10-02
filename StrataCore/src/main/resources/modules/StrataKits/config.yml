@@ -1,0 +1,19 @@
+# StrataKits - one kit per ladder rank, claimable every 72 hours. The kits themselves
+# are in kits.yml, listed lowest rank first; each kit id is the LuckPerms group
+# that unlocks it.
+
+# how long after claiming a kit before the same kit can be claimed again (72 hours, by player vote 2026-09-22)
+cooldown-seconds: 259200
+
+# the rank menu the hub NPCs open (/rankpreview <rank>). Homes and vaults are read from
+# RankEssentials' config and the kit from kits.yml, so only these two are set here.
+showcase:
+  store-url: "https://stratasmp.com/store"
+  ender-chest-rows: 6
+
+# worlds where a kit can be claimed. Kit gear and crate keys are SMP items, so the
+# Hub (which keeps its own separate inventory) gets a "SMP only" message instead.
+allowed-worlds:
+  - world
+  - world_nether
+  - world_the_end

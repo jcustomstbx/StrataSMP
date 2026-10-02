@@ -78,6 +78,9 @@ public class AlchemyListener implements Listener {
             for (ItemStack result : event.getResults()) {
                if (result != null && result.getType() != Material.AIR) {
                   this.notifier.award(player, Skill.ALCHEMY, this.xpValues.alchemy(result.getType()));
+                  if (result.getItemMeta() instanceof PotionMeta potion && potion.getBasePotionType() != null) {
+                     this.notifier.quest(player, com.stratasmp.stratammo.quests.ObjectiveType.BREW_POTION, potion.getBasePotionType().name(), 1);
+                  }
                }
             }
 

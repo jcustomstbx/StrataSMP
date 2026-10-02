@@ -23,6 +23,7 @@
     <repositories>
         <repository><id>papermc</id><url>https://repo.papermc.io/repository/maven-public/</url></repository>
         <repository><id>placeholderapi</id><url>https://repo.extendedclip.com/releases/</url></repository>
+        <repository><id>citizens</id><url>https://maven.citizensnpcs.co/repo</url></repository>
         <repository><id>jitpack</id><url>https://jitpack.io</url></repository>
     </repositories>
 
@@ -31,6 +32,7 @@
         <dependency><groupId>net.luckperms</groupId><artifactId>api</artifactId><version>${luckperms.version}</version><scope>provided</scope></dependency>
         <dependency><groupId>me.clip</groupId><artifactId>placeholderapi</artifactId><version>${placeholderapi.version}</version><scope>provided</scope></dependency>
         <dependency><groupId>com.github.MilkBowl</groupId><artifactId>VaultAPI</artifactId><version>${vault.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>net.citizensnpcs</groupId><artifactId>citizensapi</artifactId><version>2.0.35-SNAPSHOT</version><scope>provided</scope></dependency>
         <dependency><groupId>com.zaxxer</groupId><artifactId>HikariCP</artifactId><version>${hikari.version}</version></dependency>
         <dependency><groupId>org.mariadb.jdbc</groupId><artifactId>mariadb-java-client</artifactId><version>${mariadb.version}</version></dependency>
         <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>${h2.version}</version></dependency>
