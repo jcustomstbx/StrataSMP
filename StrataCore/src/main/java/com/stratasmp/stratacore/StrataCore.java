@@ -14,6 +14,8 @@ import com.stratasmp.stratatrade.StrataTradePlugin;
 import com.stratasmp.stratastore.StrataStore;
 import com.stratasmp.strataleaderboards.StrataLeaderboards;
 import com.stratasmp.stratakeystones.StrataKeystones;
+import com.stratasmp.strataduels.StrataDuels;
+import com.stratasmp.stratavotereward.StrataVoteReward;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -49,7 +51,9 @@ public final class StrataCore extends JavaPlugin {
                 new StrataTradePlugin(this),
                 new StrataStore(this),
                 new StrataLeaderboards(this),
-                new StrataKeystones(this));
+                new StrataKeystones(this),
+                new StrataDuels(this),
+                new StrataVoteReward(this));
 
         try {
             for (StrataModule module : startupOrder) {

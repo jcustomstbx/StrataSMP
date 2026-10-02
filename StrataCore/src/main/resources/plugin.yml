@@ -5,7 +5,7 @@ api-version: '1.21'
 author: JCustoms
 description: Unified StrataSMP plugin suite.
 load: POSTWORLD
-depend: [Vault, Citizens]
+depend: [Vault, Citizens, Votifier]
 softdepend: [ModelEngine, Multiverse-Core, AntiFloodGuard, PlaceholderAPI, RankEssentials, LuckPerms, CrazyCrates]
 commands:
   spawnboss: {description: Spawn a boss for testing, usage: '/spawnboss <boss>'}
@@ -44,7 +44,14 @@ commands:
   stratatrade: {description: Review a player's recent trades, usage: '/stratatrade history <player>', aliases: [tradeadmin], permission: stratatrade.admin}
   leaderboard: {description: Place and manage the floating leaderboards, usage: '/leaderboard create <kills|streak|deaths|playtime|stratas> [scale] | remove <id> | move <id> | resize <id> <scale> | list | refresh', aliases: [lb, leaderboards], permission: strataleaderboards.admin}
   keystone: {description: Keystone admin, usage: '/keystone <give|stop|reload>', permission: stratakeystones.admin}
+  duel: {description: Duel queue, challenges, stats and arena testing, usage: '/duel <queue|challenge|stats|test|end>'}
+  duelarena: {description: Manage duel arenas, usage: '/duelarena <create|setpos1|setpos2|setbound1|setbound2|savebaseline|cleanup|list|delete|toggle|ffa|addspawn|clearspawns>'}
+  duelkit: {description: Manage the six duel kits, usage: '/duelkit <set|clear> <1-6>'}
+  ffa: {description: Queue for the free-for-all arena, usage: '/ffa [join <kit>|leave|status]'}
+  vote: {description: Get a clickable link to vote for StrataSMP, usage: /vote}
 permissions:
+  strataduels.use: {description: Use duel commands, default: true}
+  strataduels.admin: {description: Manage duel arenas, kits and testing, default: op}
   stratakeystones.admin: {description: Manage keystones, default: op}
   stratabosses.admin: {description: Spawn bosses, default: op}
   stratacratevault.use: {description: Open your Crate Vault, default: true}

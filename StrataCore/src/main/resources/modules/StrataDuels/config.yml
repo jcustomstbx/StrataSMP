@@ -1,0 +1,83 @@
+elo:
+  starting-elo: 1000
+  k-factor-placement: 40
+  k-factor-standard: 20
+  placement-games: 10
+  floor: 100
+
+# thresholds are the season-elo a player needs to reach that tier
+rank-tiers:
+  bronze: 0
+  silver: 1000
+  gold: 1200
+  platinum: 1400
+  diamond: 1600
+  champion: 1800
+
+season:
+  # checked on enable + once a day; rolls over automatically once the real
+  # calendar month has moved past the stored last-season month, since there's
+  # no console/RCON access to run this by hand on the 1st
+  check-interval-hours: 24
+  giveaway-top-count: 3
+
+match:
+  countdown-seconds: 5
+  max-duration-seconds: 600
+  # how long players stay frozen at the arena after a kill/timeout before being
+  # teleported out and stats applied - also doubles as the victory-title/firework
+  # display window
+  end-delay-seconds: 5
+
+# world a disconnect-forfeiting player is sent to on their next join, instead of
+# wherever the server's normal login logic would otherwise land them
+restore-disconnect-world: world
+
+queue:
+  # a queue join and an arena freeing up both also trigger an immediate check on
+  # top of this timer, so this interval mostly just covers the ELO range slowly
+  # widening for someone who's been waiting a while - it doesn't gate how fast a
+  # fresh pairing pops any more.
+  check-interval-seconds: 1
+  initial-range: 100
+  widen-per-second: 5
+
+challenge:
+  expiry-seconds: 60
+
+autosave-interval-minutes: 5
+leaderboard-refresh-interval-seconds: 60
+
+# pushes the leaderboard to stratasmp.com's Stats page over HTTP, same
+# push-not-pull pattern as StrataMMO. api/strataduels.php exists and is live
+# (verified 2026-09-12 - it 401s an unauthenticated request instead of 404ing,
+# and this plugin's pushes with the configured key aren't erroring).
+web:
+  # Enable only after setting the API key in this server's local config.
+  push-enabled: false
+  api-url: "https://stratasmp.com/api/strataduels.php"
+  api-key: ""
+  push-interval-seconds: 60
+
+# free-for-all rounds (/ffa) on an arena flagged with /duelarena ffa <name>. Every key has a default in code,
+# so a live config that doesn't have this section keeps working.
+ffa:
+  # needed when the timer reaches zero; if fewer are queued the timer just restarts
+  min-players: 2
+  # 0 = no cap: everyone who joined before the timer hit zero is teleported in (spawns are reused if there are more players than spawns)
+  max-players: 0
+  # the timer starts as soon as the first player joins; everyone who joins before it hits zero is teleported in together
+  lobby-countdown-seconds: 30
+  # freeze time after everyone is placed on the spawns
+  countdown-seconds: 5
+  max-duration-seconds: 600
+  end-delay-seconds: 5
+  # 0 = each player picks a kit (1-6); set 1-6 to give everyone the same kit
+  forced-kit: 0
+  # the kits the FFA offers (duel kit slots); empty = every kit that is set up
+  kits: []
+  # optional labels for the FFA kit picker, e.g.
+  #   kit-names:
+  #     4: "Netherite Sword"
+  # broadcast when a lobby opens and when someone wins
+  announce-server: true
