@@ -1,0 +1,49 @@
+# StrataKeystones
+
+drops:
+  # chance per qualifying kill (0.02 = 2%). Only in the overworld.
+  chance: 0.02
+  # keystones from drops are always level 1; they rank up by clearing runs
+
+run:
+  max-level: 10
+  # base mob count for waves 1, 2, 3 at level 1
+  wave-sizes: [4, 6, 9]
+  # extra mobs per wave for each level above 1 (0.25 = +25%)
+  size-scale-per-level: 0.25
+  health-scale-per-level: 0.15
+  damage-scale-per-level: 0.10
+  spawn-radius-min: 6
+  spawn-radius-max: 11
+  # run fails if the player strays this far from where they opened the keystone
+  leash-radius: 40
+  time-limit-seconds: 300
+  wave-delay-ticks: 60
+  # on a failed run the keystone is handed back at the same level
+  return-on-fail: true
+  # level 10 keystones stay level 10 after a clear
+  mobs:
+    # type: minimum keystone level it can appear at
+    ZOMBIE: 1
+    SKELETON: 1
+    SPIDER: 1
+    CREEPER: 2
+    HUSK: 3
+    STRAY: 3
+    WITCH: 4
+    PILLAGER: 5
+    VINDICATOR: 6
+    RAVAGER: 9
+
+# Commands run by console on a cleared run at that level. Placeholders: %player%, %level%
+rewards:
+  1: []
+  2: []
+  3: []
+  4: []
+  5: []
+  6: []
+  7: []
+  8: []
+  9: []
+  10: []

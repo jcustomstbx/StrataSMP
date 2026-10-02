@@ -1,0 +1,2 @@
+# Regal /repair applies to one held item and stores the next allowed use by UUID.
+repair-cooldown-seconds: 86400

@@ -1,0 +1,161 @@
+# The /strataperkshop catalog. Enchantments may exceed vanilla limits when
+# configured as shop-exclusive items. Changes are picked up on server restart.
+items:
+  netherite_sword:
+    name: "&5&lGodly Netherite Sword"
+    material: NETHERITE_SWORD
+    price: 1
+    lore:
+      - "&7A blade fit for royalty."
+    enchantments:
+      sharpness: 5
+      looting: 3
+      fire_aspect: 2
+      sweeping_edge: 3
+      unbreaking: 3
+      mending: 1
+  netherite_axe:
+    name: "&5&lGodly Netherite Axe"
+    material: NETHERITE_AXE
+    price: 1
+    lore:
+      - "&7Cleave through anything."
+    enchantments:
+      sharpness: 5
+      efficiency: 5
+      unbreaking: 3
+      mending: 1
+  mace:
+    name: "&5&lGodly Mace"
+    material: MACE
+    price: 1
+    lore:
+      - "&7Strike from above."
+    enchantments:
+      density: 5
+      breach: 4
+      wind_burst: 3
+      unbreaking: 3
+      mending: 1
+  netherite_helmet:
+    name: "&5&lGodly Netherite Helmet"
+    material: NETHERITE_HELMET
+    price: 1
+    lore:
+      - "&7Strataing protection."
+    enchantments:
+      protection: 4
+      unbreaking: 3
+      mending: 1
+      respiration: 3
+      aqua_affinity: 1
+      thorns: 3
+  netherite_chestplate:
+    name: "&5&lGodly Netherite Chestplate"
+    material: NETHERITE_CHESTPLATE
+    price: 1
+    lore:
+      - "&7Impenetrable."
+    enchantments:
+      protection: 4
+      unbreaking: 3
+      mending: 1
+      thorns: 3
+  netherite_leggings:
+    name: "&5&lGodly Netherite Leggings"
+    material: NETHERITE_LEGGINGS
+    price: 1
+    lore:
+      - "&7Unshakeable stride."
+    enchantments:
+      protection: 4
+      unbreaking: 3
+      mending: 1
+      thorns: 3
+      swift_sneak: 3
+  netherite_boots:
+    name: "&5&lGodly Netherite Boots"
+    material: NETHERITE_BOOTS
+    price: 1
+    lore:
+      - "&7Walk any terrain."
+    enchantments:
+      protection: 4
+      unbreaking: 3
+      mending: 1
+      feather_falling: 4
+      depth_strider: 3
+      soul_speed: 3
+      thorns: 3
+  strataperk_fortune_pickaxe:
+    name: "&d&lStrataPerk's Fortune"
+    material: NETHERITE_PICKAXE
+    price: 1
+    lore:
+      - "&7A royal tool for uncovering riches."
+      - "&8Shop-exclusive utility item."
+    enchantments:
+      efficiency: 5
+      fortune: 3
+      unbreaking: 3
+      mending: 1
+  strataperk_silk_pickaxe:
+    name: "&b&lStrataPerk's Touch"
+    material: NETHERITE_PICKAXE
+    price: 1
+    lore:
+      - "&7Preserves the blocks you mine."
+      - "&8Shop-exclusive utility item."
+    enchantments:
+      efficiency: 5
+      silk_touch: 1
+      unbreaking: 3
+      mending: 1
+  stormcaller_trident:
+    name: "&b&lStormcaller Trident"
+    material: TRIDENT
+    price: 1
+    lore:
+      - "&7Ride the storm across the seas."
+      - "&8Shop-exclusive utility item."
+    enchantments:
+      riptide: 3
+      unbreaking: 3
+      mending: 1
+  royal_elytra:
+    name: "&d&lRoyal Elytra"
+    material: ELYTRA
+    price: 1
+    lore:
+      - "&7Take to the skies in strataperk style."
+      - "&8Shop-exclusive utility item."
+    enchantments:
+      unbreaking: 4
+      mending: 1
+  blaze_spawner_bundle:
+    name: "&6&lBlaze Spawner Bundle"
+    material: SPAWNER
+    spawner-type: BLAZE
+    amount: 4
+    price: 1
+    lore:
+      - "&7Four Blaze spawners, ready to place."
+      - "&8Shop-exclusive bundle."
+  skeleton_spawner_bundle:
+    name: "&f&lSkeleton Spawner Bundle"
+    material: SPAWNER
+    spawner-type: SKELETON
+    amount: 4
+    price: 1
+    lore:
+      - "&7Four Skeleton spawners, ready to place."
+      - "&8Shop-exclusive bundle."
+  zombie_spawner_bundle:
+    name: "&2&lZombie Spawner Bundle"
+    material: SPAWNER
+    spawner-type: ZOMBIE
+    amount: 4
+    price: 1
+    lore:
+      - "&7Four Zombie spawners, ready to place."
+      - "&8Shop-exclusive bundle."

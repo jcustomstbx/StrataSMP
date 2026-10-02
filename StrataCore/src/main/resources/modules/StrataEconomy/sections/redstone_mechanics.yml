@@ -1,0 +1,11 @@
+# Redstone & Mechanics - sellable, but NOT buyable (2026-09-11).
+# Pistons/observers/hoppers have never had a price; add one under items: below
+# whenever you want them purchasable/sellable.
+sellable: true
+buyable: false
+
+items:
+  REDSTONE: { sell: 10 }
+  REDSTONE_ORE: { sell: 10 }
+  DEEPSLATE_REDSTONE_ORE: { sell: 10 }
+  REDSTONE_BLOCK: { sell: 70 }

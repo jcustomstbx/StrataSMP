@@ -1,0 +1,35 @@
+# Farming Drops - sellable and buyable. Buying is rate-limited per player per
+# material (daily-limit, resets 24h after the first purchase in the window) so
+# the shop can't be used to bulk-restock a farm instead of growing it. Values
+# are a first pass at "quite low, like 3-5" - tune per item freely, or remove
+# daily-limit on an item to make it unlimited.
+sellable: true
+buyable: true
+
+items:
+  NETHER_WART: { sell: 3, buy: 16, daily-limit: 5 }
+  WHEAT: { sell: 2, buy: 10, daily-limit: 5 }
+  CARROT: { sell: 2, buy: 10, daily-limit: 5 }
+  BEETROOT: { sell: 2, buy: 10, daily-limit: 5 }
+  POTATO: { sell: 2, buy: 10, daily-limit: 5 }
+  PUMPKIN: { sell: 3, buy: 16, daily-limit: 3 }
+  MELON: { sell: 3, buy: 16, daily-limit: 3 }
+  MELON_SLICE: { sell: 1, buy: 6, daily-limit: 5 }
+  SUGAR_CANE: { sell: 5, buy: 24, daily-limit: 5 }
+
+# Added 2026-09-26 (player feedback): sell-only crops (no buy price, so no daily limit needed).
+  SWEET_BERRIES: { sell: 2 }
+  GLOW_BERRIES: { sell: 3 }
+  COCOA_BEANS: { sell: 3 }
+  CACTUS: { sell: 2 }
+  KELP: { sell: 1 }
+  BAMBOO: { sell: 1 }
+  SUGAR: { sell: 3 }
+  BROWN_MUSHROOM: { sell: 3 }
+  RED_MUSHROOM: { sell: 3 }
+  APPLE: { sell: 3 }
+  CHORUS_FRUIT: { sell: 4 }
+  HONEYCOMB: { sell: 6 }
+  HONEY_BOTTLE: { sell: 8 }
+  HAY_BLOCK: { sell: 18 }
+  LILY_PAD: { sell: 1 }

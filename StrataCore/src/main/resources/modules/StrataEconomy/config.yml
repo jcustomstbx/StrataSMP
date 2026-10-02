@@ -1,0 +1,65 @@
+# StrataEconomy
+
+database:
+  host: "localhost"
+  port: 3306
+  name: "stratasmp"
+  user: "stratasmp"
+  password: "CHANGE_ME"          # set at deploy - do not commit the real value
+  pool-size: 6
+  # tables are created automatically: stratas_balances, stratas_auctions
+
+currency:
+  starting-balance: 0
+  symbol: "♛"               # ♛
+  name-singular: "Strata"
+  name-plural: "Stratas"
+  # how many real emeralds one Strata is "worth" for /shop reference only
+  emerald-value: 30
+
+vault:
+  # register as the Vault economy provider. Leave true unless another plugin
+  # should own the economy.
+  register: true
+
+migration:
+  # on first start, import balances from RankEssentials/economy.yml if present.
+  # runs once, then writes .migrated so it never repeats.
+  from-rankessentials: true
+  rankessentials-economy-file: "../RankEssentials/economy.yml"
+  # also pull StratasPlugin/balances.yml if it still has entries
+  stratasplugin-balances-file: "../StratasPlugin/balances.yml"
+
+auction:
+  max-listings-per-player: 5      # strataeconomy.admin bypasses
+  listing-fee-percent: 0.0        # taken from the seller when listing
+  min-price: 1
+  max-price: 100000000
+  expiry-days: 0                  # 0 = never expires
+  # sale tax is applied by StrataElections via AuctionSaleEvent - not set here
+
+buyorders:
+  max-per-player: 5      # strataeconomy.admin bypasses
+  max-amount: 2304        # per order, same cap as /shop buy
+  min-price: 1
+  max-price: 100000000
+
+shop:
+  # /shop buy prices and /sell prices come from prices.yml
+  sell-tax-percent: 0.0
+  # console record of /sell, for spotting item duplication. A sale is logged when it pays at least
+  # min-stratas or sells at least min-items of one item; a player selling hourly-warn-stratas or more
+  # within an hour gets a warning line (0 turns that off). Defaults apply if these are missing.
+  sell-log:
+    min-stratas: 1000
+    min-items: 640
+    hourly-warn-stratas: 20000
+
+# worlds where the shop/AH/buy-order menus refuse clicks, even if a player opened the
+# menu elsewhere and then walked/teleported in with it still open. StrataHub's
+# hub-command-block list stops the /shop, /sell and /ah commands themselves in these
+# worlds - this is the belt-and-suspenders check for a menu that was already open.
+restricted-worlds:
+  - hub
+
+autosave-seconds: 60

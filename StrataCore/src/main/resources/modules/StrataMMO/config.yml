@@ -1,0 +1,172 @@
+# XP needed for level N is: base + (N * per-level)
+# so level 1 takes `base` xp, and each level after costs `per-level` more than the last
+level-curve:
+  base: 100
+  per-level: 40
+
+# skills stop levelling at this number. Set to 0 for uncapped - levelling just
+# keeps going forever. Milestone perks still unlock at 25/50/75/100 either way,
+# since those only ever check "level >= X", not an exact match.
+level-cap: 0
+
+# how often (in minutes) player data autosaves in the background, on top of save-on-quit
+autosave-interval: 5
+
+# pushes the leaderboard to stratasmp.com's Stats page over HTTP - the game server
+# never talks to Hostinger's database directly, this just POSTs a JSON snapshot
+web:
+  # Enable only after setting the API key in this server's local config.
+  push-enabled: false
+  api-url: "https://stratasmp.com/api/stratammo.php"
+  api-key: ""
+  push-interval-seconds: 60
+
+anti-farm:
+  # blocks a player places don't award mining/woodcutting xp when broken again,
+  # so nobody can place-and-mine the same block in a loop for free levels
+  enabled: true
+
+# server-wide chat announcement when someone hits a level that's a multiple
+# of this number, e.g. 25 means everyone gets a message at level 25, 50, 75...
+# set to 0 to turn announcements off entirely
+milestone-interval: 25
+
+# Stratas paid out for reaching a level that's a multiple of this number, in
+# each skill separately - hitting level 10 in Mining pays out, then hitting
+# level 10 in Woodcutting pays out again on top of that. A single big XP grant
+# that jumps a player past more than one threshold pays for every one crossed,
+# not just the first. Needs StrataEconomy installed - does nothing without it.
+# Independent of milestone-interval above, which is only the chat broadcast.
+stratas-reward:
+  enabled: true
+  interval: 10
+  amount: 1250
+
+xp:
+  # all rates here are -25% from the original baseline (2026-07-20)
+  mining:
+    coal_ore: 8
+    deepslate_coal_ore: 8
+    iron_ore: 11
+    deepslate_iron_ore: 11
+    copper_ore: 9
+    deepslate_copper_ore: 9
+    gold_ore: 15
+    deepslate_gold_ore: 15
+    redstone_ore: 11
+    deepslate_redstone_ore: 11
+    lapis_ore: 14
+    deepslate_lapis_ore: 14
+    diamond_ore: 30
+    deepslate_diamond_ore: 30
+    emerald_ore: 34
+    deepslate_emerald_ore: 34
+    nether_gold_ore: 11
+    nether_quartz_ore: 9
+    ancient_debris: 45
+  woodcutting:
+    oak_log: 6
+    spruce_log: 6
+    birch_log: 6
+    jungle_log: 6
+    acacia_log: 6
+    dark_oak_log: 6
+    mangrove_log: 6
+    cherry_log: 6
+    crimson_stem: 6
+    warped_stem: 6
+  farming:
+    wheat: 5
+    carrots: 5
+    potatoes: 5
+    beetroots: 5
+    nether_wart: 6
+    pumpkin: 8
+    melon: 8
+  # how much killing each mob is worth - which of Swords/Axes/Archery/Unarmed
+  # actually gets the xp depends on how the kill happened, not this table
+  combat:
+    zombie: 8
+    skeleton: 8
+    spider: 8
+    creeper: 11
+    enderman: 14
+    witch: 12
+    drowned: 9
+    husk: 9
+    blaze: 15
+    wither_skeleton: 19
+    piglin_brute: 17
+    default: 6
+  # bumped above the -25% baseline on 2026-07-24 - fishing is gated by the
+  # vanilla bobber-bite timer, so it never got the same actions-per-minute
+  # as mining/woodcutting/farming, and matching their -25% cut made
+  # levelling here disproportionately slower than every other skill
+  fishing:
+    catch: 10
+    treasure: 20
+  enchanting:
+    # multiplied by the enchant table's level cost (1-30) for that enchant
+    per-level-cost: 2
+  repair:
+    # multiplied by the anvil's xp level cost for that repair/combine
+    per-level-cost: 3
+  alchemy:
+    # xp per finished potion bottle - splash/lingering cost more ingredients
+    # to make (gunpowder, dragon's breath) so they're worth more
+    base: 9
+    splash-bonus: 5
+    lingering-bonus: 8
+
+# milestone perks unlocked at level 25/50/75/100 in each skill. Combat skills
+# (Swords/Axes/Archery/Unarmed) deliberately don't have any of these yet.
+perks:
+  enabled: true
+
+  # cooldowns are per-player, per-perk - not shared across skills
+  minor-buff-cooldown-seconds: 60      # level 25 perks (haste procs etc)
+  utility-cooldown-seconds: 300        # level 50 perks
+  conservation-cooldown-seconds: 1800  # level 75 perks - these are the ones with duplication/exploit risk
+  ultimate-cooldown-seconds: 1800      # level 100 ultimates
+  ultimate-duration-seconds: 20        # how long an activated ultimate stays active
+
+  mining:
+    haste-proc-chance: 10          # % chance per block break to get Haste II for 5-10s
+    blast-furnace-chance: 30       # % chance a mined ore auto-smelts into its ingot
+    resonance-chance: 8            # % chance a mined ore block instantly replenishes (common ores only)
+    seismic-shift-max-blocks: 12   # blocks broken per Seismic Shift activation
+
+  woodcutting:
+    lumberjack-pace-chance: 10     # % chance per log break to get Speed+Haste for 5-10s
+    resin-extraction-chance: 15    # % chance for a bonus drop breaking logs/leaves
+    root-system-chance: 10         # % chance a chopped log instantly regrows
+    timber-fall-max-logs: 48       # max connected logs felled per Timber Fall swing
+
+  farming:
+    green-thumb-chance: 15                    # % chance a harvest auto-replants + gives double yield
+    fertile-soil-chance: 10                   # % chance an adjacent crop instantly matures
+    bountiful-harvest-chance: 10              # % chance for a bonus xp burst on harvest (xp only, no items)
+    bountiful-harvest-xp-bonus-percent: 50    # size of that bonus xp burst
+    natures-wrath-radius: 1                   # 1 = 3x3 area per Nature's Wrath click
+
+  fishing:
+    reflexes-wait-reduction-percent: 15    # cuts down the vanilla wait-to-bite time
+    treasure-hunter-bonus-percent: 20      # shifts catch odds toward treasure over junk
+    catch-and-release-chance: 15           # % chance to catch double fish / auto-return junk for bonus xp
+
+  enchanting:
+    aetherial-focus-bonus-percent: 10     # small boost to effective bookshelf power
+    resonance-infusion-chance: 10         # % chance for a preserved xp cost or minor extra modifier
+
+  repair:
+    steady-hands-cost-reduction-percent: 20   # cuts the xp level cost of anvil repairs
+    reinforced-build-bonus-percent: 10        # durability bonus applied per repair
+    reinforced-build-max-stacks: 5            # caps how many times that bonus can stack on one item
+    salvage-artist-chance: 25                 # % chance breaking down gear returns higher-tier materials
+
+  alchemy:
+    practiced-brewer-chance: 15    # % chance a brew doesn't consume its base ingredient
+    potent-mixture-chance: 15      # % chance a finished potion auto-upgrades to tier II
+    waste-not-chance: 20           # % chance the glass bottles are returned on brew start
+worlds:
+  smp: [world, world_nether, world_the_end]

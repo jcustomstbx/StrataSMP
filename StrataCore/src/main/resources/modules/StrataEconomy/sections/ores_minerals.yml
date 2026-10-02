@@ -1,0 +1,69 @@
+# Ores & Minerals - sellable, but NOT buyable (2026-09-11).
+sellable: true
+buyable: false
+
+# Storage blocks sell for no more than 9x (4x for quartz) their unit price (2026-09-20) - anything higher lets players
+# craft ore into blocks to sell for a bonus. Keep it that way when tuning.
+
+items:
+  COAL: { sell: 5 }
+  RAW_IRON: { sell: 6 }
+  IRON_INGOT: { sell: 10 }
+  RAW_COPPER: { sell: 5 }
+  COPPER_INGOT: { sell: 7 }
+  RAW_GOLD: { sell: 7 }
+  GOLD_INGOT: { sell: 10 }
+  DIAMOND: { sell: 20 }
+  EMERALD: { sell: 35 }
+  LAPIS_LAZULI: { sell: 8 }
+  QUARTZ: { sell: 4 }
+  NETHERITE_SCRAP: { sell: 25 }
+  NETHERITE_INGOT: { sell: 75 }
+  COAL_ORE: { sell: 5 }
+  DEEPSLATE_COAL_ORE: { sell: 5 }
+  IRON_ORE: { sell: 20 }
+  DEEPSLATE_IRON_ORE: { sell: 20 }
+  COPPER_ORE: { sell: 18 }
+  DEEPSLATE_COPPER_ORE: { sell: 18 }
+  GOLD_ORE: { sell: 30 }
+  DEEPSLATE_GOLD_ORE: { sell: 30 }
+  NETHER_GOLD_ORE: { sell: 30 }
+  DIAMOND_ORE: { sell: 50 }
+  DEEPSLATE_DIAMOND_ORE: { sell: 50 }
+  EMERALD_ORE: { sell: 50 }
+  DEEPSLATE_EMERALD_ORE: { sell: 50 }
+  LAPIS_ORE: { sell: 8 }
+  DEEPSLATE_LAPIS_ORE: { sell: 8 }
+  NETHER_QUARTZ_ORE: { sell: 4 }
+  ANCIENT_DEBRIS: { sell: 80 }
+  COAL_BLOCK: { sell: 30 }
+  IRON_BLOCK: { sell: 90 }
+  RAW_IRON_BLOCK: { sell: 54 }
+  COPPER_BLOCK: { sell: 63 }
+  RAW_COPPER_BLOCK: { sell: 45 }
+  GOLD_BLOCK: { sell: 90 }
+  RAW_GOLD_BLOCK: { sell: 63 }
+  DIAMOND_BLOCK: { sell: 180 }
+  EMERALD_BLOCK: { sell: 260 }
+  LAPIS_BLOCK: { sell: 70 }
+  QUARTZ_BLOCK: { sell: 16 }
+  NETHERITE_BLOCK: { sell: 675 }
+
+# Added 2026-09-26 (player feedback): more sell-only minerals and treasure.
+  AMETHYST_SHARD: { sell: 6 }
+  AMETHYST_BLOCK: { sell: 24 }
+  GLOWSTONE_DUST: { sell: 4 }
+  GLOWSTONE: { sell: 16 }
+  PRISMARINE_SHARD: { sell: 4 }
+  PRISMARINE_CRYSTALS: { sell: 5 }
+  CLAY_BALL: { sell: 2 }
+  BRICK: { sell: 3 }
+  NETHER_BRICK: { sell: 3 }
+  CHARCOAL: { sell: 4 }
+  FLINT: { sell: 1 }
+  GOLD_NUGGET: { sell: 1 }
+  IRON_NUGGET: { sell: 1 }
+  OBSIDIAN: { sell: 8 }
+  ECHO_SHARD: { sell: 60 }
+  NAUTILUS_SHELL: { sell: 40 }
+  HEART_OF_THE_SEA: { sell: 250 }

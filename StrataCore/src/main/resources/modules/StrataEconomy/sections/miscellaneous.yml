@@ -1,0 +1,21 @@
+# Miscellaneous - the buy-shop catch-all (food, utility items, rare drops).
+sellable: true
+buyable: true
+
+items:
+  COOKED_BEEF: { buy: 250 }
+  GOLDEN_CARROT: { buy: 1250 }
+  GOLDEN_APPLE: { buy: 2500 }
+  ENCHANTED_GOLDEN_APPLE: { buy: 250000 }
+  SHULKER_SHELL: { buy: 37500 }
+  TOTEM_OF_UNDYING: { buy: 100000 }
+  LAVA_BUCKET: { buy: 500 }
+  WATER_BUCKET: { buy: 500 }
+  MILK_BUCKET: { buy: 500 }
+  SADDLE: { buy: 750 }
+  ENDER_CHEST: { buy: 500000 }
+  BONE_MEAL: { buy: 20 }
+  NAME_TAG: { buy: 3000 }
+  BUNDLE: { buy: 1500 }
+  BEACON: { buy: 5000000 }
+  ELYTRA: { buy: 3500000 }

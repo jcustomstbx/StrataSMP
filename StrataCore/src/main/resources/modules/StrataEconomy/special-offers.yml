@@ -1,0 +1,17 @@
+# Shop purchases that aren't a plain material - buying one withdraws Stratas then
+# runs `command` from the console. %player% is substituted.
+offers:
+  resource_key:
+    name: "&bResource Crate Key"
+    material: IRON_INGOT
+    price: 7500000
+    lore:
+      - "&7Unlocks the Resource Crate."
+    command: "crates give virtual ResourceCrate 1 %player% -s"
+  gear_key:
+    name: "&dGear Crate Key"
+    material: DIAMOND
+    price: 15000000
+    lore:
+      - "&7Unlocks the Gear Crate."
+    command: "crates give virtual GearCrate 1 %player% -s"

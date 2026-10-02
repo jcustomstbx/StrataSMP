@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.stratasmp</groupId>
+    <artifactId>StrataCore</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <paper.version>1.21.11-R0.1-SNAPSHOT</paper.version>
+        <luckperms.version>5.4</luckperms.version>
+        <placeholderapi.version>2.11.6</placeholderapi.version>
+        <vault.version>1.7.1</vault.version>
+        <hikari.version>6.2.1</hikari.version>
+        <mariadb.version>3.5.1</mariadb.version>
+        <h2.version>2.3.232</h2.version>
+    </properties>
+
+    <repositories>
+        <repository><id>papermc</id><url>https://repo.papermc.io/repository/maven-public/</url></repository>
+        <repository><id>placeholderapi</id><url>https://repo.extendedclip.com/releases/</url></repository>
+        <repository><id>jitpack</id><url>https://jitpack.io</url></repository>
+    </repositories>
+
+    <dependencies>
+        <dependency><groupId>io.papermc.paper</groupId><artifactId>paper-api</artifactId><version>${paper.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>net.luckperms</groupId><artifactId>api</artifactId><version>${luckperms.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>me.clip</groupId><artifactId>placeholderapi</artifactId><version>${placeholderapi.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>com.github.MilkBowl</groupId><artifactId>VaultAPI</artifactId><version>${vault.version}</version><scope>provided</scope></dependency>
+        <dependency><groupId>com.zaxxer</groupId><artifactId>HikariCP</artifactId><version>${hikari.version}</version></dependency>
+        <dependency><groupId>org.mariadb.jdbc</groupId><artifactId>mariadb-java-client</artifactId><version>${mariadb.version}</version></dependency>
+        <dependency><groupId>com.h2database</groupId><artifactId>h2</artifactId><version>${h2.version}</version></dependency>
+    </dependencies>
+
+    <build>
+        <finalName>StrataCore-${project.version}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes><include>plugin.yml</include></includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes><exclude>plugin.yml</exclude></excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><version>3.13.0</version>
+                <configuration><release>21</release><parameters>true</parameters></configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId><artifactId>maven-shade-plugin</artifactId><version>3.6.0</version>
+                <executions><execution><phase>package</phase><goals><goal>shade</goal></goals></execution></executions>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <artifactSet>
+                        <includes>
+                            <include>com.zaxxer:HikariCP</include>
+                            <include>org.mariadb.jdbc:mariadb-java-client</include>
+                            <include>com.h2database:h2</include>
+                        </includes>
+                    </artifactSet>
+                    <relocations>
+                        <relocation><pattern>com.zaxxer.hikari</pattern><shadedPattern>com.stratasmp.stratacore.lib.hikari</shadedPattern></relocation>
+                        <relocation><pattern>org.mariadb.jdbc</pattern><shadedPattern>com.stratasmp.stratacore.lib.mariadb</shadedPattern></relocation>
+                        <relocation><pattern>org.h2</pattern><shadedPattern>com.stratasmp.stratacore.lib.h2</shadedPattern></relocation>
+                    </relocations>
+                    <filters>
+                        <filter><artifact>*:*</artifact><excludes><exclude>META-INF/*.SF</exclude><exclude>META-INF/*.DSA</exclude><exclude>META-INF/*.RSA</exclude><exclude>META-INF/versions/**</exclude></excludes></filter>
+                    </filters>
+                    <transformers><transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/></transformers>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

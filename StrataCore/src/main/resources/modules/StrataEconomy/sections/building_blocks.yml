@@ -1,0 +1,205 @@
+# Building Blocks - sellable and buyable.
+sellable: true
+buyable: true
+
+# every <colour>_WOOL / _CONCRETE / _CONCRETE_POWDER / _TERRACOTTA /
+# _GLAZED_TERRACOTTA / _STAINED_GLASS / _STAINED_GLASS_PANE / _CANDLE
+# is auto-priced at this on load, for all 16 dye colours.
+colored-buy: 300
+colored-sell: 10
+
+items:
+  STONE: { buy: 250 }
+  COBBLESTONE: { buy: 250 }
+  GRANITE: { buy: 250 }
+  POLISHED_GRANITE: { buy: 250 }
+  DIORITE: { buy: 250 }
+  POLISHED_DIORITE: { buy: 250 }
+  ANDESITE: { buy: 250 }
+  POLISHED_ANDESITE: { buy: 250 }
+  DEEPSLATE: { buy: 250, sell: 1 }
+  COBBLED_DEEPSLATE: { buy: 250, sell: 1 }
+  POLISHED_DEEPSLATE: { buy: 250 }
+  TUFF: { buy: 250, sell: 1 }
+  CALCITE: { buy: 250, sell: 2 }
+  NETHERRACK: { buy: 250, sell: 1 }
+  BLACKSTONE: { buy: 250, sell: 1 }
+  POLISHED_BLACKSTONE: { buy: 250 }
+  BASALT: { buy: 250, sell: 1 }
+  SMOOTH_BASALT: { buy: 250 }
+  END_STONE: { buy: 250, sell: 2 }
+  SANDSTONE: { buy: 250 }
+  RED_SANDSTONE: { buy: 250 }
+  TERRACOTTA: { buy: 250 }
+  GLASS: { buy: 250 }
+  GLASS_PANE: { buy: 250 }
+  TORCH: { buy: 250 }
+  SOUL_TORCH: { buy: 250 }
+  LANTERN: { buy: 250 }
+  SOUL_LANTERN: { buy: 250 }
+  CANDLE: { buy: 250 }
+  SLIME_BLOCK: { buy: 1000 }
+
+  # Wood (2026-09-20): every wood type, buyable. Logs, stems, bark/hyphae and planks can also be sold,
+  # at a few Stratas each. Derived blocks (stairs, slabs, doors...) are buy-only, so nothing here can be
+  # bought and sold back for a profit.
+  OAK_LOG: { sell: 4, buy: 160 }
+  STRIPPED_OAK_LOG: { sell: 4, buy: 170 }
+  OAK_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_OAK_WOOD: { sell: 4, buy: 210 }
+  OAK_PLANKS: { sell: 1, buy: 40 }
+  OAK_STAIRS: { buy: 60 }
+  OAK_SLAB: { buy: 25 }
+  OAK_FENCE: { buy: 60 }
+  OAK_FENCE_GATE: { buy: 90 }
+  OAK_DOOR: { buy: 80 }
+  OAK_TRAPDOOR: { buy: 100 }
+  OAK_BUTTON: { buy: 45 }
+  OAK_PRESSURE_PLATE: { buy: 80 }
+  SPRUCE_LOG: { sell: 4, buy: 160 }
+  STRIPPED_SPRUCE_LOG: { sell: 4, buy: 170 }
+  SPRUCE_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_SPRUCE_WOOD: { sell: 4, buy: 210 }
+  SPRUCE_PLANKS: { sell: 1, buy: 40 }
+  SPRUCE_STAIRS: { buy: 60 }
+  SPRUCE_SLAB: { buy: 25 }
+  SPRUCE_FENCE: { buy: 60 }
+  SPRUCE_FENCE_GATE: { buy: 90 }
+  SPRUCE_DOOR: { buy: 80 }
+  SPRUCE_TRAPDOOR: { buy: 100 }
+  SPRUCE_BUTTON: { buy: 45 }
+  SPRUCE_PRESSURE_PLATE: { buy: 80 }
+  BIRCH_LOG: { sell: 4, buy: 160 }
+  STRIPPED_BIRCH_LOG: { sell: 4, buy: 170 }
+  BIRCH_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_BIRCH_WOOD: { sell: 4, buy: 210 }
+  BIRCH_PLANKS: { sell: 1, buy: 40 }
+  BIRCH_STAIRS: { buy: 60 }
+  BIRCH_SLAB: { buy: 25 }
+  BIRCH_FENCE: { buy: 60 }
+  BIRCH_FENCE_GATE: { buy: 90 }
+  BIRCH_DOOR: { buy: 80 }
+  BIRCH_TRAPDOOR: { buy: 100 }
+  BIRCH_BUTTON: { buy: 45 }
+  BIRCH_PRESSURE_PLATE: { buy: 80 }
+  JUNGLE_LOG: { sell: 4, buy: 160 }
+  STRIPPED_JUNGLE_LOG: { sell: 4, buy: 170 }
+  JUNGLE_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_JUNGLE_WOOD: { sell: 4, buy: 210 }
+  JUNGLE_PLANKS: { sell: 1, buy: 40 }
+  JUNGLE_STAIRS: { buy: 60 }
+  JUNGLE_SLAB: { buy: 25 }
+  JUNGLE_FENCE: { buy: 60 }
+  JUNGLE_FENCE_GATE: { buy: 90 }
+  JUNGLE_DOOR: { buy: 80 }
+  JUNGLE_TRAPDOOR: { buy: 100 }
+  JUNGLE_BUTTON: { buy: 45 }
+  JUNGLE_PRESSURE_PLATE: { buy: 80 }
+  ACACIA_LOG: { sell: 4, buy: 160 }
+  STRIPPED_ACACIA_LOG: { sell: 4, buy: 170 }
+  ACACIA_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_ACACIA_WOOD: { sell: 4, buy: 210 }
+  ACACIA_PLANKS: { sell: 1, buy: 40 }
+  ACACIA_STAIRS: { buy: 60 }
+  ACACIA_SLAB: { buy: 25 }
+  ACACIA_FENCE: { buy: 60 }
+  ACACIA_FENCE_GATE: { buy: 90 }
+  ACACIA_DOOR: { buy: 80 }
+  ACACIA_TRAPDOOR: { buy: 100 }
+  ACACIA_BUTTON: { buy: 45 }
+  ACACIA_PRESSURE_PLATE: { buy: 80 }
+  DARK_OAK_LOG: { sell: 4, buy: 160 }
+  STRIPPED_DARK_OAK_LOG: { sell: 4, buy: 170 }
+  DARK_OAK_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_DARK_OAK_WOOD: { sell: 4, buy: 210 }
+  DARK_OAK_PLANKS: { sell: 1, buy: 40 }
+  DARK_OAK_STAIRS: { buy: 60 }
+  DARK_OAK_SLAB: { buy: 25 }
+  DARK_OAK_FENCE: { buy: 60 }
+  DARK_OAK_FENCE_GATE: { buy: 90 }
+  DARK_OAK_DOOR: { buy: 80 }
+  DARK_OAK_TRAPDOOR: { buy: 100 }
+  DARK_OAK_BUTTON: { buy: 45 }
+  DARK_OAK_PRESSURE_PLATE: { buy: 80 }
+  MANGROVE_LOG: { sell: 4, buy: 160 }
+  STRIPPED_MANGROVE_LOG: { sell: 4, buy: 170 }
+  MANGROVE_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_MANGROVE_WOOD: { sell: 4, buy: 210 }
+  MANGROVE_PLANKS: { sell: 1, buy: 40 }
+  MANGROVE_STAIRS: { buy: 60 }
+  MANGROVE_SLAB: { buy: 25 }
+  MANGROVE_FENCE: { buy: 60 }
+  MANGROVE_FENCE_GATE: { buy: 90 }
+  MANGROVE_DOOR: { buy: 80 }
+  MANGROVE_TRAPDOOR: { buy: 100 }
+  MANGROVE_BUTTON: { buy: 45 }
+  MANGROVE_PRESSURE_PLATE: { buy: 80 }
+  CHERRY_LOG: { sell: 4, buy: 160 }
+  STRIPPED_CHERRY_LOG: { sell: 4, buy: 170 }
+  CHERRY_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_CHERRY_WOOD: { sell: 4, buy: 210 }
+  CHERRY_PLANKS: { sell: 1, buy: 40 }
+  CHERRY_STAIRS: { buy: 60 }
+  CHERRY_SLAB: { buy: 25 }
+  CHERRY_FENCE: { buy: 60 }
+  CHERRY_FENCE_GATE: { buy: 90 }
+  CHERRY_DOOR: { buy: 80 }
+  CHERRY_TRAPDOOR: { buy: 100 }
+  CHERRY_BUTTON: { buy: 45 }
+  CHERRY_PRESSURE_PLATE: { buy: 80 }
+  PALE_OAK_LOG: { sell: 4, buy: 160 }
+  STRIPPED_PALE_OAK_LOG: { sell: 4, buy: 170 }
+  PALE_OAK_WOOD: { sell: 4, buy: 200 }
+  STRIPPED_PALE_OAK_WOOD: { sell: 4, buy: 210 }
+  PALE_OAK_PLANKS: { sell: 1, buy: 40 }
+  PALE_OAK_STAIRS: { buy: 60 }
+  PALE_OAK_SLAB: { buy: 25 }
+  PALE_OAK_FENCE: { buy: 60 }
+  PALE_OAK_FENCE_GATE: { buy: 90 }
+  PALE_OAK_DOOR: { buy: 80 }
+  PALE_OAK_TRAPDOOR: { buy: 100 }
+  PALE_OAK_BUTTON: { buy: 45 }
+  PALE_OAK_PRESSURE_PLATE: { buy: 80 }
+  CRIMSON_STEM: { sell: 4, buy: 160 }
+  STRIPPED_CRIMSON_STEM: { sell: 4, buy: 170 }
+  CRIMSON_HYPHAE: { sell: 4, buy: 200 }
+  STRIPPED_CRIMSON_HYPHAE: { sell: 4, buy: 210 }
+  CRIMSON_PLANKS: { sell: 1, buy: 40 }
+  CRIMSON_STAIRS: { buy: 60 }
+  CRIMSON_SLAB: { buy: 25 }
+  CRIMSON_FENCE: { buy: 60 }
+  CRIMSON_FENCE_GATE: { buy: 90 }
+  CRIMSON_DOOR: { buy: 80 }
+  CRIMSON_TRAPDOOR: { buy: 100 }
+  CRIMSON_BUTTON: { buy: 45 }
+  CRIMSON_PRESSURE_PLATE: { buy: 80 }
+  WARPED_STEM: { sell: 4, buy: 160 }
+  STRIPPED_WARPED_STEM: { sell: 4, buy: 170 }
+  WARPED_HYPHAE: { sell: 4, buy: 200 }
+  STRIPPED_WARPED_HYPHAE: { sell: 4, buy: 210 }
+  WARPED_PLANKS: { sell: 1, buy: 40 }
+  WARPED_STAIRS: { buy: 60 }
+  WARPED_SLAB: { buy: 25 }
+  WARPED_FENCE: { buy: 60 }
+  WARPED_FENCE_GATE: { buy: 90 }
+  WARPED_DOOR: { buy: 80 }
+  WARPED_TRAPDOOR: { buy: 100 }
+  WARPED_BUTTON: { buy: 45 }
+  WARPED_PRESSURE_PLATE: { buy: 80 }
+  BAMBOO_BLOCK: { sell: 4, buy: 160 }
+  STRIPPED_BAMBOO_BLOCK: { sell: 4, buy: 170 }
+  BAMBOO_PLANKS: { sell: 1, buy: 40 }
+  BAMBOO_MOSAIC: { buy: 45 }
+  BAMBOO_MOSAIC_STAIRS: { buy: 60 }
+  BAMBOO_MOSAIC_SLAB: { buy: 25 }
+  BAMBOO_STAIRS: { buy: 60 }
+  BAMBOO_SLAB: { buy: 25 }
+  BAMBOO_FENCE: { buy: 60 }
+  BAMBOO_FENCE_GATE: { buy: 90 }
+  BAMBOO_DOOR: { buy: 80 }
+  BAMBOO_TRAPDOOR: { buy: 100 }
+  BAMBOO_BUTTON: { buy: 45 }
+  BAMBOO_PRESSURE_PLATE: { buy: 80 }
+
+# 2026-09-26 (player feedback): nether/end blocks above gained a sell price and soul sand is sell-only. Cobblestone, stone, dirt, sand and gravel stay unsellable on purpose (generators).
+  SOUL_SAND: { sell: 2 }

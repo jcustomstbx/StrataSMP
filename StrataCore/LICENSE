@@ -1,0 +1,128 @@
+PROPRIETARY SOFTWARE LICENSE
+All Rights Reserved
+
+Copyright (c) 2026 JCustoms. All Rights Reserved.
+
+1. DEFINITIONS
+
+   "Software" means the Minecraft server plugin(s) authored by JCustoms with
+   which this LICENSE file is distributed, in every form and in whole or in
+   part, including without limitation the source code, compiled bytecode
+   (.class files and .jar archives), APIs, configuration and data schemas,
+   bundled resources and assets, and accompanying documentation.
+
+   "Author" means JCustoms, the sole author and copyright holder of the
+   Software.
+
+   "You" or "Licensee" means the individual or legal entity that accesses,
+   possesses, receives, executes, or otherwise deals with the Software.
+
+2. OWNERSHIP
+
+   The Software is the exclusive property of the Author and is protected by
+   copyright law and international treaties. This LICENSE transfers no title
+   or ownership. All rights not expressly granted in writing by the Author
+   are reserved.
+
+3. NO GRANT OF RIGHTS
+
+   No licence or right is granted by this file. Except under a separate
+   written agreement expressly granted by the Author (see Section 5), You may
+   NOT, in source or binary form, in whole or in part:
+
+     - use, execute, install, run, or deploy the Software;
+     - copy, reproduce, store, or archive the Software;
+     - modify, adapt, translate, or create derivative works of the Software;
+     - merge or combine the Software with other software;
+     - publish, distribute, redistribute, transmit, sublicense, sell, rent,
+       lease, lend, host for download, or otherwise transfer the Software.
+
+4. RESTRICTIONS
+
+   Without limiting Section 3, You specifically may not:
+
+   (a) decompile, disassemble, deobfuscate, or otherwise reverse engineer the
+       Software, except, and only to the minimum extent, that this restriction
+       is expressly prohibited by applicable mandatory law;
+   (b) remove, alter, obscure, or falsify any copyright, authorship, or
+       licence notice contained in or displayed by the Software;
+   (c) use the Software, or any mechanic, design, or portion of code it
+       contains, to build, train, or assist a competing or derivative product;
+   (d) distribute the Software through any plugin marketplace, code
+       repository, forum, file host, Discord, or Minecraft server network or
+       marketplace;
+   (e) circumvent, disable, or tamper with any licensing, attribution, or
+       protection mechanism in the Software.
+
+5. USE ONLY BY WRITTEN PERMISSION
+
+   Any right to use the Software exists solely under a separate agreement
+   granted in writing by the Author (a signed document or a durable,
+   attributable electronic message from the Author is sufficient). That
+   agreement's terms control the permitted scope, duration, and conditions of
+   use. In the absence of such an agreement You have no right to use the
+   Software and must permanently delete every copy in Your possession or
+   control.
+
+6. GRANT CONDITIONAL ON PAYMENT
+
+   Where the Author has agreed to permit a specific Licensee to use the
+   Software under Section 5, that permission is granted, and continues, only
+   for so long as all fees, invoices, and other payments due to the Author
+   under the parties' agreement are paid in full and on time. If any such
+   payment is late, unpaid, disputed in bad faith, or reversed/charged back,
+   the Licensee's right to use the Software is suspended immediately and
+   without further notice, and terminates outright if the payment is not
+   brought current within 7 days of the Author's request. Use of the
+   Software after that point is unauthorised and unlicensed, and this
+   LICENSE's restrictions in Sections 3 and 4 apply in full. Termination
+   under this Section does not entitle the Licensee to a refund of fees
+   already paid for the period the Software was lawfully used, and does not
+   waive the Author's right to pursue payment of any outstanding fees.
+
+7. CONFIDENTIALITY
+
+   The source code and any unreleased or pre-release builds of the Software
+   are confidential information of the Author. If You have been given access
+   to them, You must keep them secret, must not disclose them to any third
+   party, and must use them only as expressly permitted by the Author.
+
+8. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF
+   ANY KIND, EXPRESS, IMPLIED, OR STATUTORY, INCLUDING WITHOUT LIMITATION THE
+   IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+   TITLE, AND NON-INFRINGEMENT. THE AUTHOR DOES NOT WARRANT THAT THE SOFTWARE
+   WILL BE ERROR-FREE OR OPERATE WITHOUT INTERRUPTION.
+
+9. LIMITATION OF LIABILITY
+
+   TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT SHALL THE AUTHOR BE
+   LIABLE FOR ANY CLAIM, OR FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+   CONSEQUENTIAL, OR EXEMPLARY DAMAGES, INCLUDING WITHOUT LIMITATION LOSS OF
+   DATA, LOSS OF PROFITS, SERVER DOWNTIME, OR CORRUPTION OF WORLDS OR PLAYER
+   DATA, ARISING OUT OF OR IN CONNECTION WITH THE SOFTWARE OR ITS USE, WHETHER
+   IN CONTRACT, TORT (INCLUDING NEGLIGENCE), OR OTHERWISE, EVEN IF ADVISED OF
+   THE POSSIBILITY OF SUCH DAMAGES.
+
+10. TERMINATION
+
+   Any permission the Author has granted terminates automatically and without
+   notice if You breach this LICENSE - including, without limitation, failing
+   to keep payments current under Section 6 - and may be terminated by the
+   Author at any time on written notice. On termination You must immediately
+   stop using the Software and destroy all copies in Your possession or
+   control.
+
+11. GOVERNING LAW
+
+   This LICENSE and any dispute arising out of or in connection with it are
+   governed by the laws of the jurisdiction in which the Author is domiciled,
+   excluding its conflict-of-law rules.
+
+12. RESERVATION OF RIGHTS
+
+   JCustoms reserves all rights not expressly granted in writing.
+
+Licensing enquiries: contact the Author, JCustoms (also known as Denntonn /
+Mr_Denntonn).

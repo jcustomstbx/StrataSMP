@@ -1,0 +1,287 @@
+# Each entry under weapons: is a key you give out with /givecw <key> <player>.
+# custom-model-data has to match a model your resource pack actually defines,
+# or the item just renders as a plain version of whatever material you picked.
+#
+# gradient is optional - two hex colors, the name fades letter-by-letter
+# between them. Leave it out and display-name just uses "color" instead.
+#
+# aura-color is a single hex color for the ambient particle glow shown while
+# a player holds this weapon - picked to match each blade's actual look
+# in-game, not necessarily the gradient above (the gradient is themed on the
+# hilt/name for a few of these, not the blade itself).
+#
+# No enchantments on any of these on purpose - players enchant them themselves,
+# they're just paying for the look, not a free maxed-out weapon.
+
+# Broadcast to the whole server whenever someone gets a kill with a catalog
+# weapon. Every weapon owner gets default-format for free; the
+# strataweapons.killmessage.use permission (sold separately, not
+# bundled with the weapons themselves) lets a player override it with their
+# own wording via /killmsg set - {killer}/{victim}/{weapon} are always
+# substituted by the plugin itself, never typed directly, so a custom
+# message can't be used to impersonate someone else's name.
+kill-messages:
+  enabled: true
+  default-format: "{victim} was struck down by {killer}'s {weapon}!"
+  # Raw template length cap, checked before {killer}/{victim}/{weapon} are
+  # substituted in - keeps the broadcast readable, not a bandwidth concern.
+  max-length: 80
+  # Case-insensitive substring match against a player's submitted /killmsg set
+  # text. This is a blunt first line of defense, not full moderation - staff
+  # still have /killmsg clear <player> to shut down anything that slips past
+  # it after the fact.
+  blacklisted-words: []
+
+weapons:
+  leviathan_fang:
+    material: NETHERITE_SWORD
+    custom-model-data: 191
+    display-name: "Leviathan's Fang"
+    gradient: ["#0054F8", "#009ADB"]
+    aura-color: "#00E5FF"
+
+  katana:
+    material: NETHERITE_SWORD
+    custom-model-data: 129
+    display-name: "Katana"
+    gradient: ["#E63946", "#F1FAEE"]
+    aura-color: "#16213E"
+
+  sabre:
+    material: NETHERITE_SWORD
+    custom-model-data: 146
+    display-name: "Sabre"
+    gradient: ["#C0C0C0", "#6E6E6E"]
+    aura-color: "#1B2A4A"
+
+  wakizashi:
+    material: NETHERITE_SWORD
+    custom-model-data: 168
+    display-name: "Wakizashi"
+    gradient: ["#FFFFFF", "#A0A0A0"]
+    aura-color: "#22314F"
+
+  longsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 131
+    display-name: "Longsword"
+    gradient: ["#8D99AE", "#2B2D42"]
+    aura-color: "#2B2D42"
+
+  claymore:
+    material: NETHERITE_SWORD
+    custom-model-data: 66
+    display-name: "Claymore"
+    gradient: ["#4361EE", "#7209B7"]
+    aura-color: "#D8D8D8"
+
+  flamberge:
+    material: NETHERITE_SWORD
+    custom-model-data: 65
+    display-name: "Flamberge"
+    gradient: ["#FF7B00", "#D00000"]
+    aura-color: "#FF4500"
+
+  zenith:
+    material: NETHERITE_SWORD
+    custom-model-data: 20
+    display-name: "Zenith"
+    gradient: ["#FFD60A", "#FFC300"]
+    aura-color: "#2ECC71"
+
+  solstice:
+    material: NETHERITE_SWORD
+    custom-model-data: 24
+    display-name: "Solstice"
+    gradient: ["#F9C74F", "#F3722C"]
+    aura-color: "#2EC4B6"
+
+  mjolnir:
+    material: NETHERITE_SWORD
+    custom-model-data: 133
+    display-name: "Mjolnir"
+    gradient: ["#FFD700", "#8B8B8B"]
+    aura-color: "#4FC3F7"
+
+  enigma:
+    material: NETHERITE_SWORD
+    custom-model-data: 182
+    display-name: "Enigma"
+    gradient: ["#7209B7", "#3A0CA3"]
+    aura-color: "#9B30FF"
+
+  sunbreak:
+    material: NETHERITE_SWORD
+    custom-model-data: 161
+    display-name: "Sunbreak"
+    gradient: ["#FFB703", "#FB8500"]
+    aura-color: "#FFAA00"
+
+  thorned_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 240
+    display-name: "Thorned Blade"
+    gradient: ["#606C38", "#283618"]
+    aura-color: "#C1121F"
+
+  phantomguard_trident:
+    material: TRIDENT
+    custom-model-data: 255
+    restrict-material: true
+    display-name: "Phantomguard Partisan"
+    gradient: ["#6745C6", "#C1A8FF"]
+    aura-color: "#8B6CFF"
+
+  crystal_trident:
+    material: TRIDENT
+    custom-model-data: 256
+    restrict-material: true
+    display-name: "Opaline Lance"
+    gradient: ["#65D8F2", "#E5FCFF"]
+    aura-color: "#74E6FF"
+
+  crimson_trident:
+    material: TRIDENT
+    custom-model-data: 257
+    restrict-material: true
+    display-name: "Crimson Lance"
+    gradient: ["#8F142B", "#FF6979"]
+    aura-color: "#FF344F"
+
+# Two independent spear tweaks - either can be on without the other.
+#
+# remove-attack-cooldown: true takes the vanilla jab (attack) cooldown off, so the swing bar refills instantly
+# while a spear is held, via a temporary attack-speed bonus (SpearCooldownTask). Currently false - real
+# vanilla jab timing.
+#
+# clear-lunge-cooldown: RankEssentials adds its own custom 15 second lockout after every Lunge swing on top
+# of vanilla - that lockout is RankEssentials' own invention, not part of Minecraft itself. true bypasses it
+# entirely (reflection call into RankEssentials, finished the instant it starts), leaving only vanilla's own
+# kinetic-weapon charge-up delay - baked into the spear item, no plugin can touch it - as the sole limiter on
+# how often Lunge can be used. This was tried throttled to a few seconds first (3s, then 10s), but any
+# RankEssentials-side restriction at all isn't "Minecraft default" - request was explicitly for that, not a
+# shorter throttle, so this is unconditional again: RankEssentials' 15s never even gets to start. Note this
+# is exactly what originally let Lunge be chained into flying across the map (2026-09-22) - that was about
+# chaining a zero-cooldown dash for fast travel, which is a separate concern from "is this vanilla or not";
+# revisit if the same complaint resurfaces.
+spear:
+  remove-attack-cooldown: false
+  clear-lunge-cooldown: true
+
+# Armour skins: applied from /skins to any helmet, chestplate, leggings or boots (a set), or to a helmet only
+# (a strata). Same unlock as the weapon skins - the strataskins.<key> permission, or StrataCharm.
+#   type       set = item model + worn look for all four pieces, strata = a helmet-only hat
+#   item-model set: the item model prefix, "<prefix>_helmet" / "_chestplate" / "_leggings" / "_boots" (resource pack items/)
+#              strata: the exact item model id
+#   equipment  set only: the worn armour look (resource pack equipment/ id). A strata has none - the client draws
+#              its model on the head instead.
+# Material, protection and enchantments are never changed, only the look.
+armor-skins:
+  dark_armor:
+    type: set
+    display-name: "Dark Armour"
+    gradient: ["#5C5C70", "#B8B8D0"]
+    item-model: "minecraft:dark"
+    equipment: "minecraft:dark"
+    charm-cost: 2
+  crimson_armor:
+    type: set
+    display-name: "Crimson Armour"
+    gradient: ["#8B0000", "#FF4D4D"]
+    item-model: "custom:crimson"
+    equipment: "custom:crimson"
+    charm-cost: 2
+  magmerite_armor:
+    type: set
+    display-name: "Magmerite Armour"
+    gradient: ["#FF6A00", "#FFD27F"]
+    item-model: "custom:magmerite"
+    equipment: "custom:magmerite"
+    charm-cost: 2
+  light_armor:
+    type: set
+    display-name: "Light Armour"
+    gradient: ["#DCE4F2", "#FFF1CC"]
+    item-model: "custom:light"
+    equipment: "custom:light"
+    charm-cost: 2
+  divine_armor:
+    type: set
+    display-name: "Divine Armour"
+    gradient: ["#B08040", "#F0F0A0"]
+    item-model: "custom:divine"
+    equipment: "custom:divine"
+    charm-cost: 2
+  enhanced_emerald_armor:
+    type: set
+    display-name: "Enhanced Emerald Armour"
+    gradient: ["#12A24F", "#A8FFD0"]
+    item-model: "custom:enhanced_emerald"
+    equipment: "custom:enhanced_emerald"
+    charm-cost: 2
+  enhanced_diamond_armor:
+    type: set
+    display-name: "Enhanced Diamond Armour"
+    gradient: ["#1FC2D2", "#E9FFFF"]
+    item-model: "custom:enhanced_diamond"
+    equipment: "custom:enhanced_diamond"
+    charm-cost: 2
+  prestige_armor:
+    type: set
+    display-name: "Prestige Iron & Gold Armour"
+    gradient: ["#8B929C", "#FFE27A"]
+    item-model: "custom:prestige"
+    equipment: "custom:prestige"
+    charm-cost: 2
+  stratasmp_armor:
+    type: set
+    display-name: "StrataSMP Royal Armour"
+    gradient: ["#C21E2B", "#FFD21A"]
+    item-model: "custom:stratasmp"
+    equipment: "custom:stratasmp"
+    charm-cost: 2
+  strata_shadow:
+    type: strata
+    display-name: "Shadow Strata"
+    gradient: ["#4A4A55", "#9A9AAA"]
+    item-model: "custom:strata_dark"
+  strata_copper:
+    type: strata
+    display-name: "Copper Strata"
+    gradient: ["#C8763A", "#F0B48A"]
+    item-model: "custom:strata_iron"
+  strata_amethyst:
+    type: strata
+    display-name: "Amethyst Strata"
+    gradient: ["#7B5CD6", "#C9B8F5"]
+    item-model: "custom:strata_gold"
+  strata_diamond:
+    type: strata
+    display-name: "Diamond Strata"
+    gradient: ["#1CC8C8", "#9CF5F0"]
+    item-model: "custom:strata_diamond"
+  strata_flame:
+    type: strata
+    display-name: "Flame Strata"
+    gradient: ["#FF6A00", "#FFD23F"]
+    item-model: "custom:strata_fire"
+  strata_frost:
+    type: strata
+    display-name: "Frost Strata"
+    gradient: ["#8EE6F0", "#F0FCFF"]
+    item-model: "custom:strata_ice"
+  strata_earth:
+    type: strata
+    display-name: "Earth Strata"
+    gradient: ["#6E8B2E", "#B89A4A"]
+    item-model: "custom:strata_earth"
+  strata_wind:
+    type: strata
+    display-name: "Wind Strata"
+    gradient: ["#B8B0E8", "#F4F2FF"]
+    item-model: "custom:strata_wind"
+  strata_golden:
+    type: strata
+    display-name: "Golden Strata"
+    gradient: ["#F2B705", "#FFE680"]
+    item-model: "custom:strata_tint"

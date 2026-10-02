@@ -1,0 +1,22 @@
+# StrataPerks - account-bound premium currency, sold on the store.
+# StrataPerks are NOT tradeable and NOT listable on /ah - they only exist to be
+# spent in /strataperkshop. Real-money pricing is set on the store side (Tebex);
+# this plugin only knows about whole StrataPerk amounts.
+
+currency:
+  name-singular: "StrataPerk"
+  name-plural: "StrataPerks"
+  symbol: "♦"
+
+messages:
+  prefix: "&5&lStrataPerks &8» &r"
+  no-permission: "&cYou can't do that."
+  players-only: "&cThis command can only be used by players."
+  player-not-found: "&cNo player found: &f{player}"
+  balance-self: "&7Your balance: &d{balance} {currency}"
+  balance-other: "&f{player}&7's balance: &d{balance} {currency}"
+  given: "&aGave &d{amount} {currency} &ato {player}."
+  received: "&aYou received &d{amount} {currency}&a!"
+  shop-cant-afford: "&cYou don't have enough StrataPerks for that."
+  shop-inventory-full: "&cYour inventory is full."
+  shop-bought: "&aYou bought &f{item} &afor &d{price} {currency}&a."

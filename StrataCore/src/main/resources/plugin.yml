@@ -1,0 +1,55 @@
+name: StrataCore
+version: '${project.version}'
+main: com.stratasmp.stratacore.StrataCore
+api-version: '1.21'
+author: JCustoms
+description: Unified StrataSMP plugin suite.
+load: POSTWORLD
+depend: [Vault]
+softdepend: [PlaceholderAPI, LuckPerms, RankEssentials]
+commands:
+  stratas: {description: Check your Stratas balance, usage: '/stratas [player]', aliases: [bal, balance, money, strata]}
+  pay: {description: Pay Stratas to another player, usage: '/pay <player> <amount>'}
+  baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop]}
+  eco: {description: Manage Stratas balances, usage: '/eco <give|take|set|reset> <player> [amount]', permission: strataeconomy.admin}
+  ah: {description: Stratas auction house, usage: '/ah [sell <price>|mine]', aliases: [auctionhouse, auction]}
+  sell: {description: Sell items for Stratas, usage: /sell, aliases: [sellgui]}
+  sellall: {description: Sell every eligible inventory item, usage: /sellall}
+  shop: {description: Stratas shop, usage: /shop}
+  strataeconomy: {description: Stratas administration, usage: '/strataeconomy <reload|status|saleslog>', permission: strataeconomy.admin}
+  stratacharm: {description: Browse and unlock weapon skins, usage: /stratacharm, aliases: [charms, stratacharms]}
+  givestratacharm: {description: Grant StrataCharm, usage: '/givestratacharm <player> <amount>', permission: strataweapons.charm.give}
+  givecw: {description: Give a catalog weapon, usage: '/givecw <key> <player>', permission: strataweapons.give}
+  skins: {description: Open the weapon skins menu, usage: /skins}
+  unskin: {description: Remove a skin from the item in hand, usage: /unskin}
+  killmsg: {description: Manage custom kill messages, usage: '/killmsg <help|set|reset|preview|clear>'}
+  transferenchants: {description: Transfer donor enchantments to a catalog weapon, usage: /transferenchants, permission: strataweapons.transferenchants}
+  skinpurge: {description: Purge a skin from server items, usage: '/skinpurge <skin>', permission: strataweapons.purge}
+  kit: {description: Open and claim your 72-hour rank kit, usage: '/kit [preview <rank>]', aliases: [kits]}
+  rankpreview: {description: Preview rank benefits, usage: '/rankpreview <rank>'}
+  rankstyle: {description: Choose paid-rank cosmetic styles, usage: '/rankstyle <name|chat|particle|join> <choice>'}
+  name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
+  repair: {description: Repair the item in hand with Regal, usage: /repair}
+  mmo: {description: RPG stats and leaderboards, usage: '/mmo [stats|top]', aliases: [stratammo]}
+  strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [perks, strataperk]}
+  givestrataperks: {description: Grant StrataPerks, usage: '/givestrataperks <player> <amount>', permission: strataperks.admin}
+  strataperkshop: {description: Open the premium shop, usage: /strataperkshop, aliases: [perkshop, pshop]}
+  store: {description: Get the StrataSMP store link, usage: /store}
+  keystone: {description: Keystone admin, usage: '/keystone <give|stop|reload>', permission: stratakeystones.admin}
+permissions:
+  stratakeystones.admin: {description: Manage keystones, default: op}
+  strataeconomy.admin: {description: Administer Stratas and auctions, default: op}
+  strataeconomy.auction.use: {description: Use the auction house, default: true}
+  strataeconomy.shop.use: {description: Use Stratas shop and sell, default: true}
+  strataweapons.purge: {description: Purge weapon skins, default: op}
+  strataweapons.charm.give: {description: Grant StrataCharm, default: op}
+  strataweapons.give: {description: Give catalog weapons, default: op}
+  strataweapons.killmessage.use: {description: Set a custom kill message, default: false}
+  strataweapons.killmessage.admin: {description: Moderate custom kill messages, default: op}
+  strataweapons.transferenchants: {description: Transfer donor enchantments, default: true}
+  strataskins.*: {description: Unlock every weapon skin, default: op}
+  stratakits.admin: {description: Reload kits and reset cooldowns, default: op}
+  stratammo.use: {description: Use MMO commands, default: true}
+  stratammo.admin: {description: Administer MMO data, default: op}
+  strataperks.use: {description: Use StrataPerks and the shop, default: true}
+  strataperks.admin: {description: Grant StrataPerks, default: op}

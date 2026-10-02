@@ -1,0 +1,39 @@
+# Mob Drops - sellable only. New category (2026-09-11), prices are a first pass -
+# tune freely.
+sellable: true
+buyable: false
+
+items:
+  ROTTEN_FLESH: { sell: 1 }
+  STRING: { sell: 2 }
+  FEATHER: { sell: 2 }
+  BONE: { sell: 2 }
+  SPIDER_EYE: { sell: 3 }
+  INK_SAC: { sell: 3 }
+  RABBIT_HIDE: { sell: 3 }
+  GUNPOWDER: { sell: 4 }
+  LEATHER: { sell: 4 }
+  SLIME_BALL: { sell: 5 }
+  RABBIT_FOOT: { sell: 10 }
+  BLAZE_ROD: { sell: 12 }
+  ENDER_PEARL: { sell: 15 }
+  PHANTOM_MEMBRANE: { sell: 15 }
+  GHAST_TEAR: { sell: 25 }
+
+# Added 2026-09-26 (player feedback): more mob drops and fishing catches.
+  BLAZE_POWDER: { sell: 6 }
+  MAGMA_CREAM: { sell: 6 }
+  GLOW_INK_SAC: { sell: 5 }
+  BREEZE_ROD: { sell: 15 }
+  ARMADILLO_SCUTE: { sell: 20 }
+  TURTLE_SCUTE: { sell: 25 }
+  DRAGON_BREATH: { sell: 30 }
+  SHULKER_SHELL: { sell: 60 }
+  TOTEM_OF_UNDYING: { sell: 2500 }
+  WITHER_SKELETON_SKULL: { sell: 500 }
+  EGG: { sell: 2 }
+  ARROW: { sell: 1 }
+  COD: { sell: 3 }
+  SALMON: { sell: 3 }
+  TROPICAL_FISH: { sell: 8 }
+  PUFFERFISH: { sell: 8 }
