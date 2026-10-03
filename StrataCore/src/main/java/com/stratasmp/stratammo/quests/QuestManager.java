@@ -160,7 +160,7 @@ public final class QuestManager {
          state.dirty = true;
          if (entry.progress >= def.amount()) {
             // only count it done once the xp actually landed; otherwise the next matching action retries
-            if (!this.notifier.awardExact(player, def.skill(), def.xp())) continue;
+            if (def.xp() > 0 && !this.notifier.awardExact(player, def.skill(), def.xp())) continue;
             entry.done = true;
             player.sendMessage(Component.text("Quest complete: ", NamedTextColor.GREEN)
                   .append(Component.text(def.name(), NamedTextColor.WHITE))

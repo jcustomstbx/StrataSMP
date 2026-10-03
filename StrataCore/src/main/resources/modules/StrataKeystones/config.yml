@@ -53,9 +53,11 @@ rewards:
   10: []
 
 party:
-  # teammates within join-radius of whoever opens the keystone join the run automatically
+  # teammates within join-radius of whoever opens the keystone get a click-to-join invite
   enabled: true
   join-radius: 30
   max-size: 5
+  # how long teammates have to click the invite before the first wave starts
+  join-window-seconds: 10
   # extra mobs per additional party member (0.5 = +50% each)
   size-scale-per-extra-member: 0.5

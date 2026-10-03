@@ -14,6 +14,10 @@ final class KeystoneRun {
     /** Party members who actually hurt a run mob; only they (and the opener) are paid when the run is cleared. */
     final Set<UUID> contributors = new HashSet<>();
     final long deadline;
+    /** Mobs the server can no longer find, with when that started; briefly unloaded or genuinely gone. */
+    final java.util.Map<UUID, Long> missingSince = new java.util.HashMap<>();
+    /** The level held back in pending.yml while the run is open, so a crash can't eat the keystone. */
+    int reserved;
     int wave; // 0 until the first wave spawns
     long nextWaveAt;
 

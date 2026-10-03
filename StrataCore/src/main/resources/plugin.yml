@@ -44,7 +44,7 @@ commands:
   trade: {description: Safely trade items and Stratas, usage: '/trade <player|accept|deny|cancel>', aliases: [trading]}
   stratatrade: {description: Review a player's recent trades, usage: '/stratatrade history <player>', aliases: [tradeadmin], permission: stratatrade.admin}
   leaderboard: {description: Place and manage the floating leaderboards, usage: '/leaderboard create <kills|streak|deaths|playtime|stratas> [scale] | remove <id> | move <id> | resize <id> <scale> | list | refresh', aliases: [lb, leaderboards], permission: strataleaderboards.admin}
-  keystone: {description: Keystone admin, usage: '/keystone <give|stop|reload>', permission: stratakeystones.admin}
+  keystone: {description: Keystone admin, usage: '/keystone <join|give|stop|reload>'}
   duel: {description: Duel queue, challenges, stats and arena testing, usage: '/duel <queue|challenge|stats|test|end>'}
   duelarena: {description: Manage duel arenas, usage: '/duelarena <create|setpos1|setpos2|setbound1|setbound2|savebaseline|cleanup|list|delete|toggle|ffa|addspawn|clearspawns>'}
   duelkit: {description: Manage the six duel kits, usage: '/duelkit <set|clear> <1-6>'}

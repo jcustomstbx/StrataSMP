@@ -57,6 +57,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
     private final Map<UUID, KeystoneRun> runs = new HashMap<>(); // every participant -> their run
     private final Set<KeystoneRun> active = new LinkedHashSet<>();
     private TeamManager teams;
+    private final Map<UUID, KeystoneRun> invites = new HashMap<>(); // invited teammate -> run they may join
     private final Map<EntityType, Integer> mobPool = new java.util.LinkedHashMap<>();
     private List<Integer> waveSizes;
 
@@ -108,18 +109,21 @@ public final class StrataKeystones extends StrataModule implements Listener {
         if (entity.getPersistentDataContainer().has(runMob, PersistentDataType.BYTE)) {
             event.getDrops().clear();
             event.setDroppedExp(0);
+            UUID owner = KeystoneMobs.owner(entity);
+            // the opener may have dropped out of the run, so find it by owner rather than by participant
+            for (KeystoneRun open : active) {
+                if (open.owner.equals(owner)) open.alive.remove(entity.getUniqueId());
+            }
             return;
         }
         Player killer = entity.getKiller();
         if (killer == null || !(entity instanceof Monster)) return;
         if (!worldAllowed(entity.getWorld(), "drops.worlds")) return;
-        // spawner and egg mobs are farmable, so they never drop keystones
+        // only mobs that spawned the ordinary way count; spawners, eggs, slime splits, raids, traps and the like are farmable
         var reason = entity.getEntitySpawnReason();
-        if (reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER
-                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
-                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER
-                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM
-                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DISPENSE_EGG) return;
+        if (reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.NATURAL
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DEFAULT
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CHUNK_GEN) return;
         if (ThreadLocalRandom.current().nextDouble() >= getConfig().getDouble("drops.chance", 0.02)) return;
         event.getDrops().add(KeystoneItem.create(1));
         killer.sendMessage(Component.text("A Keystone dropped!", NamedTextColor.LIGHT_PURPLE));
@@ -186,6 +190,27 @@ public final class StrataKeystones extends StrataModule implements Listener {
         if (KeystoneMobs.isRunMob(event.getEntity())) event.blockList().clear();
     }
 
+    /** Reinforcements, jockeys, splits and conversions born next to a run mob are run mobs too. */
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    public void onOffspring(org.bukkit.event.entity.CreatureSpawnEvent event) {
+        var reason = event.getSpawnReason();
+        if (reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.REINFORCEMENTS
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.JOCKEY
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SLIME_SPLIT
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.INFECTION
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DROWNED
+                && reason != org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.MOUNT) return;
+        if (runs.isEmpty()) return;
+        for (LivingEntity near : event.getLocation().getNearbyLivingEntities(8.0, KeystoneMobs::isRunMob)) {
+            UUID owner = KeystoneMobs.owner(near);
+            if (owner != null) {
+                KeystoneMobs.tag(event.getEntity(), owner);
+                event.getEntity().setPersistent(false);
+            }
+            return;
+        }
+    }
+
     @EventHandler
     public void onJoin(org.bukkit.event.player.PlayerJoinEvent event) {
         deliverPending(event.getPlayer());
@@ -201,7 +226,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
         pendingFile = new File(getDataFolder(), "pending.yml");
         pendingReturns.clear();
         if (!pendingFile.exists()) return;
-        var yaml = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(pendingFile);
+        var yaml = com.stratasmp.stratacore.AtomicYaml.load(pendingFile, getLogger());
         for (String key : yaml.getKeys(false)) {
             try {
                 pendingReturns.put(UUID.fromString(key), new ArrayList<>(yaml.getIntegerList(key)));
@@ -216,7 +241,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
         for (Map.Entry<UUID, List<Integer>> e : pendingReturns.entrySet()) yaml.set(e.getKey().toString(), e.getValue());
         try {
             getDataFolder().mkdirs();
-            yaml.save(pendingFile);
+            com.stratasmp.stratacore.AtomicYaml.save(yaml, pendingFile);
         } catch (java.io.IOException e) {
             getLogger().warning("Could not save pending keystones: " + e.getMessage());
         }
@@ -236,6 +261,8 @@ public final class StrataKeystones extends StrataModule implements Listener {
     private void deliverPending(Player player) {
         List<Integer> levels = pendingReturns.get(player.getUniqueId());
         if (levels == null || player.isDead()) return;
+        // the keystone of a run still in progress stays held until that run ends
+        for (KeystoneRun open : active) if (open.owner.equals(player.getUniqueId())) return;
         pendingReturns.remove(player.getUniqueId());
         savePending();
         for (int level : levels) give(player, KeystoneItem.create(level));
@@ -245,19 +272,56 @@ public final class StrataKeystones extends StrataModule implements Listener {
     private void start(Player player, int level) {
         long deadline = System.currentTimeMillis() + getConfig().getLong("run.time-limit-seconds", 300) * 1000L;
         KeystoneRun run = new KeystoneRun(player.getUniqueId(), level, player.getLocation().clone(), deadline);
-        run.players.addAll(partyAround(player));
+        // the keystone is held in pending.yml until the run ends; a crash mid-run then hands it back on next login
+        run.reserved = level;
+        pendingReturns.computeIfAbsent(run.owner, k -> new ArrayList<>()).add(level);
+        savePending();
         active.add(run);
-        for (UUID id : run.players) {
-            runs.put(id, run);
+        runs.put(run.owner, run);
+        player.showTitle(Title.title(Component.text("Keystone Lv. " + level, NamedTextColor.LIGHT_PURPLE),
+                Component.text("Prepare yourself", NamedTextColor.GRAY)));
+        Set<UUID> invited = partyAround(player);
+        for (UUID id : invited) {
             Player member = Bukkit.getPlayer(id);
             if (member == null) continue;
-            member.showTitle(Title.title(Component.text("Keystone Lv. " + level, NamedTextColor.LIGHT_PURPLE),
-                    Component.text(id.equals(run.owner) ? "Prepare yourself" : player.getName() + "'s keystone - fight!", NamedTextColor.GRAY)));
+            invites.put(id, run);
+            member.sendMessage(Component.text(player.getName() + " opened a level " + level + " keystone. ", NamedTextColor.LIGHT_PURPLE)
+                    .append(Component.text("[Click to join]", NamedTextColor.GREEN, net.kyori.adventure.text.format.TextDecoration.BOLD)
+                            .clickEvent(net.kyori.adventure.text.event.ClickEvent.runCommand("/keystone join"))
+                            .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(Component.text("Join the run")))));
         }
-        run.nextWaveAt = System.currentTimeMillis() + 3000L;
+        long window = invited.isEmpty() ? 3000L : getConfig().getLong("party.join-window-seconds", 10) * 1000L;
+        run.nextWaveAt = System.currentTimeMillis() + window;
     }
 
-    /** Teammates close enough to the opener, not already in a run, join automatically. */
+    /** /keystone join: a teammate accepts an invite while the run is still waiting for its first wave. */
+    private void join(Player player) {
+        KeystoneRun run = invites.get(player.getUniqueId());
+        if (run == null || !active.contains(run) || run.wave > 0) {
+            invites.remove(player.getUniqueId());
+            player.sendMessage(Component.text("There is no keystone run you can join right now.", NamedTextColor.RED));
+            return;
+        }
+        double radius = getConfig().getDouble("party.join-radius", 30) * 2;
+        if (runs.containsKey(player.getUniqueId()) || !player.getWorld().equals(run.origin.getWorld())
+                || player.getLocation().distanceSquared(run.origin) > radius * radius) {
+            player.sendMessage(Component.text("You are too far from the keystone to join.", NamedTextColor.RED));
+            return;
+        }
+        if (run.players.size() >= getConfig().getInt("party.max-size", 5)) {
+            player.sendMessage(Component.text("That run is full.", NamedTextColor.RED));
+            return;
+        }
+        invites.remove(player.getUniqueId());
+        run.players.add(player.getUniqueId());
+        runs.put(player.getUniqueId(), run);
+        player.showTitle(Title.title(Component.text("Keystone Lv. " + run.level, NamedTextColor.LIGHT_PURPLE),
+                Component.text("Fight alongside your team", NamedTextColor.GRAY)));
+        Player owner = Bukkit.getPlayer(run.owner);
+        if (owner != null) owner.sendMessage(Component.text(player.getName() + " joined your keystone run.", NamedTextColor.GREEN));
+    }
+
+    /** Teammates close enough to the opener who are free to be invited. */
     private Set<UUID> partyAround(Player opener) {
         Set<UUID> party = new LinkedHashSet<>();
         if (teams == null || !getConfig().getBoolean("party.enabled", true)) return party;
@@ -307,7 +371,14 @@ public final class StrataKeystones extends StrataModule implements Listener {
             if (!active.contains(run) || lead == null) continue;
             run.alive.removeIf(id -> {
                 Entity e = Bukkit.getEntity(id);
-                return e == null || !e.isValid() || e.isDead();
+                if (e != null) {
+                    run.missingSince.remove(id);
+                    return !e.isValid() || e.isDead();
+                }
+                // not found: killed and removed normally (the death handler already took it out) or in an unloaded
+                // chunk; give it a few seconds before treating it as gone so a stray lookup can't skip a wave
+                long since = run.missingSince.computeIfAbsent(id, k -> now);
+                return now - since > 10000L;
             });
             if (!run.alive.isEmpty()) continue;
             if (run.nextWaveAt < 0) {
@@ -336,9 +407,15 @@ public final class StrataKeystones extends StrataModule implements Listener {
         for (int i = 0; i < count; i++) {
             Location at = findSpawn(run.origin, player);
             EntityType type = eligible.get(rng.nextInt(eligible.size()));
-            Entity spawned = at.getWorld().spawnEntity(at, type);
-            if (!(spawned instanceof Mob mob)) { spawned.remove(); continue; }
-            mob.getPersistentDataContainer().set(runMob, PersistentDataType.BYTE, (byte) 1);
+            Entity spawned;
+            try {
+                spawned = at.getWorld().spawnEntity(at, type);
+            } catch (RuntimeException e) {
+                continue;
+            }
+            // a region mob-deny, mob cap or peaceful difficulty leaves an invalid entity behind
+            if (!(spawned instanceof Mob mob) || !spawned.isValid()) { spawned.remove(); continue; }
+            KeystoneMobs.tag(mob, run.owner);
             mob.setPersistent(false);
             mob.setRemoveWhenFarAway(false);
             mob.setCanPickupItems(false);
@@ -351,12 +428,17 @@ public final class StrataKeystones extends StrataModule implements Listener {
             mob.setTarget(target != null ? target : player);
             run.alive.add(mob.getUniqueId());
         }
+        if (run.alive.isEmpty()) {
+            // nothing could be spawned: this must fail, never count as a cleared wave
+            end(run, false, "Mobs could not spawn here. Try another spot.");
+            return;
+        }
         run.nextWaveAt = -1;
         for (UUID id : run.players) {
             Player member = Bukkit.getPlayer(id);
             if (member != null) {
                 member.showTitle(Title.title(Component.text("Wave " + run.wave + "/3", NamedTextColor.GOLD),
-                        Component.text(count + " mobs", NamedTextColor.GRAY)));
+                        Component.text(run.alive.size() + " mobs", NamedTextColor.GRAY)));
             }
         }
     }
@@ -397,6 +479,8 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     private void end(KeystoneRun run, boolean success, String reason) {
         active.remove(run);
+        invites.values().removeIf(r -> r == run);
+        releaseReservation(run);
         for (UUID id : run.alive) {
             Entity e = Bukkit.getEntity(id);
             if (e != null) e.remove();
@@ -433,6 +517,18 @@ public final class StrataKeystones extends StrataModule implements Listener {
         }
     }
 
+    /** The run is over, so the keystone held back at the start is no longer pending (the result is handed back below). */
+    private void releaseReservation(KeystoneRun run) {
+        if (run.reserved <= 0) return;
+        List<Integer> held = pendingReturns.get(run.owner);
+        if (held != null) {
+            held.remove(Integer.valueOf(run.reserved));
+            if (held.isEmpty()) pendingReturns.remove(run.owner);
+            savePending();
+        }
+        run.reserved = 0;
+    }
+
     private void give(Player player, ItemStack item) {
         for (ItemStack left : player.getInventory().addItem(item).values()) {
             player.getWorld().dropItemNaturally(player.getLocation(), left);
@@ -441,6 +537,11 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length >= 1 && args[0].equalsIgnoreCase("join")) {
+            if (sender instanceof Player player) join(player);
+            else sender.sendMessage(Component.text("Only players can join a run.", NamedTextColor.RED));
+            return true;
+        }
         if (!sender.hasPermission("stratakeystones.admin")) {
             sender.sendMessage(Component.text("No permission.", NamedTextColor.RED));
             return true;
@@ -469,13 +570,13 @@ public final class StrataKeystones extends StrataModule implements Listener {
             end(run, false, "Stopped by an admin.");
             return true;
         }
-        sender.sendMessage(Component.text("/keystone <give <player> [level]|stop <player>|reload>", NamedTextColor.YELLOW));
+        sender.sendMessage(Component.text("/keystone <join|give <player> [level]|stop <player>|reload>", NamedTextColor.YELLOW));
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        if (args.length == 1) return List.of("give", "stop", "reload");
+        if (args.length == 1) return sender.hasPermission("stratakeystones.admin") ? List.of("join", "give", "stop", "reload") : List.of("join");
         if (args.length == 2 && !args[0].equalsIgnoreCase("reload")) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
         }
