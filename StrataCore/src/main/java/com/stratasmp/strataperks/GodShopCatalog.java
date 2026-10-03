@@ -72,6 +72,10 @@ public final class GodShopCatalog {
                     enchantments.put(key, enchantSection.getInt(key));
                 }
             }
+            if (entry.getLong("price", 0) <= 0) {
+                plugin.getLogger().warning("God item '" + id + "' has no valid price and was skipped.");
+                continue;
+            }
             items.add(new GodItem(
                     id,
                     entry.getString("name", id),

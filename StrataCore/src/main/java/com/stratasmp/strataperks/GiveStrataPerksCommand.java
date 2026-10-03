@@ -41,25 +41,21 @@ public final class GiveStrataPerksCommand implements CommandExecutor {
             return true;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-        if (!target.hasPlayedBefore() && !target.isOnline()) {
-            plugin.msg().send(sender, "player-not-found", Map.of("player", args[0]));
-            return true;
-        }
-
-        plugin.strataperks().deposit(target.getUniqueId(), amount);
-        plugin.getLogger().info("Granted " + amount + " StrataPerks to " + target.getName() + " (by " + sender.getName() + ").");
-        plugin.msg().send(sender, "given", Map.of(
-                "amount", String.valueOf(amount),
-                "player", target.getName() == null ? args[0] : target.getName(),
-                "currency", plugin.currencyName(amount)));
-
-        Player online = target.getPlayer();
-        if (online != null) {
-            plugin.msg().send(online, "received", Map.of(
-                    "amount", String.valueOf(amount),
-                    "currency", plugin.currencyName(amount)));
-        }
+        final long grant = amount;
+        com.stratasmp.stratacore.NameLookup.resolve(plugin, args[0], (uuid, name) -> {
+            plugin.strataperks().deposit(uuid, grant);
+            plugin.getLogger().info("Granted " + grant + " StrataPerks to " + name + " (by " + sender.getName() + ").");
+            plugin.msg().send(sender, "given", Map.of(
+                    "amount", String.valueOf(grant),
+                    "player", name,
+                    "currency", plugin.currencyName(grant)));
+            Player online = Bukkit.getPlayer(uuid);
+            if (online != null) {
+                plugin.msg().send(online, "received", Map.of(
+                        "amount", String.valueOf(grant),
+                        "currency", plugin.currencyName(grant)));
+            }
+        }, () -> plugin.msg().send(sender, "player-not-found", Map.of("player", args[0])));
         return true;
     }
 }

@@ -20,8 +20,12 @@ public final class StrataPerksCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
         if (args.length >= 1) {
-            OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[0]);
-            if (!target.hasPlayedBefore() && !target.isOnline()) {
+            if (!sender.hasPermission("strataperks.admin") && !sender.getName().equalsIgnoreCase(args[0])) {
+                plugin.msg().send(sender, "no-permission");
+                return true;
+            }
+            OfflinePlayer target = plugin.getServer().getOfflinePlayerIfCached(args[0]);
+            if (target == null) {
                 plugin.msg().send(sender, "player-not-found", Map.of("player", args[0]));
                 return true;
             }

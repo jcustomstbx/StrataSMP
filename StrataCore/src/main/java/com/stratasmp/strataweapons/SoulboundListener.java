@@ -114,9 +114,17 @@ public class SoulboundListener implements Listener {
          }
       } else if (click == ClickType.NUMBER_KEY) {
          // swaps the clicked container slot with a hotbar slot - block if the incoming hotbar
-         // item is soulbound
-         ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
-         if (this.catalog.holdsSoulbound(hotbarItem)) {
+         // item is soulbound (a click inside the player's own inventory is just a rearrange)
+         if (event.getClickedInventory() != null && !(event.getClickedInventory().getHolder() instanceof Player)) {
+            ItemStack hotbarItem = event.getWhoClicked().getInventory().getItem(event.getHotbarButton());
+            if (this.catalog.holdsSoulbound(hotbarItem)) {
+               this.block(event, event.getWhoClicked());
+            }
+         }
+      } else if (click == ClickType.SWAP_OFFHAND) {
+         // F over a container slot swaps it with the offhand, which would carry a soulbound offhand item out
+         if (event.getClickedInventory() != null && !(event.getClickedInventory().getHolder() instanceof Player)
+               && this.catalog.holdsSoulbound(event.getWhoClicked().getInventory().getItemInOffHand())) {
             this.block(event, event.getWhoClicked());
          }
       } else if (event.getClickedInventory() != null && !(event.getClickedInventory().getHolder() instanceof Player)) {
@@ -124,6 +132,30 @@ public class SoulboundListener implements Listener {
          if (this.catalog.holdsSoulbound(event.getCursor())) {
             this.block(event, event.getWhoClicked());
          }
+      }
+   }
+
+   /** Decorated pots and shelves accept any item on right-click, so a soulbound one must not go in. */
+   @EventHandler(ignoreCancelled = true)
+   public void onStore(org.bukkit.event.player.PlayerInteractEvent event) {
+      if (event.getAction() != org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) return;
+      String type = event.getClickedBlock().getType().name();
+      if (!type.equals("DECORATED_POT") && !type.endsWith("_SHELF")) return;
+      ItemStack held = event.getItem();
+      if (held != null && this.catalog.holdsSoulbound(held)) {
+         event.setCancelled(true);
+         event.getPlayer().sendMessage(Component.text("That weapon is soulbound - it can't be stored there.", NamedTextColor.RED));
+      }
+   }
+
+   /** An allay takes the held item on right-click. */
+   @EventHandler(ignoreCancelled = true)
+   public void onHandToMob(org.bukkit.event.player.PlayerInteractEntityEvent event) {
+      if (!(event.getRightClicked() instanceof org.bukkit.entity.Allay)) return;
+      ItemStack held = event.getPlayer().getInventory().getItem(event.getHand());
+      if (held != null && this.catalog.holdsSoulbound(held)) {
+         event.setCancelled(true);
+         event.getPlayer().sendMessage(Component.text("That weapon is soulbound - it can't be given away.", NamedTextColor.RED));
       }
    }
 

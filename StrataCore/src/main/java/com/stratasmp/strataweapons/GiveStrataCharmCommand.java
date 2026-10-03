@@ -39,23 +39,18 @@ public final class GiveStrataCharmCommand implements CommandExecutor {
             return true;
         }
 
-        OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
-        if (!target.hasPlayedBefore() && !target.isOnline()) {
-            sender.sendMessage(Component.text("No player found: " + args[0], NamedTextColor.RED));
-            return true;
-        }
-
-        charms.deposit(target.getUniqueId(), amount);
-        String name = target.getName() == null ? args[0] : target.getName();
-        plugin.getLogger().info("Granted " + amount + " StrataCharm(s) to " + name + " (by " + sender.getName() + ").");
-        sender.sendMessage(Component.text("Gave " + amount + " StrataCharm" + (amount == 1 ? "" : "s") + " to " + name + ".",
-                NamedTextColor.GREEN));
-
-        Player online = target.getPlayer();
-        if (online != null) {
-            online.sendMessage(Component.text("You received " + amount + " StrataCharm" + (amount == 1 ? "" : "s")
-                    + "! Use /stratacharm to unlock a skin.", NamedTextColor.LIGHT_PURPLE));
-        }
+        final int grant = amount;
+        com.stratasmp.stratacore.NameLookup.resolve(plugin, args[0], (uuid, name) -> {
+            charms.deposit(uuid, grant);
+            plugin.getLogger().info("Granted " + grant + " StrataCharm(s) to " + name + " (by " + sender.getName() + ").");
+            sender.sendMessage(Component.text("Gave " + grant + " StrataCharm" + (grant == 1 ? "" : "s") + " to " + name + ".",
+                    NamedTextColor.GREEN));
+            Player online = Bukkit.getPlayer(uuid);
+            if (online != null) {
+                online.sendMessage(Component.text("You received " + grant + " StrataCharm" + (grant == 1 ? "" : "s")
+                        + "! Use /stratacharm to unlock a skin.", NamedTextColor.LIGHT_PURPLE));
+            }
+        }, () -> sender.sendMessage(Component.text("No player found: " + args[0], NamedTextColor.RED)));
         return true;
     }
 }

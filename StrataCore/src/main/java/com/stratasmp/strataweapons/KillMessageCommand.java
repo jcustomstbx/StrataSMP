@@ -21,8 +21,10 @@ public class KillMessageCommand implements CommandExecutor, TabCompleter {
    private static final String USE_PERMISSION = "strataweapons.killmessage.use";
    private static final String ADMIN_PERMISSION = "strataweapons.killmessage.admin";
    private final KillMessageManager messages;
+   private final com.stratasmp.stratacore.StrataModule plugin;
 
-   public KillMessageCommand(KillMessageManager messages) {
+   public KillMessageCommand(com.stratasmp.stratacore.StrataModule plugin, KillMessageManager messages) {
+      this.plugin = plugin;
       this.messages = messages;
    }
 
@@ -39,9 +41,10 @@ public class KillMessageCommand implements CommandExecutor, TabCompleter {
             sender.sendMessage("Usage: /killmsg clear <player>");
             return true;
          } else {
-            UUID target = Bukkit.getOfflinePlayer(args[1]).getUniqueId();
-            this.messages.reset(target);
-            sender.sendMessage("Cleared " + args[1] + "'s custom kill message.");
+            com.stratasmp.stratacore.NameLookup.resolve(this.plugin, args[1], (uuid, name) -> {
+               this.messages.reset(uuid);
+               sender.sendMessage("Cleared " + name + "'s custom kill message.");
+            }, () -> sender.sendMessage("No player found: " + args[1]));
             return true;
          }
       } else if (sender instanceof Player player) {

@@ -25,7 +25,7 @@ public final class StrataCharmService {
         if (!file.exists()) {
             plugin.getDataFolder().mkdirs();
         }
-        this.storage = YamlConfiguration.loadConfiguration(file);
+        this.storage = com.stratasmp.stratacore.AtomicYaml.load(file, plugin.getLogger());
     }
 
     public int getBalance(UUID uuid) {
@@ -50,7 +50,7 @@ public final class StrataCharmService {
 
     private void save() {
         try {
-            storage.save(file);
+            com.stratasmp.stratacore.AtomicYaml.save(storage, file);
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Could not save charms.yml - a StrataCharm balance change may be lost!", e);
         }

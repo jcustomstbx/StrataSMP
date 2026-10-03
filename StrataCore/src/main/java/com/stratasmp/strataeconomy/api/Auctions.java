@@ -36,4 +36,7 @@ public interface Auctions {
 
     /** @return null on success, otherwise a player-facing error string. */
     String cancel(Player who, UUID listingId);
+
+    /** Removes a listing outright, with no delivery to the seller (used by skin purges). @return true if it existed. */
+    boolean adminRemove(UUID listingId);
 }

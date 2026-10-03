@@ -258,6 +258,27 @@ public final class AuctionStore implements Auctions {
         return null;
     }
 
+    @Override
+    public boolean adminRemove(UUID listingId) {
+        Impl l = listings.get(listingId);
+        if (l == null) {
+            return false;
+        }
+        try {
+            db.transaction(c -> {
+                try (PreparedStatement ps = c.prepareStatement("DELETE FROM stratas_auctions WHERE id=?")) {
+                    ps.setString(1, listingId.toString());
+                    ps.executeUpdate();
+                }
+            });
+        } catch (java.sql.SQLException e) {
+            plugin.getLogger().severe("Admin removal of auction listing failed: " + e.getMessage());
+            return false;
+        }
+        listings.remove(listingId, l);
+        return true;
+    }
+
     public int claimDeliveries(Player player) {
         reconcileMarkers(player);
         int claimed = 0;

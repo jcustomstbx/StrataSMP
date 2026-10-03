@@ -39,7 +39,7 @@ public class StrataWeapons extends StrataModule {
       this.getCommand("stratacharm").setExecutor(charmGui);
       this.getCommand("givestratacharm").setExecutor(new GiveStrataCharmCommand(this, charmService));
       KillMessageManager killMessages = new KillMessageManager(this);
-      this.getCommand("killmsg").setExecutor(new KillMessageCommand(killMessages));
+      this.getCommand("killmsg").setExecutor(new KillMessageCommand(this, killMessages));
       this.getServer().getPluginManager().registerEvents(new KillMessageListener(this, catalog, killMessages), this);
       new WeaponAuraTask(catalog).runTaskTimer(this, 0L, 4L);
       if (this.getConfig().getBoolean("spear.remove-attack-cooldown", false)

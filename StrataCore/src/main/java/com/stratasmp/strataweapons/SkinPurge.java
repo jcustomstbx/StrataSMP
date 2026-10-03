@@ -157,18 +157,15 @@ public class SkinPurge implements Listener, TabExecutor {
 
    /** Hands one purged skin back to a player who legitimately owns it, right after their own purge sweep. */
    private void queueRestore(CommandSender sender, String key, String name) {
-      OfflinePlayer target = Bukkit.getOfflinePlayer(name);
-      if (!target.hasPlayedBefore() && target.getPlayer() == null) {
-         sender.sendMessage("No player called '" + name + "' has joined this server.");
-         return;
-      }
-      restore.computeIfAbsent(key, k -> new HashSet<>()).add(target.getUniqueId());
-      save();
-      Player online = target.getPlayer();
-      if (online != null) {
-         settle(online);
-      }
-      sender.sendMessage("Queued a " + catalog.displayNameOf(key) + " for " + name + "; they get it once they're in the SMP and any pending purge has run.");
+      com.stratasmp.stratacore.NameLookup.resolve(plugin, name, (uuid, resolved) -> {
+         restore.computeIfAbsent(key, k -> new HashSet<>()).add(uuid);
+         save();
+         Player online = Bukkit.getPlayer(uuid);
+         if (online != null) {
+            settle(online);
+         }
+         sender.sendMessage("Queued a " + catalog.displayNameOf(key) + " for " + resolved + "; they get it once they're in the SMP and any pending purge has run.");
+      }, () -> sender.sendMessage("No player called '" + name + "' was found."));
    }
 
    @Override
@@ -379,39 +376,23 @@ public class SkinPurge implements Listener, TabExecutor {
       }, 1L, 1L);
    }
 
-   /**
-    * StrataEconomy is the Vault economy and can't be reloaded live, so its auction store is reached by reflection
-    * rather than through a new API method.
-    */
    private int purgeAuctions(String key) {
-      Plugin stratas = plugin.core().module(com.stratasmp.strataeconomy.StrataEconomy.class);
-      if (stratas == null || !stratas.isEnabled()) {
+      com.stratasmp.strataeconomy.StrataEconomy economy = plugin.core().module(com.stratasmp.strataeconomy.StrataEconomy.class);
+      if (economy == null || !economy.isEnabled()) {
          return 0;
       }
-      try {
-         ClassLoader loader = stratas.getClass().getClassLoader();
-         Class<?> auctionsApi = Class.forName("com.stratasmp.strataeconomy.api.Auctions", true, loader);
-         Class<?> listingApi = Class.forName("com.stratasmp.strataeconomy.api.Auctions$Listing", true, loader);
-         Object store = stratas.getClass().getMethod("auctions").invoke(stratas);
-         Method all = auctionsApi.getMethod("all");
-         Method item = listingApi.getMethod("item");
-         Method id = listingApi.getMethod("id");
-         Method remove = store.getClass().getDeclaredMethod("remove", UUID.class);
-         remove.setAccessible(true);
-         List<?> listings = (List<?>) all.invoke(store);
-         int removed = 0;
-         for (Object listing : listings) {
-            ItemStack stack = (ItemStack) item.invoke(listing);
-            if (matches(stack, key) || stripNested(stack.clone(), key) > 0) {
-               remove.invoke(store, id.invoke(listing));
+      com.stratasmp.strataeconomy.api.Auctions store = economy.auctions();
+      List<com.stratasmp.strataeconomy.api.Auctions.Listing> listings = store.all();
+      int removed = 0;
+      for (com.stratasmp.strataeconomy.api.Auctions.Listing listing : listings) {
+         ItemStack stack = listing.item();
+         if (matches(stack, key) || stripNested(stack.clone(), key) > 0) {
+            if (store.adminRemove(listing.id())) {
                removed++;
             }
          }
-         plugin.getLogger().info("Auction house: checked " + listings.size() + " listing(s), removed " + removed + ".");
-         return removed;
-      } catch (ReflectiveOperationException | ClassCastException e) {
-         plugin.getLogger().warning("Couldn't purge auction listings: " + e);
-         return 0;
       }
+      plugin.getLogger().info("Auction house: checked " + listings.size() + " listing(s), removed " + removed + ".");
+      return removed;
    }
 }

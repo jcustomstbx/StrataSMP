@@ -25,7 +25,7 @@ public final class StrataPerksService {
         if (!file.exists()) {
             plugin.getDataFolder().mkdirs();
         }
-        this.storage = YamlConfiguration.loadConfiguration(file);
+        this.storage = com.stratasmp.stratacore.AtomicYaml.load(file, plugin.getLogger());
     }
 
     public long getBalance(UUID uuid) {
@@ -54,7 +54,7 @@ public final class StrataPerksService {
 
     private void save() {
         try {
-            storage.save(file);
+            com.stratasmp.stratacore.AtomicYaml.save(storage, file);
         } catch (IOException e) {
             plugin.getLogger().log(Level.SEVERE, "Could not save balances.yml - a StrataPerks balance change may be lost!", e);
         }

@@ -132,6 +132,13 @@ public final class SkinsGui implements Listener {
     }
 
     @EventHandler
+    public void onDrag(org.bukkit.event.inventory.InventoryDragEvent event) {
+        if (event.getInventory().getHolder() instanceof Holder) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
     public void onClick(InventoryClickEvent event) {
         if (!(event.getInventory().getHolder() instanceof Holder holder)) {
             return;

@@ -43,7 +43,14 @@ public class TransferEnchantsCommand implements CommandExecutor {
 
             for (Entry<Enchantment, Integer> entry : donor.getItemMeta().getEnchants().entrySet()) {
                Enchantment enchant = entry.getKey();
-               if (enchant.canEnchantItem(customWeapon)) {
+               boolean conflicts = false;
+               for (Enchantment present : weaponMeta.getEnchants().keySet()) {
+                  if (!present.equals(enchant) && enchant.conflictsWith(present)) conflicts = true;
+               }
+               for (Enchantment chosen : toApply.keySet()) {
+                  if (!chosen.equals(enchant) && enchant.conflictsWith(chosen)) conflicts = true;
+               }
+               if (enchant.canEnchantItem(customWeapon) && !conflicts) {
                   int existing = weaponMeta.getEnchantLevel(enchant);
                   toApply.put(enchant, Math.max(existing, entry.getValue()));
                }

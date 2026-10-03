@@ -220,7 +220,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
             openCatalog(player, returnPage, armour);
             return;
         }
-        if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("LuckPerms")) {
             player.sendMessage(Component.text("Skin unlocking is unavailable right now - try again later.", NamedTextColor.RED));
             player.closeInventory();
             return;
@@ -234,7 +234,19 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
         }
 
         redeeming.add(id);
-        LuckPermsUnlocker.grant(id, key).whenComplete((ignored, error) ->
+        java.util.concurrent.CompletableFuture<?> grant;
+        try {
+            grant = LuckPermsUnlocker.grant(id, key);
+        } catch (RuntimeException e) {
+            // LuckPerms present but not usable: undo the charge and free the player's clicks
+            charms.deposit(id, cost);
+            redeeming.remove(id);
+            plugin.getLogger().warning("Skin unlock could not start for " + player.getName() + " (" + key + "), refunded: " + e);
+            player.sendMessage(Component.text("Skin unlocking is unavailable right now - you were not charged.", NamedTextColor.RED));
+            player.closeInventory();
+            return;
+        }
+        grant.whenComplete((ignored, error) ->
                 Bukkit.getScheduler().runTask(plugin, () -> {
                     redeeming.remove(id);
                     if (error != null) {
