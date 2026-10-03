@@ -76,6 +76,7 @@ public final class StrataCore extends JavaPlugin {
                 getLogger().severe("Module " + module.getName() + " failed to start and was skipped; the rest keep running.");
                 failure.printStackTrace();
                 shutDown(module);
+                releaseCommands(module);
                 enabledModules.remove(module);
                 modules.remove(module.getName());
             }
@@ -101,6 +102,20 @@ public final class StrataCore extends JavaPlugin {
         }
         enabledModules.clear();
         modules.clear();
+    }
+
+    /** Commands the failed module had already bound must not keep running against a stopped module. */
+    private void releaseCommands(StrataModule module) {
+        String modulePackage = module.getClass().getPackageName();
+        for (String name : getDescription().getCommands().keySet()) {
+            org.bukkit.command.PluginCommand command = getCommand(name);
+            if (command == null) continue;
+            Object executor = command.getExecutor();
+            if (executor != this && executor != null && executor.getClass().getName().startsWith(modulePackage)) {
+                command.setExecutor(this);
+                command.setTabCompleter(null);
+            }
+        }
     }
 
     private void shutDown(StrataModule module) {

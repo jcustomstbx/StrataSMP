@@ -79,7 +79,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     @Override
     public void onDisable() {
-        for (KeystoneRun run : new ArrayList<>(active)) end(run, false, "The server is restarting.");
+        for (KeystoneRun run : new ArrayList<>(active)) end(run, false, "The server is restarting.", true);
         super.onDisable();
     }
 
@@ -137,6 +137,11 @@ public final class StrataKeystones extends StrataModule implements Listener {
         ItemStack hand = player.getInventory().getItemInMainHand();
         int level = KeystoneItem.level(hand);
         if (level <= 0) return;
+        // a right-click on a chest, door or crafting table opens that instead; sneak to use the keystone there
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null
+                && event.getClickedBlock().getType().isInteractable() && !player.isSneaking()) {
+            return;
+        }
         event.setCancelled(true);
         if (runs.containsKey(player.getUniqueId())) {
             player.sendMessage(Component.text("You already have a keystone run active.", NamedTextColor.RED));
@@ -181,7 +186,8 @@ public final class StrataKeystones extends StrataModule implements Listener {
         }
         if (!(damager instanceof Player player)) return;
         KeystoneRun run = runs.get(player.getUniqueId());
-        if (run != null) run.contributors.add(player.getUniqueId());
+        // only a mob of the player's own run counts, not one from somebody else's keystone
+        if (run != null && run.owner.equals(KeystoneMobs.owner(event.getEntity()))) run.contributors.add(player.getUniqueId());
     }
 
     /** Run mobs (creepers especially) never break blocks. */
@@ -302,8 +308,14 @@ public final class StrataKeystones extends StrataModule implements Listener {
             player.sendMessage(Component.text("There is no keystone run you can join right now.", NamedTextColor.RED));
             return;
         }
-        double radius = getConfig().getDouble("party.join-radius", 30) * 2;
-        if (runs.containsKey(player.getUniqueId()) || !player.getWorld().equals(run.origin.getWorld())
+        if (runs.containsKey(player.getUniqueId())) {
+            invites.remove(player.getUniqueId());
+            player.sendMessage(Component.text("You are already in a keystone run.", NamedTextColor.RED));
+            return;
+        }
+        // never farther than the leash, or the run would drop them a moment after they join
+        double radius = Math.min(getConfig().getDouble("party.join-radius", 30) * 2, getConfig().getDouble("run.leash-radius", 40));
+        if (!player.getWorld().equals(run.origin.getWorld())
                 || player.getLocation().distanceSquared(run.origin) > radius * radius) {
             player.sendMessage(Component.text("You are too far from the keystone to join.", NamedTextColor.RED));
             return;
@@ -430,7 +442,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
         }
         if (run.alive.isEmpty()) {
             // nothing could be spawned: this must fail, never count as a cleared wave
-            end(run, false, "Mobs could not spawn here. Try another spot.");
+            end(run, false, "Mobs could not spawn here. Try another spot.", true);
             return;
         }
         run.nextWaveAt = -1;
@@ -478,6 +490,11 @@ public final class StrataKeystones extends StrataModule implements Listener {
     }
 
     private void end(KeystoneRun run, boolean success, String reason) {
+        end(run, success, reason, false);
+    }
+
+    /** @param alwaysReturn hand the keystone back whatever run.return-on-fail says (restarts, admin stops, spawn failures) */
+    private void end(KeystoneRun run, boolean success, String reason, boolean alwaysReturn) {
         active.remove(run);
         invites.values().removeIf(r -> r == run);
         releaseReservation(run);
@@ -486,6 +503,17 @@ public final class StrataKeystones extends StrataModule implements Listener {
             if (e != null) e.remove();
         }
         run.alive.clear();
+        // anything else this run spawned (reinforcements, split slimes, jockeys) goes too
+        if (run.origin.getWorld() != null) {
+            for (LivingEntity stray : run.origin.getWorld().getNearbyLivingEntities(run.origin, 80.0, KeystoneMobs::isRunMob)) {
+                if (run.owner.equals(KeystoneMobs.owner(stray))) {
+                    for (Entity passenger : List.copyOf(stray.getPassengers())) {
+                        if (!(passenger instanceof Player)) passenger.remove();
+                    }
+                    stray.remove();
+                }
+            }
+        }
         List<UUID> members = new ArrayList<>(run.players);
         for (UUID id : members) runs.remove(id);
         run.players.clear();
@@ -502,8 +530,12 @@ public final class StrataKeystones extends StrataModule implements Listener {
                     continue;
                 }
                 for (String command : getConfig().getStringList("rewards." + run.level)) {
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
-                            command.replace("%player%", member.getName()).replace("%level%", String.valueOf(run.level)));
+                    try {
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
+                                command.replace("%player%", member.getName()).replace("%level%", String.valueOf(run.level)));
+                    } catch (RuntimeException e) {
+                        getLogger().warning("Keystone reward command failed for " + member.getName() + ": " + command + " (" + e + ")");
+                    }
                 }
             }
         } else {
@@ -513,7 +545,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
                     if (member != null) member.sendMessage(Component.text("Keystone failed: " + reason, NamedTextColor.RED));
                 }
             }
-            if (getConfig().getBoolean("run.return-on-fail", true)) handBack(run.owner, run.level);
+            if (alwaysReturn || getConfig().getBoolean("run.return-on-fail", true)) handBack(run.owner, run.level);
         }
     }
 
@@ -567,7 +599,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
             Player target = Bukkit.getPlayer(args[1]);
             KeystoneRun run = target == null ? null : runs.get(target.getUniqueId());
             if (run == null) { sender.sendMessage(Component.text("No active run.", NamedTextColor.RED)); return true; }
-            end(run, false, "Stopped by an admin.");
+            end(run, false, "Stopped by an admin.", true);
             return true;
         }
         sender.sendMessage(Component.text("/keystone <join|give <player> [level]|stop <player>|reload>", NamedTextColor.YELLOW));
@@ -577,7 +609,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) return sender.hasPermission("stratakeystones.admin") ? List.of("join", "give", "stop", "reload") : List.of("join");
-        if (args.length == 2 && !args[0].equalsIgnoreCase("reload")) {
+        if (args.length == 2 && !args[0].equalsIgnoreCase("reload") && !args[0].equalsIgnoreCase("join")) {
             return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
         }
         return List.of();

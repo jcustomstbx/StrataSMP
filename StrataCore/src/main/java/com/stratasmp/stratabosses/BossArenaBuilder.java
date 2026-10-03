@@ -50,7 +50,7 @@ public class BossArenaBuilder {
       this.placePerimeter(world, centerX, centerZ, baseY, theme, recorded);
       this.scatterAccents(world, centerX, centerZ, baseY, theme, recorded);
       Location spawnAt = new Location(world, centerX + 0.5, baseY + 1, centerZ + 0.5);
-      return new BossArenaBuilder.ArenaResult(spawnAt, new BossArenaBuilder.ArenaSnapshot(world, new ArrayList<>(recorded.values())));
+      return new BossArenaBuilder.ArenaResult(spawnAt, new BossArenaBuilder.ArenaSnapshot(world, spawnAt, new ArrayList<>(recorded.values())));
    }
 
    /**
@@ -241,11 +241,14 @@ public class BossArenaBuilder {
 
    public static final class ArenaSnapshot {
       private final World world;
+      /** Where the arena was built, kept until the blocks are put back so a new arena can't overlap it. */
+      public final Location center;
       private final List<BossArenaBuilder.BlockChange> changes;
       private volatile File file;
       private volatile boolean discarded;
 
-      private ArenaSnapshot(World world, List<BossArenaBuilder.BlockChange> changes) {
+      private ArenaSnapshot(World world, Location center, List<BossArenaBuilder.BlockChange> changes) {
+         this.center = center;
          this.world = world;
          this.changes = changes;
       }

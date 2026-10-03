@@ -499,14 +499,47 @@ public class BossManager implements Listener {
       }
    }
 
-   /** True when an active boss is already standing within this many blocks (its arena would overlap). */
+   /** Arenas whose boss is dead but whose blocks are still waiting to be put back. */
+   private final List<org.bukkit.Location> restoringCenters = new ArrayList<>();
+
+   /**
+    * True when a new arena here would overlap one that is still standing or about to be restored. Arenas are tracked
+    * by where they were built, not by where their boss currently is (a boss can chase players well outside it).
+    */
    public boolean activeBossNear(org.bukkit.Location at, double radius) {
+      for (BossArenaBuilder.ArenaSnapshot snapshot : this.arenaSnapshots.values()) {
+         if (near(snapshot.center, at, radius)) return true;
+      }
+      for (org.bukkit.Location center : this.restoringCenters) {
+         if (near(center, at, radius)) return true;
+      }
       for (BossInfo info : this.activeBosses()) {
-         if (info.location().getWorld().equals(at.getWorld()) && info.location().distanceSquared(at) < radius * radius) {
-            return true;
-         }
+         if (near(info.location(), at, radius)) return true;
       }
       return false;
+   }
+
+   private static boolean near(org.bukkit.Location a, org.bukkit.Location b, double radius) {
+      return a != null && a.getWorld() != null && a.getWorld().equals(b.getWorld()) && a.distanceSquared(b) < radius * radius;
+   }
+
+   /** Restores a dead boss's arena after the delay, tracking its centre until then. */
+   private void restoreLater(BossArenaBuilder.ArenaSnapshot snapshot, long delayTicks) {
+      this.restoringCenters.add(snapshot.center);
+      Bukkit.getScheduler().runTaskLater(this.plugin, () -> {
+         BossArenaBuilder.restore(snapshot);
+         this.restoringCenters.remove(snapshot.center);
+      }, delayTicks);
+   }
+
+   /** A boss whose chunk unloads is dropped from tracking and re-adopted when the chunk loads again. */
+   @EventHandler
+   public void onEntitiesUnload(org.bukkit.event.world.EntitiesUnloadEvent event) {
+      for (Entity entity : event.getEntities()) {
+         if (this.active.containsKey(entity.getUniqueId())) {
+            this.cleanupOrphaned(entity.getUniqueId(), false);
+         }
+      }
    }
 
    private void despawnIdle(LivingEntity boss, BossDefinition def) {
@@ -701,7 +734,7 @@ public class BossManager implements Listener {
       this.lastDeathAtMillis.put(def.id, System.currentTimeMillis());
       BossArenaBuilder.ArenaSnapshot arenaSnapshot = this.releaseArena(entity.getUniqueId());
       if (arenaSnapshot != null) {
-         Bukkit.getScheduler().runTaskLater(this.plugin, () -> BossArenaBuilder.restore(arenaSnapshot), 160L);
+         this.restoreLater(arenaSnapshot, 160L);
       }
 
       for (Entity passenger : List.copyOf(entity.getPassengers())) {

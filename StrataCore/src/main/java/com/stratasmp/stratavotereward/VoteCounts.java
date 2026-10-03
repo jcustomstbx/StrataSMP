@@ -27,16 +27,12 @@ public class VoteCounts {
    public synchronized int add(UUID id, int votes) {
       int total = this.storage.getInt(id.toString(), 0) + votes;
       this.storage.set(id.toString(), total);
-      String snapshot = this.storage.saveToString();
-      Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> this.write(snapshot));
-      return total;
-   }
-
-   private synchronized void write(String snapshot) {
+      // votes are rare, so the file is written right here (atomically): no queued writes to reorder or lose at shutdown
       try {
-         java.nio.file.Files.writeString(this.file.toPath(), snapshot);
+         com.stratasmp.stratacore.AtomicYaml.save(this.storage, this.file);
       } catch (IOException e) {
          this.plugin.getLogger().warning("Couldn't save vote_counts.yml: " + e.getMessage());
       }
+      return total;
    }
 }
