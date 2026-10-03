@@ -93,7 +93,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
     }
 
     private static String charmWord(int amount) {
-        return amount == 1 ? "StrataCharm" : "StrataCharm";
+        return amount == 1 ? "StrataCharm" : "StrataCharms";
     }
 
     private ItemStack button(Material material, NamedTextColor colour, String name, List<Component> lore) {

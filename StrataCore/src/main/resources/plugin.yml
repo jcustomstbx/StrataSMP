@@ -13,7 +13,7 @@ commands:
   cratevault: {description: Open and claim your Crate Vault, usage: /cratevault, aliases: [cvault]}
   stratas: {description: Check your Stratas balance, usage: '/stratas [player]', aliases: [bal, balance, money, strata]}
   pay: {description: Pay Stratas to another player, usage: '/pay <player> <amount>'}
-  baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop, croptop]}
+  baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop]}
   eco: {description: Manage Stratas balances, usage: '/eco <give|take|set|reset> <player> [amount]', permission: strataeconomy.admin}
   ah: {description: Stratas auction house, usage: '/ah [sell <price>|mine]', aliases: [auctionhouse, auction]}
   sell: {description: Sell items for Stratas, usage: /sell, aliases: [sellgui]}
@@ -35,9 +35,9 @@ commands:
   name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
   repair: {description: Repair the item in hand with Regal, usage: /repair}
   mmo: {description: RPG stats and leaderboards, usage: '/mmo [stats|top]', aliases: [stratammo]}
-  strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [sov, strataperk]}
+  strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [perks, strataperk]}
   givestrataperks: {description: Grant StrataPerks, usage: '/givestrataperks <player> <amount>', permission: strataperks.admin}
-  strataperkshop: {description: Open the premium shop, usage: /strataperkshop, aliases: [sovshop, godshop]}
+  strataperkshop: {description: Open the premium shop, usage: /strataperkshop, aliases: [perkshop, pshop]}
   store: {description: Get the StrataSMP store link, usage: /store}
   myteam: {description: Manage your team, usage: '/myteam <create|invite|accept|deny|kick|rename|disband|leave|ff>'}
   thome: {description: Teleport to your team home, usage: '/thome [set]', aliases: [tmhome]}

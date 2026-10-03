@@ -42,7 +42,7 @@ items:
     material: NETHERITE_HELMET
     price: 1
     lore:
-      - "&7Strataing protection."
+      - "&7Crowning protection."
     enchantments:
       protection: 4
       unbreaking: 3
@@ -127,7 +127,7 @@ items:
     material: ELYTRA
     price: 1
     lore:
-      - "&7Take to the skies in strataperk style."
+      - "&7Take to the skies in StrataPerks style."
       - "&8Shop-exclusive utility item."
     enchantments:
       unbreaking: 4
