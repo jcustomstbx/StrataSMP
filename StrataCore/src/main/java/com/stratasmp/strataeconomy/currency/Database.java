@@ -24,7 +24,7 @@ public final class Database {
         hc.setPoolName("StrataEconomy");
         // driver is shaded + relocated, so point Hikari straight at the moved class
         // instead of relying on the jdbc:mariadb: scheme lookup via DriverManager
-        hc.setDriverClassName("com.stratasmp.strataeconomy.lib.mariadb.Driver");
+        hc.setDriverClassName("com.stratasmp.stratacore.lib.mariadb.Driver");
         hc.setJdbcUrl("jdbc:mariadb://" + host + ":" + port + "/" + name
                 + "?useUnicode=true&characterEncoding=utf8&autoReconnect=true");
         hc.setUsername(user);
