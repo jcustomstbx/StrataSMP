@@ -90,7 +90,7 @@ public final class StrataRanks extends StrataModule implements Listener {
 
     private void style(Player player, RankTier tier, String[] args) {
         if (args.length < 2) {
-            player.sendMessage("/rankstyle name <#RRGGBB|reset>, chat <imperial-gold|royal-aqua|regal-rose>, particle <strata|aurora|ember|off>, join <message|reset>");
+            player.sendMessage("/rankstyle name <#RRGGBB|reset>, chat <imperial-gold|royal-aqua|regal-rose>, particle <crown|aurora|ember|off>, join <message|reset>");
             return;
         }
         UUID id = player.getUniqueId();
@@ -124,7 +124,7 @@ public final class StrataRanks extends StrataModule implements Listener {
                 }
             }
             case "particle" -> {
-                List<String> allowed = tier == RankTier.REGAL ? List.of("strata", "aurora", "ember", "off") : List.of("strata", "off");
+                List<String> allowed = tier == RankTier.REGAL ? List.of("crown", "aurora", "ember", "off") : List.of("crown", "off");
                 if (!allowed.contains(choice)) { player.sendMessage("Available particles: " + String.join(", ", allowed)); return; }
                 choices.set(id + ".particle", choice);
                 saveChoices();
@@ -213,11 +213,11 @@ public final class StrataRanks extends StrataModule implements Listener {
             if (!isSmpWorld(player) && !player.getWorld().getName().equals("hub")) continue;
             RankTier tier = RankTier.of(player);
             if (tier == RankTier.NONE) continue;
-            String choice = choices.getString(player.getUniqueId() + ".particle", "strata");
-            if (tier != RankTier.REGAL && !choice.equals("strata")) continue;
+            String choice = choices.getString(player.getUniqueId() + ".particle", "crown");
+            if (tier != RankTier.REGAL && !choice.equals("crown")) continue;
             var at = player.getLocation().add(0, 2.15, 0);
             switch (choice) {
-                case "strata" -> player.getWorld().spawnParticle(Particle.DUST, at, 2, 0.25, 0.02, 0.25, 0,
+                case "crown" -> player.getWorld().spawnParticle(Particle.DUST, at, 2, 0.25, 0.02, 0.25, 0,
                         new Particle.DustOptions(Color.fromRGB(255, 210, 45), 1.2f));
                 case "aurora" -> player.getWorld().spawnParticle(Particle.DUST, at, 2, 0.35, 0.1, 0.35, 0,
                         new Particle.DustOptions(Color.fromRGB(85, 235, 240), 1.2f));
@@ -268,7 +268,7 @@ public final class StrataRanks extends StrataModule implements Listener {
         return switch (args[0].toLowerCase(Locale.ROOT)) {
             case "name" -> List.of("#A020F0", "reset");
             case "chat" -> List.of("imperial-gold", "royal-aqua", "regal-rose");
-            case "particle" -> List.of("strata", "aurora", "ember", "off");
+            case "particle" -> List.of("crown", "aurora", "ember", "off");
             case "join" -> List.of("reset");
             default -> List.of();
         };

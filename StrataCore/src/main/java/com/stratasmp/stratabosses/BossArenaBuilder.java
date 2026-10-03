@@ -96,7 +96,9 @@ public class BossArenaBuilder {
          for (BossArenaBuilder.BlockChange change : snapshot.changes) {
             Block block = snapshot.world.getBlockAt(change.x(), change.y(), change.z());
             // a block someone changed while the arena stood is theirs now; leave it
-            if (change.placed() != null && block.getType() != change.placed()) continue;
+            // (water or lava that has flowed into a cleared space doesn't count as a player change)
+            Material now = block.getType();
+            if (change.placed() != null && now != change.placed() && now != Material.WATER && now != Material.LAVA) continue;
             block.setBlockData(change.original(), false);
          }
          snapshot.discard();
@@ -127,7 +129,8 @@ public class BossArenaBuilder {
                String data = current ? parts[4] : String.join(",", java.util.Arrays.copyOfRange(parts, 3, parts.length));
                if (parts.length >= 4) {
                   Block block = world.getBlockAt(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
-                  if (current && block.getType() != Material.valueOf(parts[3])) continue;
+                  Material now = block.getType();
+                  if (current && now != Material.valueOf(parts[3]) && now != Material.WATER && now != Material.LAVA) continue;
                   block.setBlockData(Bukkit.createBlockData(data), false);
                }
             }

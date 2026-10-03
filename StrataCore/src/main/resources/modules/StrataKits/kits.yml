@@ -214,25 +214,25 @@ kits:
     rewards:
       - { display: "&6Resource Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual ResourceCrate 1 {player} -s" }
       - { display: "&dGear Key &7x1", icon: TRIPWIRE_HOOK, command: "crates give virtual GearCrate 1 {player} -s" }
-  strataed:
-    display-name: "&#F4BB54&lStrataed"
+  crowned:
+    display-name: "&#F4BB54&lCrowned"
     icon: NETHERITE_CHESTPLATE
     items:
       - material: NETHERITE_HELMET
-        name: "&#F4BB54&lStrataed Helmet"
-        lore: ["&7Strataed Kit"]
+        name: "&#F4BB54&lCrowned Helmet"
+        lore: ["&7Crowned Kit"]
         enchants: { protection: 3, unbreaking: 2 }
       - material: NETHERITE_CHESTPLATE
-        name: "&#F4BB54&lStrataed Chestplate"
-        lore: ["&7Strataed Kit"]
+        name: "&#F4BB54&lCrowned Chestplate"
+        lore: ["&7Crowned Kit"]
         enchants: { protection: 3, unbreaking: 2 }
       - material: NETHERITE_LEGGINGS
-        name: "&#F4BB54&lStrataed Leggings"
-        lore: ["&7Strataed Kit"]
+        name: "&#F4BB54&lCrowned Leggings"
+        lore: ["&7Crowned Kit"]
         enchants: { protection: 3, unbreaking: 2 }
       - material: NETHERITE_BOOTS
-        name: "&#F4BB54&lStrataed Boots"
-        lore: ["&7Strataed Kit"]
+        name: "&#F4BB54&lCrowned Boots"
+        lore: ["&7Crowned Kit"]
         enchants: { protection: 3, unbreaking: 2 }
       - material: NETHERITE_SWORD
         enchants: { fire_aspect: 2, sharpness: 4, unbreaking: 3 }

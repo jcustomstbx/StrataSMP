@@ -282,11 +282,11 @@ public class WeaponCatalog {
       return n.endsWith("_BOOTS") ? "boots" : null;
    }
 
-   private boolean isStrata(ConfigurationSection def) {
-      return "strata".equalsIgnoreCase(def.getString("type"));
+   private boolean isCrown(ConfigurationSection def) {
+      return "crown".equalsIgnoreCase(def.getString("type"));
    }
 
-   /** Whether a skin can go on this kind of item: swords/axes/maces/tridents for weapons, armour pieces for armour, helmets only for stratas. */
+   /** Whether a skin can go on this kind of item: swords/axes/maces/tridents for weapons, armour pieces for armour, helmets only for crowns. */
    public boolean canSkin(Material material, String key) {
       ConfigurationSection def = this.definitions.get(key.toLowerCase());
       if (def == null) {
@@ -303,14 +303,14 @@ public class WeaponCatalog {
          return true;
       }
       String piece = pieceOf(material);
-      return piece != null && (!isStrata(def) || piece.equals("helmet"));
+      return piece != null && (!isCrown(def) || piece.equals("helmet"));
    }
 
    public String wrongItemHint(String key) {
       ConfigurationSection def = this.definitions.get(key.toLowerCase());
       if (def != null && this.armorKeys.contains(key.toLowerCase())) {
-         return isStrata(def)
-            ? "Hold the helmet you want to give this strata to, then click."
+         return isCrown(def)
+            ? "Hold the helmet you want to give this crown to, then click."
             : "Hold the helmet, chestplate, leggings or boots you want to skin, then click.";
       }
       return "Hold the sword / axe / mace / trident / spear you want to skin, then click.";
@@ -318,7 +318,7 @@ public class WeaponCatalog {
 
    /**
     * Armour skins are two components: item_model (the icon) and equippable's asset id (what it looks like
-    * on the player). A strata has no asset id, so the client draws the item model on the head instead.
+    * on the player). A crown has no asset id, so the client draws the item model on the head instead.
     * Everything else about the piece - material, protection, enchants - is untouched.
     */
    private boolean applyArmorSkin(ItemStack held, ConfigurationSection def, String key) {
@@ -329,9 +329,9 @@ public class WeaponCatalog {
       if (current == null) {
          return false;
       }
-      boolean strata = isStrata(def);
+      boolean crown = isCrown(def);
       String base = def.getString("item-model");
-      Key itemModel = Key.key(strata ? base : base + "_" + pieceOf(held.getType()));
+      Key itemModel = Key.key(crown ? base : base + "_" + pieceOf(held.getType()));
 
       ItemMeta meta = held.getItemMeta();
       meta.displayName(nameFor(def, key));
@@ -340,7 +340,7 @@ public class WeaponCatalog {
       held.setItemMeta(meta);
 
       // components go on after the meta, or setItemMeta would write the old values back over them
-      Equippable.Builder worn = strata
+      Equippable.Builder worn = crown
          ? Equippable.equippable(current.slot()).equipSound(current.equipSound()).damageOnHurt(current.damageOnHurt())
          : current.toBuilder().assetId(Key.key(def.getString("equipment", base)));
       held.setData(DataComponentTypes.EQUIPPABLE, worn);
@@ -417,18 +417,18 @@ public class WeaponCatalog {
    }
 
    private ItemStack armorMenuIcon(ConfigurationSection def, String key, boolean owned) {
-      boolean strata = isStrata(def);
+      boolean crown = isCrown(def);
       String base = def.getString("item-model");
-      ItemStack icon = new ItemStack(strata ? Material.PAPER : Material.NETHERITE_CHESTPLATE);
+      ItemStack icon = new ItemStack(crown ? Material.PAPER : Material.NETHERITE_CHESTPLATE);
       ItemMeta meta = icon.getItemMeta();
-      meta.setItemModel(NamespacedKey.fromString(strata ? base : base + "_chestplate"));
+      meta.setItemModel(NamespacedKey.fromString(crown ? base : base + "_chestplate"));
       meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
       meta.displayName(nameFor(def, key));
-      String hold = strata ? "Click while holding a helmet" : "Click while holding a piece of armour";
+      String hold = crown ? "Click while holding a helmet" : "Click while holding a piece of armour";
       meta.lore(List.of(
             Component.text(owned ? hold : "Not unlocked", owned ? NamedTextColor.GRAY : NamedTextColor.RED)
                   .decoration(TextDecoration.ITALIC, false),
-            Component.text(owned ? (strata ? "to wear this strata." : "to apply it. Works on any armour piece.") : "Available in the store.",
+            Component.text(owned ? (crown ? "to wear this crown." : "to apply it. Works on any armour piece.") : "Available in the store.",
                   NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
       icon.setItemMeta(meta);
       return icon;

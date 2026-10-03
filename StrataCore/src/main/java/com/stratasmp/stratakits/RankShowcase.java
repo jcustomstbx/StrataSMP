@@ -162,7 +162,7 @@ final class RankShowcase implements Listener {
 
         if (paid) {
             inv.setItem(18, named(Material.PINK_DYE, "&dCosmetic perks", List.of(
-                    "&7Custom name colour and three chat colours", "&7/nick, /ec and strata particles",
+                    "&7Custom name colour and three chat colours", "&7/nick, /ec and crown particles",
                     kit.id().equals("regal") ? "&7Regal: three particles and a join message" : "&7Inherited by Ornate and Regal")));
             if (kit.id().equals("ornate") || kit.id().equals("regal")) {
                 inv.setItem(19, named(Material.EMERALD, "&aEconomy perks", List.of(

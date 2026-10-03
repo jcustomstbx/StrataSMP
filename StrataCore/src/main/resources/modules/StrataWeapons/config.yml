@@ -169,11 +169,11 @@ spear:
   clear-lunge-cooldown: true
 
 # Armour skins: applied from /skins to any helmet, chestplate, leggings or boots (a set), or to a helmet only
-# (a strata). Same unlock as the weapon skins - the strataskins.<key> permission, or StrataCharm.
-#   type       set = item model + worn look for all four pieces, strata = a helmet-only hat
+# (a crown). Same unlock as the weapon skins - the strataskins.<key> permission, or StrataCharm.
+#   type       set = item model + worn look for all four pieces, crown = a helmet-only hat
 #   item-model set: the item model prefix, "<prefix>_helmet" / "_chestplate" / "_leggings" / "_boots" (resource pack items/)
-#              strata: the exact item model id
-#   equipment  set only: the worn armour look (resource pack equipment/ id). A strata has none - the client draws
+#              crown: the exact item model id
+#   equipment  set only: the worn armour look (resource pack equipment/ id). A crown has none - the client draws
 #              its model on the head instead.
 # Material, protection and enchantments are never changed, only the look.
 armor-skins:
@@ -240,48 +240,48 @@ armor-skins:
     item-model: "custom:stratasmp"
     equipment: "custom:stratasmp"
     charm-cost: 2
-  strata_shadow:
-    type: strata
-    display-name: "Shadow Strata"
+  crown_shadow:
+    type: crown
+    display-name: "Shadow Crown"
     gradient: ["#4A4A55", "#9A9AAA"]
-    item-model: "custom:strata_dark"
-  strata_copper:
-    type: strata
-    display-name: "Copper Strata"
+    item-model: "custom:crown_dark"
+  crown_copper:
+    type: crown
+    display-name: "Copper Crown"
     gradient: ["#C8763A", "#F0B48A"]
-    item-model: "custom:strata_iron"
-  strata_amethyst:
-    type: strata
-    display-name: "Amethyst Strata"
+    item-model: "custom:crown_iron"
+  crown_amethyst:
+    type: crown
+    display-name: "Amethyst Crown"
     gradient: ["#7B5CD6", "#C9B8F5"]
-    item-model: "custom:strata_gold"
-  strata_diamond:
-    type: strata
-    display-name: "Diamond Strata"
+    item-model: "custom:crown_gold"
+  crown_diamond:
+    type: crown
+    display-name: "Diamond Crown"
     gradient: ["#1CC8C8", "#9CF5F0"]
-    item-model: "custom:strata_diamond"
-  strata_flame:
-    type: strata
-    display-name: "Flame Strata"
+    item-model: "custom:crown_diamond"
+  crown_flame:
+    type: crown
+    display-name: "Flame Crown"
     gradient: ["#FF6A00", "#FFD23F"]
-    item-model: "custom:strata_fire"
-  strata_frost:
-    type: strata
-    display-name: "Frost Strata"
+    item-model: "custom:crown_fire"
+  crown_frost:
+    type: crown
+    display-name: "Frost Crown"
     gradient: ["#8EE6F0", "#F0FCFF"]
-    item-model: "custom:strata_ice"
-  strata_earth:
-    type: strata
-    display-name: "Earth Strata"
+    item-model: "custom:crown_ice"
+  crown_earth:
+    type: crown
+    display-name: "Earth Crown"
     gradient: ["#6E8B2E", "#B89A4A"]
-    item-model: "custom:strata_earth"
-  strata_wind:
-    type: strata
-    display-name: "Wind Strata"
+    item-model: "custom:crown_earth"
+  crown_wind:
+    type: crown
+    display-name: "Wind Crown"
     gradient: ["#B8B0E8", "#F4F2FF"]
-    item-model: "custom:strata_wind"
-  strata_golden:
-    type: strata
-    display-name: "Golden Strata"
+    item-model: "custom:crown_wind"
+  crown_golden:
+    type: crown
+    display-name: "Golden Crown"
     gradient: ["#F2B705", "#FFE680"]
-    item-model: "custom:strata_tint"
+    item-model: "custom:crown_tint"
