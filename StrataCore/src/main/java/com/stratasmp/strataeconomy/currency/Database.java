@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public final class Database {
 
-    private final HikariDataSource pool;
+    private final javax.sql.DataSource pool;
 
     public Database(ConfigurationSection db, Logger log) {
         String host = db.getString("host");
@@ -39,6 +39,11 @@ public final class Database {
         this.pool = new HikariDataSource(hc);
         createTables();
         log.info("Database pool up (" + host + "/" + name + ").");
+    }
+
+    /** For tests: wraps an existing data source (the caller creates the tables). */
+    public Database(javax.sql.DataSource source) {
+        this.pool = source;
     }
 
     private void createTables() {
@@ -139,8 +144,8 @@ public final class Database {
     }
 
     public void close() {
-        if (pool != null && !pool.isClosed()) {
-            pool.close();
+        if (pool instanceof HikariDataSource hikari && !hikari.isClosed()) {
+            hikari.close();
         }
     }
 }

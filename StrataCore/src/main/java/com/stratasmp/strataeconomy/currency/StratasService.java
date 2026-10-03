@@ -371,8 +371,9 @@ public final class StratasService {
         }
         Map<UUID, Pending> batch = new java.util.HashMap<>(dirty);
         String sql = "INSERT INTO stratas_balances (uuid, username, balance, updated_at) VALUES (?,?,?,?) "
-                + "ON DUPLICATE KEY UPDATE username=IF(VALUES(username)='', username, VALUES(username)), "
-                + "balance=IF(VALUES(updated_at) >= updated_at, VALUES(balance), balance), "
+                + "ON DUPLICATE KEY UPDATE "
+                + "username=CASE WHEN VALUES(username)='' THEN username ELSE VALUES(username) END, "
+                + "balance=CASE WHEN VALUES(updated_at) >= updated_at THEN VALUES(balance) ELSE balance END, "
                 + "updated_at=GREATEST(updated_at, VALUES(updated_at))";
         if (!batch.isEmpty()) {
             try (Connection c = db.connection(); PreparedStatement ps = c.prepareStatement(sql)) {

@@ -42,6 +42,6 @@
 
 ## Layout
 
-`StrataCore/` Maven project (`mvn -f StrataCore/pom.xml clean package`), `resourcepack/` resource pack and artwork,
+`StrataCore/` Maven project (`mvn -f StrataCore/pom.xml clean package` builds and runs the unit tests; `mvn -f StrataCore/pom.xml test` runs only the tests), `resourcepack/` resource pack and artwork,
 `server/` server setup notes. Module defaults live in `src/main/resources/modules/<Module>/`; runtime data in
 `plugins/<Module>/`. Keystone level rewards are empty command lists in `StrataKeystones/config.yml`.
