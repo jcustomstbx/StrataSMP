@@ -111,7 +111,12 @@ public class MatchManager {
    public void forceResolveAllActive() {
       for (DuelMatch match : new HashSet<>(this.activeByPlayer.values())) {
          try {
-            this.resolveMatch(match, MatchManager.Outcome.DRAW, null, null);
+            // a match that was already decided and only waiting out its end delay keeps its result
+            if (match.state == DuelMatch.State.ENDING && match.decidedOutcome != null) {
+               this.resolveMatch(match, match.decidedOutcome, match.decidedWinner, match.decidedLoser);
+            } else {
+               this.resolveMatch(match, MatchManager.Outcome.DRAW, null, null);
+            }
          } catch (RuntimeException e) {
             this.plugin.getLogger().warning("Couldn't cleanly end a duel during shutdown: " + e);
          }
@@ -214,6 +219,10 @@ public class MatchManager {
       if (match == null || !match.playerA.equals(match.playerB)) {
          return "You're not in a test duel.";
       }
+      // a lethal hit may have queued a delayed resolve; mark the match finished so that never runs afterwards
+      match.state = DuelMatch.State.COMPLETE;
+      if (match.countdownTask != null) match.countdownTask.cancel();
+      if (match.timeoutTask != null) match.timeoutTask.cancel();
       this.activeByPlayer.remove(uuid);
       this.frozen.remove(uuid);
       if (match.snapshotA != null) {

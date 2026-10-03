@@ -18,8 +18,10 @@ import java.util.UUID;
 public final class PendingRestores {
 
     private final File dir;
+    private final StrataModule plugin;
 
     public PendingRestores(StrataModule plugin) {
+        this.plugin = plugin;
         this.dir = new File(plugin.getDataFolder(), "pending-restores");
     }
 
@@ -30,7 +32,8 @@ public final class PendingRestores {
         YamlConfiguration cfg = new YamlConfiguration();
         snapshot.saveTo(cfg);
         try {
-            cfg.save(file(uuid));
+            // temp file + move: a crash mid-write (the case this file exists for) must not leave a truncated copy
+            com.stratasmp.stratacore.AtomicYaml.save(cfg, file(uuid));
         } catch (IOException e) {
             throw new IllegalStateException("Couldn't save pending duel restore for " + uuid, e);
         }
@@ -55,7 +58,19 @@ public final class PendingRestores {
         if (!f.isFile()) {
             return null;
         }
-        PlayerSnapshot snapshot = PlayerSnapshot.loadFrom(YamlConfiguration.loadConfiguration(f));
+        PlayerSnapshot snapshot;
+        try {
+            snapshot = PlayerSnapshot.loadFrom(YamlConfiguration.loadConfiguration(f));
+        } catch (RuntimeException e) {
+            snapshot = null;
+        }
+        if (snapshot == null || !snapshot.isUsable()) {
+            // a damaged copy would wipe the inventory and set health to 0, so it is set aside instead of applied
+            File aside = new File(dir, uuid + ".yml.corrupt-" + System.currentTimeMillis());
+            f.renameTo(aside);
+            plugin.getLogger().severe("Pending duel restore for " + uuid + " is damaged; moved to " + aside.getName());
+            return null;
+        }
         f.delete();
         return snapshot;
     }

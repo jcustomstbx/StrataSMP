@@ -152,23 +152,21 @@ public class StrataDuels extends StrataModule {
       if (this.queueManager != null) {
          this.queueManager.stop();
       }
-      if (this.duelsExpansion != null && this.duelsExpansion.isRegistered()) {
-         this.duelsExpansion.unregister();
-      }
-      if (this.ffaManager != null) {
-         this.ffaManager.shutdown();
-      }
-
-      if (this.matchManager != null) {
-         this.matchManager.forceResolveAllActive();
-      }
-
-      if (this.queueManager != null) {
-         this.queueManager.stop();
-      }
-
-      if (this.dataManager != null) {
-         this.dataManager.saveAll();
+      try {
+         if (this.duelsExpansion != null && this.duelsExpansion.isRegistered()) {
+            this.duelsExpansion.unregister();
+         }
+         if (this.ffaManager != null) {
+            this.ffaManager.shutdown();
+         }
+         if (this.matchManager != null) {
+            this.matchManager.forceResolveAllActive();
+         }
+      } finally {
+         // ratings must reach disk even if ending a match above threw
+         if (this.dataManager != null) {
+            this.dataManager.saveAll();
+         }
       }
    }
 }

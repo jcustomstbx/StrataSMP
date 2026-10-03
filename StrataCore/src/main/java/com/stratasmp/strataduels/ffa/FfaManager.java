@@ -390,7 +390,7 @@ public class FfaManager {
          // close first: an open trade window hands its items back on close, before the snapshot is taken
          player.closeInventory();
          PlayerSnapshot snapshot = PlayerSnapshot.capture(player);
-         this.pending.save(id, snapshot);
+         this.pending.saveQuietly(id, snapshot);
          this.fighters.put(id, new Fighter(id, player.getName(), snapshot, kit));
          this.frozen.add(id);
          player.setGameMode(GameMode.SURVIVAL);

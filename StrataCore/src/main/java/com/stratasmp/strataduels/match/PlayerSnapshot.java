@@ -68,6 +68,12 @@ public class PlayerSnapshot {
       );
    }
 
+   /** False for a snapshot read from a damaged or truncated file. */
+   public boolean isUsable() {
+      return this.location != null && this.location.getWorld() != null && this.contents != null
+         && this.contents.length > 0 && this.health > 0.0;
+   }
+
    public Location location() {
       return this.location;
    }

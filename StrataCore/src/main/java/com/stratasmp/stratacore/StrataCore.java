@@ -57,19 +57,28 @@ public final class StrataCore extends JavaPlugin {
                 new StrataDuels(this),
                 new StrataVoteReward(this));
 
-        try {
-            for (StrataModule module : startupOrder) {
-                modules.put(module.getName(), module);
-                module.startModule();
-                enabledModules.add(module);
+        for (StrataModule module : startupOrder) {
+            modules.put(module.getName(), module);
+            module.startModule();
+            enabledModules.add(module);
+            try {
                 module.onEnable();
                 getLogger().info("Enabled module " + module.getName());
+            } catch (Throwable failure) {
+                if (module instanceof StrataEconomy) {
+                    // everything pays through the economy, so without it there is nothing safe to run
+                    getLogger().severe("StrataEconomy could not start (check the database settings); disabling StrataCore.");
+                    failure.printStackTrace();
+                    disableModules();
+                    getServer().getPluginManager().disablePlugin(this);
+                    return;
+                }
+                getLogger().severe("Module " + module.getName() + " failed to start and was skipped; the rest keep running.");
+                failure.printStackTrace();
+                shutDown(module);
+                enabledModules.remove(module);
+                modules.remove(module.getName());
             }
-        } catch (Throwable failure) {
-            getLogger().severe("StrataCore could not enable every module; disabling the core to avoid a partial server setup.");
-            failure.printStackTrace();
-            disableModules();
-            getServer().getPluginManager().disablePlugin(this);
         }
     }
 
@@ -88,22 +97,25 @@ public final class StrataCore extends JavaPlugin {
 
     private void disableModules() {
         for (int i = enabledModules.size() - 1; i >= 0; i--) {
-            StrataModule module = enabledModules.get(i);
-            try {
-                // flag the module as stopped first: shutdown code that checks isEnabled() must take its
-                // synchronous path, because the scheduler tasks are cancelled right after onDisable
-                module.stopModule();
-                module.onDisable();
-            } catch (Throwable failure) {
-                getLogger().severe("Module " + module.getName() + " failed to shut down cleanly: " + failure);
-            } finally {
-                getServer().getScheduler().cancelTasks(module);
-                org.bukkit.event.HandlerList.unregisterAll(module);
-                module.unregisterServices();
-                module.stopModule();
-            }
+            shutDown(enabledModules.get(i));
         }
         enabledModules.clear();
         modules.clear();
+    }
+
+    private void shutDown(StrataModule module) {
+        try {
+            // flag the module as stopped first: shutdown code that checks isEnabled() must take its
+            // synchronous path, because the scheduler tasks are cancelled right after onDisable
+            module.stopModule();
+            module.onDisable();
+        } catch (Throwable failure) {
+            getLogger().severe("Module " + module.getName() + " failed to shut down cleanly: " + failure);
+        } finally {
+            getServer().getScheduler().cancelTasks(module);
+            org.bukkit.event.HandlerList.unregisterAll(module);
+            module.unregisterServices();
+            module.stopModule();
+        }
     }
 }

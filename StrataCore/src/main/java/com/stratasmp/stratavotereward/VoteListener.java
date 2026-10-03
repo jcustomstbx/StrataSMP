@@ -104,8 +104,9 @@ public final class VoteListener implements Listener {
          giveVoteKey(online.getName());
          countVotes(online.getUniqueId(), online.getName(), 1);
       } else {
-         OfflinePlayer known = Bukkit.getOfflinePlayer(username);
-         if (!known.hasPlayedBefore()) {
+         // cached lookup only: the by-name version can block the tick on a Mojang request
+         OfflinePlayer known = Bukkit.getOfflinePlayerIfCached(username);
+         if (known == null || !known.hasPlayedBefore()) {
             this.pendingVotes.add(username, amount);
             int keys = voteKeyAmount();
             if (keys > 0) {
