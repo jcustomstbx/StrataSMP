@@ -20,7 +20,11 @@ public final class DefaultSellPrices {
     private static final int FALLBACK_PRICE = 1;
 
     private static final Map<String, Entry> FIXED = new HashMap<>();
+    /** What one ingredient of each gear tier sells for (see ores_minerals.yml); gear is priced below its ingredients. */
     private static final Map<String, Integer> TIERS = new HashMap<>();
+    /** How many of that ingredient each piece needs. */
+    private static final Map<String, Integer> PIECE_COUNT = new HashMap<>();
+    private static final int NETHERITE_INGOT_VALUE = 75;
     private static final String[] PIECES = {
             "_SWORD", "_PICKAXE", "_AXE", "_SHOVEL", "_HOE", "_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS", "_SPEAR"};
     private static final Set<String> NEVER = new HashSet<>();
@@ -40,20 +44,30 @@ public final class DefaultSellPrices {
                 "AIR", "CAVE_AIR", "VOID_AIR", "BARRIER", "BEDROCK", "COMMAND_BLOCK", "CHAIN_COMMAND_BLOCK",
                 "REPEATING_COMMAND_BLOCK", "COMMAND_BLOCK_MINECART", "STRUCTURE_BLOCK", "STRUCTURE_VOID", "JIGSAW", "LIGHT",
                 "DEBUG_STICK", "KNOWLEDGE_BOOK", "SPAWNER", "TRIAL_SPAWNER", "VAULT", "REINFORCED_DEEPSLATE",
-                "END_PORTAL_FRAME", "BUDDING_AMETHYST", "DRAGON_EGG", "FARMLAND", "PETRIFIED_OAK_SLAB", "WRITTEN_BOOK",
+                "END_PORTAL_FRAME", "COPPER_NUGGET", "BUDDING_AMETHYST", "DRAGON_EGG", "FARMLAND", "PETRIFIED_OAK_SLAB", "WRITTEN_BOOK",
                 "FILLED_MAP", "TEST_BLOCK", "TEST_INSTANCE_BLOCK", "CHORUS_PLANT"}) {
             NEVER.add(n);
         }
 
-        TIERS.put("WOODEN", 2);
-        TIERS.put("STONE", 2);
-        TIERS.put("LEATHER", 8);
-        TIERS.put("CHAINMAIL", 12);
-        TIERS.put("IRON", 20);
-        TIERS.put("GOLDEN", 20);
-        TIERS.put("COPPER", 14);
-        TIERS.put("DIAMOND", 80);
-        TIERS.put("NETHERITE", 220);
+        TIERS.put("WOODEN", 1);
+        TIERS.put("STONE", 1);
+        TIERS.put("LEATHER", 4);
+        TIERS.put("CHAINMAIL", 3);
+        TIERS.put("IRON", 10);
+        TIERS.put("GOLDEN", 10);
+        TIERS.put("COPPER", 7);
+        TIERS.put("DIAMOND", 20);
+        TIERS.put("NETHERITE", 20); // netherite gear is diamond gear plus an ingot, see gearPrice
+        PIECE_COUNT.put("_SWORD", 2);
+        PIECE_COUNT.put("_PICKAXE", 3);
+        PIECE_COUNT.put("_AXE", 3);
+        PIECE_COUNT.put("_SHOVEL", 1);
+        PIECE_COUNT.put("_HOE", 2);
+        PIECE_COUNT.put("_HELMET", 5);
+        PIECE_COUNT.put("_CHESTPLATE", 8);
+        PIECE_COUNT.put("_LEGGINGS", 7);
+        PIECE_COUNT.put("_BOOTS", 4);
+        PIECE_COUNT.put("_SPEAR", 2);
 
         fix(500, Section.MISCELLANEOUS, "NETHER_STAR");
         fix(800, Section.MISCELLANEOUS, "ELYTRA");
@@ -83,6 +97,11 @@ public final class DefaultSellPrices {
         fix(3, Section.MISCELLANEOUS, "WIND_CHARGE", "FISHING_ROD", "BOOK", "LOOM", "CARTOGRAPHY_TABLE", "FLETCHING_TABLE",
                 "BARREL", "CHEST", "HONEYCOMB", "FIREWORK_ROCKET", "FIREWORK_STAR", "SPECTRAL_ARROW");
         fix(2, Section.MISCELLANEOUS, "CRAFTING_TABLE", "FURNACE", "MAP");
+
+        // an ingot sells for 7 and makes 9 nuggets, which could not be priced below 9 at the 1-strata floor, so copper
+        // nuggets are not sellable; the many-per-ingot copper items sit at the floor
+        fix(1, Section.BUILDING_BLOCKS, "COPPER_BARS", "COPPER_TORCH");
+        fix(2, Section.BUILDING_BLOCKS, "COPPER_CHAIN");
 
         fix(25, Section.REDSTONE_MECHANICS, "COMPARATOR", "POWERED_RAIL");
         fix(22, Section.REDSTONE_MECHANICS, "REDSTONE_LAMP");
@@ -156,8 +175,7 @@ public final class DefaultSellPrices {
         for (String piece : PIECES) {
             if (n.endsWith(piece)) {
                 String tier = n.substring(0, n.length() - piece.length());
-                Integer price = TIERS.get(tier);
-                if (price != null) return new Entry(price, Section.MISCELLANEOUS);
+                if (TIERS.containsKey(tier)) return new Entry(gearPrice(tier, piece), Section.MISCELLANEOUS);
             }
         }
         if (n.endsWith("_HORSE_ARMOR")) {
@@ -188,9 +206,19 @@ public final class DefaultSellPrices {
             return new Entry(n.contains("CORAL") ? 3 : 1, Section.FARMING_DROPS);
         }
         if (n.contains("COPPER") && !n.contains("ORE") && !n.startsWith("RAW_")) {
-            return new Entry(8, Section.BUILDING_BLOCKS);
+            return new Entry(6, Section.BUILDING_BLOCKS); // below the 7 an ingot sells for
         }
         return new Entry(FALLBACK_PRICE, Section.BUILDING_BLOCKS);
+    }
+
+    /** 90% of what the ingredients sell for, so crafting gear and selling it never makes money. Minimum 1. */
+    public static int gearPrice(String tier, String piece) {
+        int count = PIECE_COUNT.get(piece);
+        int ingredients = count * TIERS.get(tier);
+        if (tier.equals("NETHERITE")) {
+            ingredients += NETHERITE_INGOT_VALUE; // the diamond gear it is upgraded from plus one ingot
+        }
+        return Math.max(1, (int) Math.floor(ingredients * 0.9));
     }
 
     /** Names the fixed table prices; used by tests to catch typos. */

@@ -527,7 +527,7 @@ public class FfaManager {
    private void restore(UUID id, PlayerSnapshot snapshot) {
       Player p = Bukkit.getPlayer(id);
       if (p == null) {
-         this.pending.save(id, snapshot);
+         this.pending.saveQuietly(id, snapshot);
          return;
       }
       p.teleport(snapshot.location());
@@ -536,7 +536,7 @@ public class FfaManager {
             snapshot.applyState(p);
             this.pending.discard(id);
          } else {
-            this.pending.save(id, snapshot);
+            this.pending.saveQuietly(id, snapshot);
          }
       });
    }
@@ -608,7 +608,7 @@ public class FfaManager {
          this.clearTag(e.getKey());
          Player p = Bukkit.getPlayer(e.getKey());
          if (p == null) {
-            this.pending.save(e.getKey(), e.getValue());
+            this.pending.saveQuietly(e.getKey(), e.getValue());
          } else {
             p.teleport(e.getValue().location());
             e.getValue().applyState(p);

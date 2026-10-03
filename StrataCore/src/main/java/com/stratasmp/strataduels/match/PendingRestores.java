@@ -44,7 +44,7 @@ public final class PendingRestores {
         try {
             save(uuid, snapshot);
         } catch (IllegalStateException e) {
-            // best effort only; the in-memory snapshot is still the primary copy
+            plugin.getLogger().severe("Could not save the safety copy of a player's inventory for " + uuid + ": " + e.getMessage());
         }
     }
 
@@ -68,7 +68,8 @@ public final class PendingRestores {
             // a damaged copy would wipe the inventory and set health to 0, so it is set aside instead of applied
             File aside = new File(dir, uuid + ".yml.corrupt-" + System.currentTimeMillis());
             f.renameTo(aside);
-            plugin.getLogger().severe("Pending duel restore for " + uuid + " is damaged; moved to " + aside.getName());
+            plugin.getLogger().severe("Pending duel restore for " + uuid + " could not be read (damaged file, or its world is not loaded); "
+                    + "moved to " + aside.getName() + ". The player's items are in that file; restore them by hand."); 
             return null;
         }
         f.delete();

@@ -50,6 +50,9 @@ public final class StratasService {
     /* ---- deposits that arrived while the database could not be read ---- */
 
     private final java.io.File journal;
+    /** When the last database read failed; reads are skipped for a short while so one outage can't stall every call. */
+    private volatile long lastReadFailure;
+    private static final long READ_RETRY_MILLIS = 30_000L;
 
     private void loadJournal() {
         var yaml = com.stratasmp.stratacore.AtomicYaml.load(journal, plugin.getLogger());
@@ -104,6 +107,11 @@ public final class StratasService {
 
     /** @return the balance now in the cache, or null if the database could not be read. */
     private Long tryLoad(UUID uuid, String username) {
+        return tryLoad(uuid, username, false);
+    }
+
+    /** @param probe true for the background retry, which always tries the database even right after a failure */
+    private Long tryLoad(UUID uuid, String username, boolean probe) {
         Long cached = cache.get(uuid);
         if (cached != null) {
             if (username != null) {
@@ -111,6 +119,9 @@ public final class StratasService {
                 touchName(uuid, username);
             }
             return cached;
+        }
+        if (!probe && System.currentTimeMillis() - lastReadFailure < READ_RETRY_MILLIS) {
+            return null; // the database was just found unreachable; don't make the caller wait on it again
         }
         long bal;
         boolean existed = false;
@@ -126,9 +137,11 @@ public final class StratasService {
                 }
             }
         } catch (Exception e) {
+            lastReadFailure = System.currentTimeMillis();
             plugin.getLogger().warning("preload(" + uuid + ") failed, balance left uncached: " + e.getMessage());
             return null;
         }
+        lastReadFailure = 0L;
         boolean fold = false;
         synchronized (this) {
             // folded in under the monitor, together with the cache write, so a deposit can never be counted twice
@@ -148,12 +161,15 @@ public final class StratasService {
                 }
                 return cache.get(uuid);
             }
+            if (!existed || fold) {
+                // stamped inside the monitor so a mutation right after this can never be ordered before it
+                dirty.put(uuid, new Pending(bal, nextStamp()));
+            }
         }
         if (username != null) {
             names.put(uuid, username);
         }
         if (!existed || fold) {
-            dirty.put(uuid, new Pending(bal, nextStamp()));
             flushAsync();
         } else if (username != null) {
             touchName(uuid, username);
@@ -210,6 +226,10 @@ public final class StratasService {
     /* ---- writes ---- */
 
     public synchronized void set(UUID uuid, long amount) {
+        // an absolute balance replaces anything held back during an outage for this player
+        if (pendingDeltas.remove(uuid) != null) {
+            saveJournal();
+        }
         long v = Math.max(0L, amount);
         cache.put(uuid, v);
         dirty.put(uuid, new Pending(v, nextStamp()));
@@ -398,7 +418,7 @@ public final class StratasService {
     /** Folds deposits held back during a database outage into the balances now that reads work again. */
     private void retryPending() {
         for (UUID id : new java.util.ArrayList<>(pendingDeltas.keySet())) {
-            if (tryLoad(id, null) == null) {
+            if (tryLoad(id, null, true) == null) {
                 return; // still down; try again on the next flush
             }
         }

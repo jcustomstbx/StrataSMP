@@ -78,13 +78,29 @@ class DefaultSellPricesTest {
     }
 
     @Test
-    void gearNeverSellsForMoreThanItsIngotsAreWorth() {
-        // iron ingot 10, diamond 20, gold 10 (see ores_minerals.yml): a sword needs at least two of them
-        assertTrue(DefaultSellPrices.of("IRON_SWORD").price() <= 2 * 10);
-        assertTrue(DefaultSellPrices.of("GOLDEN_SWORD").price() <= 2 * 10);
-        assertTrue(DefaultSellPrices.of("DIAMOND_SWORD").price() <= 2 * 20 * 2);
-        assertTrue(DefaultSellPrices.of("IRON_CHESTPLATE").price() <= 8 * 10);
-        assertTrue(DefaultSellPrices.of("DIAMOND_CHESTPLATE").price() <= 8 * 20);
+    void gearNeverSellsForMoreThanItsIngredientsAreWorth() {
+        // ingredient prices from ores_minerals.yml: iron 10, gold 10, copper 7, diamond 20, netherite ingot 75
+        int[][] counts = {{2}, {3}, {3}, {1}, {2}, {5}, {8}, {7}, {4}};
+        String[] pieces = {"SWORD", "PICKAXE", "AXE", "SHOVEL", "HOE", "HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"};
+        String[] tiers = {"IRON", "GOLDEN", "COPPER", "DIAMOND", "NETHERITE"};
+        int[] unit = {10, 10, 7, 20, 20};
+        for (int t = 0; t < tiers.length; t++) {
+            for (int p = 0; p < pieces.length; p++) {
+                String name = tiers[t] + "_" + pieces[p];
+                if (Material.getMaterial(name) == null) continue;
+                int ingredients = counts[p][0] * unit[t] + (tiers[t].equals("NETHERITE") ? 75 : 0);
+                int price = DefaultSellPrices.of(name).price();
+                assertTrue(price <= ingredients, name + " sells for " + price + " but its ingredients sell for " + ingredients);
+            }
+        }
+    }
+
+    @Test
+    void copperItemsMadeFromIngotsStayBelowTheIngot() {
+        // one ingot (7) makes nine nuggets, which cannot be priced below 9 at the 1-strata floor
+        assertNull(DefaultSellPrices.of("COPPER_NUGGET"));
+        assertTrue(DefaultSellPrices.of("COPPER_BARS").price() <= 1);
+        assertTrue(DefaultSellPrices.of("CUT_COPPER").price() <= 7);
     }
 
     @Test

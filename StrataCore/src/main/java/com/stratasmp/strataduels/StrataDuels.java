@@ -152,21 +152,30 @@ public class StrataDuels extends StrataModule {
       if (this.queueManager != null) {
          this.queueManager.stop();
       }
+      // each step stands alone, so one failing can never skip ending the matches or saving ratings
       try {
          if (this.duelsExpansion != null && this.duelsExpansion.isRegistered()) {
             this.duelsExpansion.unregister();
          }
+      } catch (RuntimeException e) {
+         this.getLogger().warning("Could not unregister the duels placeholders: " + e);
+      }
+      try {
          if (this.ffaManager != null) {
             this.ffaManager.shutdown();
          }
+      } catch (RuntimeException e) {
+         this.getLogger().severe("Could not end the FFA cleanly: " + e);
+      }
+      try {
          if (this.matchManager != null) {
             this.matchManager.forceResolveAllActive();
          }
-      } finally {
-         // ratings must reach disk even if ending a match above threw
-         if (this.dataManager != null) {
-            this.dataManager.saveAll();
-         }
+      } catch (RuntimeException e) {
+         this.getLogger().severe("Could not end the duels cleanly: " + e);
+      }
+      if (this.dataManager != null) {
+         this.dataManager.saveAll();
       }
    }
 }

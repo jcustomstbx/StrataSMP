@@ -85,6 +85,12 @@ public class DuelListener implements Listener {
    public void onDamage(EntityDamageEvent event) {
       if (event.getEntity() instanceof Player victim) {
          DuelMatch match = this.matchManager.getActiveMatchFor(victim.getUniqueId());
+         if (match != null && match.state != DuelMatch.State.ACTIVE && !match.playerA.equals(match.playerB)) {
+            // before the start and during the end delay nobody can be hurt: a duelist killed for real here would
+            // be restored onto a dead player and lose their real inventory on respawn
+            event.setCancelled(true);
+            return;
+         }
          if (match != null && match.state == DuelMatch.State.ACTIVE) {
             if (event instanceof EntityDamageByEntityEvent byEntity) {
                Player attacker = this.resolveAttacker(byEntity.getDamager());

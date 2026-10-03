@@ -79,7 +79,11 @@ class PriceTableTest {
         assertEquals(20, prices.baseSellPrice(Material.DIAMOND));
         assertEquals(75, prices.baseSellPrice(Material.NETHERITE_INGOT));
         assertEquals(10, prices.baseSellPrice(Material.IRON_INGOT));
-        assertEquals(10, prices.baseSellPrice(Material.WHITE_WOOL), "coloured blocks keep the colored-sell rule");
+        assertEquals(10, prices.baseSellPrice(Material.WHITE_WOOL), "wool keeps the colored-sell rule");
+        // concrete powder, glass, terracotta and candles are cheap to mass-produce, so they no longer get 10
+        assertEquals(1, prices.baseSellPrice(Material.RED_CONCRETE_POWDER));
+        assertEquals(1, prices.baseSellPrice(Material.BLUE_STAINED_GLASS));
+        assertTrue(prices.baseSellPrice(Material.GREEN_CANDLE) <= 2);
     }
 
     @Test

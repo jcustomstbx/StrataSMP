@@ -150,7 +150,9 @@ public final class PriceTable implements Prices {
                         buy.putIfAbsent(m, coloredBuy);
                         buySection.putIfAbsent(m, section);
                     }
-                    if (section.sellable) {
+                    // only wool keeps the colored-sell price: concrete, glass, terracotta and candles are cheap to
+                    // make in bulk and fall back to the 1-strata default instead
+                    if (section.sellable && suffix.equals("_WOOL")) {
                         sell.putIfAbsent(m, coloredSell);
                         sellSection.putIfAbsent(m, section);
                     }

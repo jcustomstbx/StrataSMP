@@ -40,12 +40,14 @@ class StratasServiceTest {
     private static final class Flaky implements DataSource {
         private final DataSource real;
         volatile boolean down;
+        final java.util.concurrent.atomic.AtomicInteger attempts = new java.util.concurrent.atomic.AtomicInteger();
 
         Flaky(DataSource real) {
             this.real = real;
         }
 
         @Override public Connection getConnection() throws SQLException {
+            attempts.incrementAndGet();
             if (down) throw new SQLException("database is down");
             return real.getConnection();
         }
@@ -201,6 +203,40 @@ class StratasServiceTest {
         assertEquals(5025, svc.getBalance(id));
         assertEquals(5025L, dbBalance(id));
         assertFalse(new File(dataDir.toFile(), "pending-deposits.yml").exists(), "journal is cleared once applied");
+    }
+
+    @Test
+    void afterAFailedReadTheDatabaseIsNotHammeredByEveryCall() {
+        StratasService svc = service(0);
+        UUID id = UUID.randomUUID();
+        source.down = true;
+
+        svc.getBalance(id);
+        int afterFirst = source.attempts.get();
+        for (int i = 0; i < 20; i++) {
+            svc.getBalance(id);
+            svc.has(id, 1);
+        }
+
+        assertEquals(afterFirst, source.attempts.get(), "callers must not each wait on a database that was just found down");
+    }
+
+    @Test
+    void anAbsoluteSetReplacesDepositsHeldDuringAnOutage() throws Exception {
+        UUID id = UUID.randomUUID();
+        insertRow(id, 5000, 1);
+        StratasService svc = service(0);
+        source.down = true;
+        svc.deposit(id, 25);
+        assertTrue(new File(dataDir.toFile(), "pending-deposits.yml").exists());
+
+        svc.set(id, 7);
+
+        assertFalse(new File(dataDir.toFile(), "pending-deposits.yml").exists(), "the held deposit is dropped by the set");
+        source.down = false;
+        svc.flushNow();
+        assertEquals(7L, dbBalance(id));
+        assertEquals(7, service(0).getBalance(id), "a restart must not add the old deposit on top");
     }
 
     @Test

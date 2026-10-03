@@ -31,6 +31,13 @@ public class JoinQuitListener implements Listener {
       this.matchManager.applyPendingRestoreIfAny(event.getPlayer());
    }
 
+   /** A duelist who died during the end delay has their inventory restored once they are alive again. */
+   @EventHandler
+   public void onRespawn(org.bukkit.event.player.PlayerRespawnEvent event) {
+      // the restore is applied a tick later, once the player is alive
+      this.matchManager.applyPendingRestoreIfAny(event.getPlayer());
+   }
+
    @EventHandler
    public void onQuit(PlayerQuitEvent event) {
       this.matchManager.forfeit(event.getPlayer().getUniqueId());

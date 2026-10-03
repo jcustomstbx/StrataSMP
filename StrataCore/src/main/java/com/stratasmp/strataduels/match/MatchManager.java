@@ -78,10 +78,13 @@ public class MatchManager {
       PlayerSnapshot snapshot = this.pendingRestores.takeIfPresent(player.getUniqueId());
       if (snapshot != null) {
          Bukkit.getScheduler().runTask(this.plugin, () -> {
-            if (player.isOnline()) {
+            if (player.isOnline() && !player.isDead()) {
                snapshot.applyState(player);
                this.teleportToSmp(player);
                player.sendMessage(Component.text("Your inventory from before an interrupted duel has been restored.", NamedTextColor.YELLOW));
+            } else {
+               // left again or died before it could be applied: keep it for the next join or respawn
+               this.pendingRestores.saveQuietly(player.getUniqueId(), snapshot);
             }
          });
       }
@@ -421,28 +424,28 @@ public class MatchManager {
          return;
       }
       Player player = Bukkit.getPlayer(uuid);
-      if (player == null) {
-         // already disconnected by the time the match resolved (e.g. this IS the
-         // quit event that triggered the forfeit) - queue the restore for their
-         // next join instead of silently dropping it.
-         this.pendingRestores.save(uuid, snapshot);
+      if (player == null || player.isDead()) {
+         // already disconnected by the time the match resolved (e.g. this IS the quit event that triggered the
+         // forfeit), or on the death screen: queue the restore for their next join or respawn instead of
+         // applying it to a player who is about to be replaced by a fresh entity.
+         this.pendingRestores.saveQuietly(uuid, snapshot);
          return;
       }
       player.teleport(snapshot.location());
       if (!this.plugin.isEnabled()) {
-         if (player.isOnline()) {
+         if (player.isOnline() && !player.isDead()) {
             snapshot.applyState(player);
             this.pendingRestores.discard(uuid);
          } else {
-            this.pendingRestores.save(uuid, snapshot);
+            this.pendingRestores.saveQuietly(uuid, snapshot);
          }
       } else {
          Bukkit.getScheduler().runTask(this.plugin, () -> {
-            if (player.isOnline()) {
+            if (player.isOnline() && !player.isDead()) {
                snapshot.applyState(player);
                this.pendingRestores.discard(uuid);
             } else {
-               this.pendingRestores.save(uuid, snapshot);
+               this.pendingRestores.saveQuietly(uuid, snapshot);
             }
          });
       }
