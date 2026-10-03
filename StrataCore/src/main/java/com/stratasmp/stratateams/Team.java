@@ -12,6 +12,8 @@ public class Team {
    public final Set<UUID> members = new LinkedHashSet<>();
    public boolean friendlyFire = false;
    public Location home;
+   /** A saved home whose world was not loaded yet; kept so saving never drops it. */
+   public java.util.Map<String, Object> unresolvedHome;
 
    public Team(UUID id, String name, UUID owner) {
       this.id = id;

@@ -30,6 +30,18 @@ final class AntiFloodClickable {
         this.plugin = plugin;
     }
 
+    private java.util.logging.Logger hookedLogger;
+    private Handler hookedHandler;
+
+    /** Takes the handler back off AntiFloodGuard's logger so nothing keeps calling into a disabled plugin. */
+    void unhook() {
+        if (hookedLogger != null && hookedHandler != null) {
+            hookedLogger.removeHandler(hookedHandler);
+        }
+        hookedLogger = null;
+        hookedHandler = null;
+    }
+
     void hook() {
         if (!plugin.getConfig().getBoolean("antiflood-clickable", true)) {
             return;
@@ -38,11 +50,12 @@ final class AntiFloodClickable {
         if (antiFloodGuard == null) {
             return;
         }
-        antiFloodGuard.getLogger().addHandler(new Handler() {
+        hookedLogger = antiFloodGuard.getLogger();
+        hookedHandler = new Handler() {
             @Override
             public void publish(LogRecord record) {
                 String message = record.getMessage();
-                if (message == null) {
+                if (message == null || !plugin.isEnabled()) {
                     return;
                 }
                 Matcher matcher = LOCATION.matcher(message);
@@ -65,7 +78,8 @@ final class AntiFloodClickable {
             @Override
             public void close() {
             }
-        });
+        };
+        hookedLogger.addHandler(hookedHandler);
         plugin.getLogger().info("Hooked AntiFloodGuard's alerts for click-to-teleport.");
     }
 

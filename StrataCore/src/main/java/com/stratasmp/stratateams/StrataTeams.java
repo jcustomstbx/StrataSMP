@@ -28,6 +28,14 @@ public class StrataTeams extends StrataModule {
       HomeTeleporter teleporter = new HomeTeleporter(this, teams, this.combat);
       TeamGUI gui = new TeamGUI(teams, teleporter);
       this.getServer().getPluginManager().registerEvents(gui, this);
+      this.getServer().getPluginManager().registerEvents(new org.bukkit.event.Listener() {
+         @org.bukkit.event.EventHandler
+         public void onWorldLoad(org.bukkit.event.world.WorldLoadEvent event) {
+            teams.resolveHomes();
+         }
+      }, this);
+      // worlds from Multiverse and friends finish loading after plugins enable
+      this.getServer().getScheduler().runTask(this, teams::resolveHomes);
       this.getServer().getPluginManager().registerEvents(teleporter, this);
       this.getServer().getPluginManager().registerEvents(new FriendlyFireListener(teams, this.combat), this);
       this.getServer().getPluginManager().registerEvents(new TeleportFlightGrace(this), this);

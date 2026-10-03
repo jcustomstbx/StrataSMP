@@ -37,8 +37,8 @@ public final class EntryNpcListener implements Listener {
         boolean alwaysRtp = plugin.getConfig().getBoolean("entry-always-rtp", true);
         Location saved = alwaysRtp ? null : plugin.playerLocations().get(uuid);
         if (saved != null) {
-            player.teleport(saved);
-            plugin.msg().send(player, "returning");
+            // a lockdown or closed world cancels the teleport; say nothing more and stay put
+            if (player.teleport(saved)) plugin.msg().send(player, "returning");
             return;
         }
 
@@ -47,8 +47,9 @@ public final class EntryNpcListener implements Listener {
             player.sendMessage("The SMP world isn't loaded - tell an admin.");
             return;
         }
+        // a cancelled teleport (lockdown, closed world) must not fall through to /rtp from inside the hub
+        if (!player.teleport(smpWorld.getSpawnLocation())) return;
         plugin.msg().send(player, alwaysRtp ? "entry" : "first-entry");
-        player.teleport(smpWorld.getSpawnLocation());
         clearRtpCooldown(uuid);
         player.performCommand("rtp");
     }

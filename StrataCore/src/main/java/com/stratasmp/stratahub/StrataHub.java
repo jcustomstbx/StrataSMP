@@ -34,7 +34,8 @@ public final class StrataHub extends StrataModule {
         getServer().getPluginManager().registerEvents(beaconBeam, this);
         beaconBeam.start();
         new SafeZoneOutline(this).start();
-        new AntiFloodClickable(this).hook();
+        antiFlood = new AntiFloodClickable(this);
+        antiFlood.hook();
         getServer().getPluginManager().registerEvents(new BarrierNoClip(this), this);
         getServer().getPluginManager().registerEvents(new BoatWaterOnlyGuard(this), this);
         getServer().getPluginManager().registerEvents(new SafeZoneCombatGuard(this), this);
@@ -64,5 +65,15 @@ public final class StrataHub extends StrataModule {
 
     NpcGear npcGear() {
         return npcGear;
+    }
+
+    private AntiFloodClickable antiFlood;
+
+    @Override
+    public void onDisable() {
+        if (antiFlood != null) {
+            antiFlood.unhook();
+        }
+        super.onDisable();
     }
 }

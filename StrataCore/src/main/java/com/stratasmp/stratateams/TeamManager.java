@@ -56,11 +56,14 @@ public class TeamManager {
 
                   ConfigurationSection h = t.getConfigurationSection("home");
                   if (h != null) {
-                     World world = Bukkit.getWorld(h.getString("world"));
+                     World world = Bukkit.getWorld(h.getString("world", ""));
                      if (world != null) {
                         team.home = new Location(
                            world, h.getDouble("x"), h.getDouble("y"), h.getDouble("z"), (float)h.getDouble("yaw"), (float)h.getDouble("pitch")
                         );
+                     } else {
+                        // the world may load after us (Multiverse); keep the raw values and resolve them later
+                        team.unresolvedHome = new java.util.LinkedHashMap<>(h.getValues(false));
                      }
                   }
 
@@ -80,7 +83,9 @@ public class TeamManager {
          cfg.set(base + ".owner", team.owner.toString());
          cfg.set(base + ".friendly-fire", team.friendlyFire);
          cfg.set(base + ".members", team.members.stream().map(UUID::toString).toList());
-         if (team.home != null) {
+         if (team.home == null && team.unresolvedHome != null) {
+            cfg.set(base + ".home", team.unresolvedHome);
+         } else if (team.home != null && team.home.getWorld() != null) {
             cfg.set(base + ".home.world", team.home.getWorld().getName());
             cfg.set(base + ".home.x", team.home.getX());
             cfg.set(base + ".home.y", team.home.getY());
@@ -95,6 +100,26 @@ public class TeamManager {
       } catch (IOException var5) {
          this.plugin.getLogger().warning("Couldn't save teams.yml: " + var5.getMessage());
       }
+   }
+
+   /** Turns saved homes into locations once their worlds exist. */
+   public void resolveHomes() {
+      for (Team team : this.teams.values()) {
+         if (team.home == null && team.unresolvedHome != null) {
+            Object worldName = team.unresolvedHome.get("world");
+            World world = worldName == null ? null : Bukkit.getWorld(worldName.toString());
+            if (world != null) {
+               java.util.Map<String, Object> h = team.unresolvedHome;
+               team.home = new Location(world, num(h.get("x")), num(h.get("y")), num(h.get("z")),
+                  (float)num(h.get("yaw")), (float)num(h.get("pitch")));
+               team.unresolvedHome = null;
+            }
+         }
+      }
+   }
+
+   private static double num(Object value) {
+      return value instanceof Number n ? n.doubleValue() : 0.0;
    }
 
    public Team getTeam(UUID playerUuid) {
@@ -274,6 +299,24 @@ public class TeamManager {
          return "Only the team owner can set the team home.";
       } else {
          team.home = owner.getLocation();
+         this.save();
+         return null;
+      }
+   }
+
+   /** Removes a member by UUID, for callers (the GUI) that already know who they mean. */
+   public String kick(Player owner, UUID targetUuid) {
+      Team team = this.getTeam(owner.getUniqueId());
+      if (team == null) {
+         return "You're not in a team.";
+      } else if (!team.owner.equals(owner.getUniqueId())) {
+         return "Only the team owner can remove members.";
+      } else if (targetUuid.equals(owner.getUniqueId())) {
+         return "You can't remove yourself - use /myteam disband instead.";
+      } else if (!team.members.remove(targetUuid)) {
+         return "That player isn't in your team.";
+      } else {
+         this.membership.remove(targetUuid);
          this.save();
          return null;
       }

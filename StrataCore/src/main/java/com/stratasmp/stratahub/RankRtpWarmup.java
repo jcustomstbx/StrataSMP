@@ -24,12 +24,23 @@ final class RankRtpWarmup implements Listener {
 
     RankRtpWarmup(StrataHub plugin) { this.plugin = plugin; }
 
+    /** Same RankEssentials combat tag the safe-zone guard reads; if it can't be reached the check is skipped. */
+    private boolean inCombat(Plugin rank, UUID id) {
+        try {
+            Object manager = rank.getClass().getMethod("getCombatManager").invoke(rank);
+            if (manager == null) return false;
+            return (boolean) manager.getClass().getMethod("isInCombat", UUID.class).invoke(manager, id);
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            return false;
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
         String raw = event.getMessage().toLowerCase(java.util.Locale.ROOT).trim();
         if ((!raw.equals("/rtp") && !raw.equals("/rankessentials:rtp"))
-                || !player.getWorld().getName().equals("world")
+                || !player.getWorld().getName().equals(plugin.getConfig().getString("smp-world", "world"))
                 || RankTier.of(player).ordinal() < RankTier.ORNATE.ordinal()
                 || broken) return;
         Plugin rank = plugin.getServer().getPluginManager().getPlugin("RankEssentials");
@@ -47,6 +58,10 @@ final class RankRtpWarmup implements Listener {
             long now = System.currentTimeMillis();
             long remaining = cooldowns.getOrDefault(id, 0L) - now;
             event.setCancelled(true);
+            if (inCombat(rank, id)) {
+                player.sendMessage("You can't use /rtp while in combat.");
+                return;
+            }
             if (remaining > 0) {
                 player.sendMessage("/rtp is ready in " + Math.max(1, (remaining + 999) / 1000) + " seconds.");
                 return;
@@ -57,7 +72,8 @@ final class RankRtpWarmup implements Listener {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (!player.isOnline() || !player.getWorld().equals(start.getWorld()) || player.isGliding()
                         || player.getLocation().distanceSquared(start) > 0.05) {
-                    if (player.isOnline()) player.sendMessage("Teleport cancelled because you moved.");
+                    cooldowns.remove(id);
+                    if (player.isOnline()) player.sendMessage("Teleport cancelled because you moved; no cooldown was charged.");
                     return;
                 }
                 try {

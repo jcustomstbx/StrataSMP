@@ -39,12 +39,29 @@ final class ClaimStore {
         save();
     }
 
+    /** One writer thread keeps snapshots in the order they were taken, so an older one can never overwrite a newer one. */
+    private final java.util.concurrent.ExecutorService io = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "StrataKits-claims-io");
+        t.setDaemon(true);
+        return t;
+    });
+
     private void save() {
         String snapshot = yaml.saveToString();
-        if (plugin.isEnabled()) {
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> write(snapshot));
+        if (!io.isShutdown()) {
+            io.execute(() -> write(snapshot));
         } else {
             write(snapshot);
+        }
+    }
+
+    /** Finishes queued writes; later changes are written directly. Called on shutdown so the last claim isn't lost. */
+    void shutdown() {
+        io.shutdown();
+        try {
+            io.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 

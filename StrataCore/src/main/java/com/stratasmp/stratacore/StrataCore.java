@@ -36,6 +36,8 @@ public final class StrataCore extends JavaPlugin {
             return;
         }
 
+        LegacyFolders.migrate(pluginData, getLogger());
+
         // Economy starts first; MMO and others consume its API.
         List<StrataModule> startupOrder = List.of(
                 new StrataEconomy(this),

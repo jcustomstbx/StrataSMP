@@ -63,13 +63,23 @@ final class KitCatalog {
             }
             Map<String, Integer> enchants = new LinkedHashMap<>();
             if (raw.get("enchants") instanceof Map<?, ?> map) {
-                map.forEach((k, v) -> enchants.put(String.valueOf(k), ((Number) v).intValue()));
+                map.forEach((k, v) -> {
+                    if (v instanceof Number level) {
+                        enchants.put(String.valueOf(k), level.intValue());
+                    } else {
+                        plugin.getLogger().warning("Kit '" + id + "': enchant '" + k + "' needs a number, skipped.");
+                    }
+                });
             }
             items.add(new KitItem(material, Math.max(1, amount), name, lore, enchants));
         }
         List<Reward> rewards = new ArrayList<>();
         for (Map<?, ?> raw : section.getMapList("rewards")) {
             Material icon = Material.matchMaterial(String.valueOf(raw.get("icon")));
+            if (raw.get("command") == null) {
+                plugin.getLogger().warning("Kit '" + id + "': a reward has no command, skipped.");
+                continue;
+            }
             rewards.add(new Reward(String.valueOf(raw.get("display")), icon == null ? Material.CHEST : icon,
                     String.valueOf(raw.get("command"))));
         }

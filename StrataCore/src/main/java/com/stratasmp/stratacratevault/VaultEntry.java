@@ -42,7 +42,12 @@ final class VaultEntry {
         for (Map.Entry<String, Integer> e : enchants.entrySet()) {
             Enchantment enchant = Registry.ENCHANTMENT.get(NamespacedKey.minecraft(e.getKey()));
             if (enchant != null) {
-                meta.addEnchant(enchant, e.getValue(), true);
+                // enchanted books hold their enchants as stored ones; addEnchant would make them inert
+                if (meta instanceof org.bukkit.inventory.meta.EnchantmentStorageMeta storage) {
+                    storage.addStoredEnchant(enchant, e.getValue(), true);
+                } else {
+                    meta.addEnchant(enchant, e.getValue(), true);
+                }
             }
         }
         item.setItemMeta(meta);

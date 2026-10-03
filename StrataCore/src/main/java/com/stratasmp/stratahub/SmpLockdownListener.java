@@ -32,6 +32,35 @@ public final class SmpLockdownListener implements Listener {
         }
     }
 
+    /** Someone who logged out inside a locked world must not simply log back in during a lockdown. */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        sendToHubIfLocked(event.getPlayer());
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onRespawn(org.bukkit.event.player.PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        if (event.getRespawnLocation().getWorld() != null && isLocked(player, event.getRespawnLocation().getWorld().getName())) {
+            org.bukkit.World hub = plugin.getServer().getWorld(plugin.getConfig().getString("hub-world", "hub"));
+            if (hub != null) event.setRespawnLocation(hub.getSpawnLocation());
+        }
+    }
+
+    private void sendToHubIfLocked(Player player) {
+        if (!isLocked(player, player.getWorld().getName())) return;
+        org.bukkit.World hub = plugin.getServer().getWorld(plugin.getConfig().getString("hub-world", "hub"));
+        if (hub != null) {
+            player.teleport(hub.getSpawnLocation());
+            plugin.msg().send(player, "lockdown-blocked");
+        }
+    }
+
+    private boolean isLocked(Player player, String worldName) {
+        return plugin.hubData().isSmpLockdown() && !hasBypass(player)
+                && plugin.getConfig().getStringList("lockdown.worlds").contains(worldName);
+    }
+
     private boolean isBlocked(Player player, PlayerTeleportEvent event) {
         if (!plugin.hubData().isSmpLockdown() || hasBypass(player)) {
             return false;

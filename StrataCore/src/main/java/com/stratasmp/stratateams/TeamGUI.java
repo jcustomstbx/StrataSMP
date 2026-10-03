@@ -171,8 +171,9 @@ public class TeamGUI implements Listener {
                         UUID targetUuid = slotMap.get(slot);
                         if (!targetUuid.equals(player.getUniqueId())) {
                            OfflinePlayer target = Bukkit.getOfflinePlayer(targetUuid);
-                           String error = this.teams.kick(player, target.getName());
-                           player.sendMessage(error != null ? error : target.getName() + " was removed from the team.");
+                           String error = this.teams.kick(player, targetUuid);
+                           String shown = target.getName() == null ? targetUuid.toString().substring(0, 8) : target.getName();
+                           player.sendMessage(error != null ? error : shown + " was removed from the team.");
                            this.open(player);
                         }
                      }

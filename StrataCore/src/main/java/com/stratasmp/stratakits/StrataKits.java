@@ -10,11 +10,22 @@ public final class StrataKits extends StrataModule {
    }
 
 
+    private ClaimStore claims;
+
+    @Override
+    public void onDisable() {
+        if (claims != null) {
+            claims.shutdown();
+        }
+        super.onDisable();
+    }
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
         KitCatalog catalog = new KitCatalog(this);
-        KitService service = new KitService(this, catalog, new ClaimStore(this));
+        claims = new ClaimStore(this);
+        KitService service = new KitService(this, catalog, claims);
         KitGui gui = new KitGui(service);
         RankLimits limits = new RankLimits(this);
         RankShowcase showcase = new RankShowcase(this, service, gui, limits);

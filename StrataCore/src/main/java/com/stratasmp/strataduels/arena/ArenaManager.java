@@ -207,6 +207,8 @@ public class ArenaManager {
       if (removed == null) {
          return "No arena named " + name + ".";
       } else {
+         // a re-created arena of the same name must not inherit the old arena's saved blocks
+         new File(new File(this.plugin.getDataFolder(), "arena-snapshots"), name.toLowerCase() + ".snapshot").delete();
          this.save();
          return null;
       }

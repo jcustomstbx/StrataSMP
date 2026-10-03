@@ -67,6 +67,8 @@ hub-command-block:
   - home
   - homes
   - delhome
+  - thome
+  - tmhome
   - kit
   - kits
   - createkit
