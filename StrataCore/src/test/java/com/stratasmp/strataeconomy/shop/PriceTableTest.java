@@ -143,6 +143,77 @@ class PriceTableTest {
         assertTrue(warnings.stream().anyMatch(w -> w.contains("NOT_A_MATERIAL")), "a bad name is reported");
     }
 
+    /** Loads the config.yml bundled in the plugin, as a real server would on first start. */
+    private void useShippedConfig() throws Exception {
+        try (InputStream in = PriceTableTest.class.getResourceAsStream("/modules/StrataEconomy/config.yml")) {
+            assertNotNull(in);
+            config.loadFromString(new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8));
+        }
+    }
+
+    @Test
+    void shippedUnsellableListOnlyNamesRealMaterials() throws Exception {
+        useShippedConfig();
+        List<String> names = config.getStringList("shop.unsellable");
+        assertFalse(names.isEmpty());
+        for (String name : names) {
+            assertNotNull(Material.matchMaterial(name), name + " in shop.unsellable is not a material");
+        }
+        assertEquals(names.size(), new java.util.HashSet<>(names).size(), "no duplicates in shop.unsellable");
+    }
+
+    @Test
+    void farmableBlocksAndPlantsAreNotSellableWithTheShippedConfig() throws Exception {
+        useShippedConfig();
+        PriceTable prices = table();
+        for (Material m : new Material[] {Material.STONE, Material.COBBLESTONE, Material.SNOW_BLOCK, Material.SNOWBALL,
+                Material.POINTED_DRIPSTONE, Material.SCULK, Material.OAK_SAPLING, Material.OAK_LEAVES, Material.POPPY,
+                Material.SUNFLOWER, Material.SHORT_GRASS, Material.VINE, Material.WHEAT_SEEDS, Material.BRAIN_CORAL,
+                Material.MOSS_BLOCK, Material.CRIMSON_FUNGUS}) {
+            assertFalse(prices.canSell(m), m + " is farmable and must not sell");
+        }
+        assertTrue(warnings.isEmpty(), "the shipped config produced warnings: " + warnings);
+    }
+
+    @Test
+    void shippedUnsellableListLeavesAlreadyPricedItemsAlone() throws Exception {
+        useShippedConfig();
+        PriceTable prices = table();
+        // priced in the section files before the sell-everything change, so the owner's choice stands
+        for (Material m : new Material[] {Material.WHEAT, Material.SUGAR_CANE, Material.CACTUS, Material.BAMBOO, Material.KELP,
+                Material.DEEPSLATE, Material.NETHERRACK, Material.BASALT, Material.CHORUS_FRUIT, Material.LILY_PAD}) {
+            assertTrue(prices.canSell(m), m + " was priced explicitly and must still sell");
+        }
+        assertTrue(prices.canSell(Material.DIAMOND_PICKAXE), "everything else still sells");
+        assertTrue(prices.canSell(Material.HOPPER));
+    }
+
+    @Test
+    void craftedFoodNeverSellsForMoreThanItsIngredients() {
+        PriceTable prices = table();
+        // 9 wheat make a hay block; 8 gold nuggets + a carrot make a golden carrot; 8 nuggets + a melon slice a glistering slice
+        assertTrue(prices.baseSellPrice(Material.HAY_BLOCK) <= 9 * prices.baseSellPrice(Material.WHEAT));
+        assertTrue(prices.baseSellPrice(Material.GOLDEN_CARROT)
+                <= prices.baseSellPrice(Material.CARROT) + 8 * prices.baseSellPrice(Material.GOLD_NUGGET));
+        assertTrue(prices.baseSellPrice(Material.GLISTERING_MELON_SLICE)
+                <= prices.baseSellPrice(Material.MELON_SLICE) + 8 * prices.baseSellPrice(Material.GOLD_NUGGET));
+    }
+
+    @Test
+    void storageBlocksNeverSellForMoreThanTheirIngots() {
+        PriceTable prices = table();
+        Object[][] pairs = {{Material.IRON_BLOCK, Material.IRON_INGOT}, {Material.GOLD_BLOCK, Material.GOLD_INGOT},
+                {Material.DIAMOND_BLOCK, Material.DIAMOND}, {Material.EMERALD_BLOCK, Material.EMERALD},
+                {Material.NETHERITE_BLOCK, Material.NETHERITE_INGOT}, {Material.COAL_BLOCK, Material.COAL},
+                {Material.COPPER_BLOCK, Material.COPPER_INGOT}, {Material.LAPIS_BLOCK, Material.LAPIS_LAZULI},
+                {Material.REDSTONE_BLOCK, Material.REDSTONE}};
+        for (Object[] pair : pairs) {
+            int block = prices.baseSellPrice((Material) pair[0]);
+            int ingot = prices.baseSellPrice((Material) pair[1]);
+            assertTrue(block <= 9 * ingot, pair[0] + " sells for " + block + " but 9 x " + pair[1] + " is " + 9 * ingot);
+        }
+    }
+
     @Test
     void sellableItemsAreListedInTheirSections() {
         PriceTable prices = table();

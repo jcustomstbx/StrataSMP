@@ -92,11 +92,14 @@ public final class DefaultSellPrices {
 
         fix(100, Section.MOB_DROPS, "DRAGON_HEAD");
         fix(25, Section.MOB_DROPS, "CREEPER_HEAD", "PIGLIN_HEAD");
-        fix(20, Section.MOB_DROPS, "ZOMBIE_HEAD", "SKELETON_SKULL", "GOLDEN_CARROT", "HAY_BLOCK", "TURTLE_EGG");
+        fix(20, Section.MOB_DROPS, "ZOMBIE_HEAD", "SKELETON_SKULL", "TURTLE_EGG");
+        // crafted from priced ingredients, so kept below what those ingredients sell for (hay: 9 wheat = 18)
+        fix(15, Section.FARMING_DROPS, "HAY_BLOCK");
+        fix(9, Section.FARMING_DROPS, "GOLDEN_CARROT");
         fix(5, Section.MOB_DROPS, "PLAYER_HEAD");
 
         fix(50, Section.FARMING_DROPS, "WITHER_ROSE");
-        fix(18, Section.FARMING_DROPS, "GLISTERING_MELON_SLICE");
+        fix(8, Section.FARMING_DROPS, "GLISTERING_MELON_SLICE");
         fix(15, Section.FARMING_DROPS, "CAKE");
         fix(10, Section.FARMING_DROPS, "RABBIT_STEW", "SUSPICIOUS_STEW");
         fix(9, Section.FARMING_DROPS, "DRIED_KELP_BLOCK");
