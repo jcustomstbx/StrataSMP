@@ -75,7 +75,12 @@ public class AlchemyListener implements Listener {
       if (brewerId != null) {
          Player player = Bukkit.getPlayer(brewerId);
          if (player != null) {
-            for (ItemStack result : event.getResults()) {
+            java.util.List<ItemStack> results = event.getResults();
+            for (int slot = 0; slot < results.size(); slot++) {
+               ItemStack result = results.get(slot);
+               // a slot holding a potion that was not changed by this brew (already finished) earns nothing
+               ItemStack before = slot < 3 ? event.getContents().getItem(slot) : null;
+               if (result != null && before != null && before.isSimilar(result)) continue;
                if (result != null && result.getType() != Material.AIR) {
                   this.notifier.award(player, Skill.ALCHEMY, this.xpValues.alchemy(result.getType()));
                   if (result.getItemMeta() instanceof PotionMeta potion && potion.getBasePotionType() != null) {

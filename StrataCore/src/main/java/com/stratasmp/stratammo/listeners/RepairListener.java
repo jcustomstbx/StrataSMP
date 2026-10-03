@@ -67,6 +67,8 @@ public class RepairListener implements Listener {
          if (event.getInventory() instanceof AnvilInventory anvil) {
             if (event.getWhoClicked() instanceof Player player) {
                if (!this.notifier.accepts(player)) return;
+               // a click with something already on the cursor doesn't pick the result up, so it earns nothing
+               if (!event.isShiftClick() && event.getCursor() != null && !event.getCursor().getType().isAir()) return;
                ItemStack result = event.getCurrentItem();
                if (result != null && !result.getType().isAir()) {
                   if (this.perks.enabled() && this.activeUltimates.isActive(player.getUniqueId(), Skill.REPAIR)) {

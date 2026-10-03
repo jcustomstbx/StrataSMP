@@ -11,6 +11,8 @@ final class KeystoneRun {
     final Location origin;
     final Set<UUID> players = new HashSet<>();
     final Set<UUID> alive = new HashSet<>();
+    /** Party members who actually hurt a run mob; only they (and the opener) are paid when the run is cleared. */
+    final Set<UUID> contributors = new HashSet<>();
     final long deadline;
     int wave; // 0 until the first wave spawns
     long nextWaveAt;

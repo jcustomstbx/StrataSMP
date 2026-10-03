@@ -36,12 +36,20 @@ public class CombatListener implements Listener {
       if (event.getDamager() instanceof Projectile projectile && projectile.getShooter() instanceof Player player
             && !this.notifier.accepts(player)) return;
       boolean ranged = event.getDamager() instanceof Projectile proj && proj.getShooter() instanceof Player;
+      // only hits by players matter; recording mob-vs-mob damage leaked an entry per entity
+      if (!ranged && !(event.getDamager() instanceof Player)) return;
+      if (this.lastHitWasProjectile.size() > 5000) this.lastHitWasProjectile.clear();
       this.lastHitWasProjectile.put(event.getEntity().getUniqueId(), ranged);
    }
 
    @EventHandler
    public void onDeath(EntityDeathEvent event) {
       Player killer = event.getEntity().getKiller();
+      // keystone run mobs pay nothing, so a run can't be started and abandoned for free xp
+      if (com.stratasmp.stratakeystones.KeystoneMobs.isRunMob(event.getEntity())) {
+         this.lastHitWasProjectile.remove(event.getEntity().getUniqueId());
+         return;
+      }
       if (killer != null && !this.notifier.accepts(killer)) {
          this.lastHitWasProjectile.remove(event.getEntity().getUniqueId());
          return;

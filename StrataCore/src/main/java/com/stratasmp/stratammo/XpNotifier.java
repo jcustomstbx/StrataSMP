@@ -56,13 +56,19 @@ public class XpNotifier {
    }
 
    public void award(Player player, Skill skill, int amount) {
-      this.awardExact(player, skill, amount > 0 ? Math.max(1, (int) Math.round(amount * this.xpMultiplier)) : amount);
+      if (amount <= 0) return;
+      // randomised rounding keeps the bonus at the configured percentage even for small amounts
+      double scaled = amount * this.xpMultiplier;
+      int whole = (int) Math.floor(scaled);
+      if (java.util.concurrent.ThreadLocalRandom.current().nextDouble() < scaled - whole) whole++;
+      this.awardExact(player, skill, Math.max(1, whole));
    }
 
    /** Awards xp without the global multiplier (quest rewards pay out exactly what they advertise). */
-   public void awardExact(Player player, Skill skill, int amount) {
+   public boolean awardExact(Player player, Skill skill, int amount) {
       if (amount > 0 && this.accepts(player)) {
          PlayerData data = this.dataManager.get(player.getUniqueId());
+         if (data == null) return false;
          if (data != null) {
             int before = this.levelCurve.levelFromTotalXp(data.getXp(skill))[0];
             if (!this.levelCurve.isCapped() || before < this.levelCurve.maxLevel()) {
@@ -82,7 +88,9 @@ public class XpNotifier {
                }
             }
          }
+         return true;
       }
+      return false;
    }
 
    private void awardStratasIfMilestone(Player player, Skill skill, int before, int after) {

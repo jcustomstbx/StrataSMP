@@ -1,11 +1,15 @@
 # StrataKeystones
 
 drops:
-  # chance per qualifying kill (0.02 = 2%). Only in the overworld.
+  # worlds keystones can drop in (overworld-type only); empty = any overworld-type world
+  worlds: [world]
+  # chance per qualifying kill (0.02 = 2%). Spawner and egg mobs never drop one.
   chance: 0.02
   # keystones from drops are always level 1; they rank up by clearing runs
 
 run:
+  # worlds a keystone can be opened in; empty = any overworld-type world
+  worlds: [world]
   max-level: 10
   # base mob count for waves 1, 2, 3 at level 1
   wave-sizes: [4, 6, 9]

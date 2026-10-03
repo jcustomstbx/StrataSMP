@@ -36,6 +36,12 @@ public class DataManager {
 
    public PlayerData load(Player player) {
       UUID id = player.getUniqueId();
+      // already loaded (a world change inside the profile): keep the live copy, it has xp the disk doesn't
+      PlayerData existing = this.online.get(id);
+      if (existing != null) {
+         existing.lastKnownName = player.getName();
+         return existing;
+      }
       PlayerData data = this.readFromDisk(id, player.getName());
       data.lastKnownName = player.getName();
       this.online.put(id, data);

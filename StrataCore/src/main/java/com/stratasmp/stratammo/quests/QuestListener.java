@@ -40,31 +40,45 @@ public final class QuestListener implements Listener {
       this.quests.unload(event.getPlayer());
    }
 
-   // LOW so we read the placed-block tracker before the skill listeners forget the block
+   // What a break would count for, decided at LOW (before the skill listeners forget placed blocks) and paid out at
+   // MONITOR once we know no protection plugin cancelled it.
+   private final java.util.Map<String, Object[]> pendingBreaks = new java.util.HashMap<>();
+
+   private static String blockKey(Block block) {
+      return block.getWorld().getUID() + ":" + block.getX() + ":" + block.getY() + ":" + block.getZ();
+   }
+
    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-   public void onBreak(BlockBreakEvent event) {
+   public void onBreakDecide(BlockBreakEvent event) {
       Player player = event.getPlayer();
       if (player.getGameMode() == GameMode.CREATIVE || !this.notifier.accepts(player)) return;
       Block block = event.getBlock();
       Material type = block.getType();
+      ObjectiveType objective;
       if (block.getBlockData() instanceof Ageable ageable) {
-         if (ageable.getAge() >= ageable.getMaximumAge()) {
-            this.quests.progress(player, ObjectiveType.HARVEST_CROP, type.name(), 1);
-         }
+         if (ageable.getAge() < ageable.getMaximumAge()) return;
+         objective = ObjectiveType.HARVEST_CROP;
+      } else if (this.placed.wasPlaced(block.getLocation())) {
          return;
-      }
-      if (this.placed.wasPlaced(block.getLocation())) return;
-      if (Tag.LOGS.isTagged(type)) {
-         this.quests.progress(player, ObjectiveType.CHOP_LOG, type.name(), 1);
       } else {
-         this.quests.progress(player, ObjectiveType.MINE_BLOCK, type.name(), 1);
+         objective = Tag.LOGS.isTagged(type) ? ObjectiveType.CHOP_LOG : ObjectiveType.MINE_BLOCK;
       }
+      this.pendingBreaks.put(blockKey(block), new Object[] {objective, type.name()});
+   }
+
+   @EventHandler(priority = EventPriority.MONITOR)
+   public void onBreakCredit(BlockBreakEvent event) {
+      Object[] decided = this.pendingBreaks.remove(blockKey(event.getBlock()));
+      if (decided == null || event.isCancelled()) return;
+      this.quests.progress(event.getPlayer(), (ObjectiveType) decided[0], (String) decided[1], 1);
    }
 
    @EventHandler(ignoreCancelled = true)
    public void onKill(EntityDeathEvent event) {
       Player killer = event.getEntity().getKiller();
       if (killer == null || !this.notifier.accepts(killer)) return;
+      // keystone run mobs never count, so a run can't be started and abandoned for quest progress
+      if (com.stratasmp.stratakeystones.KeystoneMobs.isRunMob(event.getEntity())) return;
       this.quests.progress(killer, ObjectiveType.KILL_MOB, event.getEntityType().name(), 1);
    }
 

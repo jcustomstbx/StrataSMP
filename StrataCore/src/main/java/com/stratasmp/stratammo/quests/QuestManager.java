@@ -46,6 +46,12 @@ public final class QuestManager {
    private final File folder;
    private final Map<String, QuestDef> pool = new LinkedHashMap<>();
    private final Map<UUID, State> states = new ConcurrentHashMap<>();
+   /** One thread for all quest-file I/O: reads and writes never overlap and land in the order they were queued. */
+   private final java.util.concurrent.ExecutorService io = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+      Thread t = new Thread(r, "StrataMMO-quests-io");
+      t.setDaemon(true);
+      return t;
+   });
    private int dailyCount = 3;
    private ZoneId zone = ZoneId.of("UTC");
 
@@ -93,7 +99,7 @@ public final class QuestManager {
 
    public void load(Player player) {
       UUID id = player.getUniqueId();
-      plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+      io.execute(() -> {
          State state = new State();
          File file = new File(this.folder, id + ".yml");
          if (file.exists()) {
@@ -109,7 +115,8 @@ public final class QuestManager {
                }
             }
          }
-         this.states.put(id, state);
+         // the player may have left while the file was being read; don't keep a state nobody will unload
+         if (plugin.getServer().getPlayer(id) != null) this.states.put(id, state);
       });
    }
 
@@ -142,7 +149,7 @@ public final class QuestManager {
    }
 
    public void progress(Player player, ObjectiveType type, String key, int amount) {
-      if (this.pool.isEmpty()) return;
+      if (this.pool.isEmpty() || !this.notifier.accepts(player)) return;
       State state = this.current(player.getUniqueId());
       if (state == null) return;
       for (Map.Entry<String, Entry> e : state.entries.entrySet()) {
@@ -152,12 +159,13 @@ public final class QuestManager {
          entry.progress = Math.min(def.amount(), entry.progress + amount);
          state.dirty = true;
          if (entry.progress >= def.amount()) {
+            // only count it done once the xp actually landed; otherwise the next matching action retries
+            if (!this.notifier.awardExact(player, def.skill(), def.xp())) continue;
             entry.done = true;
             player.sendMessage(Component.text("Quest complete: ", NamedTextColor.GREEN)
                   .append(Component.text(def.name(), NamedTextColor.WHITE))
                   .append(Component.text("  +" + def.xp() + " " + def.skill().displayName() + " XP", NamedTextColor.GOLD)));
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0F, 1.0F);
-            this.notifier.awardExact(player, def.skill(), def.xp());
          }
       }
    }
@@ -194,14 +202,19 @@ public final class QuestManager {
    }
 
    private void write(UUID id, YamlConfiguration yaml, boolean async) {
+      // saved to a temp file and moved into place, so a crash or a quick relog never sees a half-written file
       Runnable job = () -> {
+         File target = new File(this.folder, id + ".yml");
+         File temp = new File(this.folder, id + ".yml.tmp");
          try {
-            yaml.save(new File(this.folder, id + ".yml"));
+            yaml.save(temp);
+            java.nio.file.Files.move(temp.toPath(), target.toPath(),
+                  java.nio.file.StandardCopyOption.REPLACE_EXISTING, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
          } catch (IOException e) {
             plugin.getLogger().warning("Could not save quests for " + id + ": " + e.getMessage());
          }
       };
-      if (async && plugin.isEnabled()) plugin.getServer().getScheduler().runTaskAsynchronously(plugin, job);
+      if (async && !io.isShutdown()) io.execute(job);
       else job.run();
    }
 
@@ -215,6 +228,13 @@ public final class QuestManager {
    }
 
    public void saveAllNow() {
+      // finish whatever is queued first, then write the rest here so shutdown never loses progress
+      io.shutdown();
+      try {
+         io.awaitTermination(10, java.util.concurrent.TimeUnit.SECONDS);
+      } catch (InterruptedException e) {
+         Thread.currentThread().interrupt();
+      }
       for (Map.Entry<UUID, State> e : this.states.entrySet()) {
          this.write(e.getKey(), this.snapshot(e.getValue()), false);
       }

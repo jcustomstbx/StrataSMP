@@ -5,6 +5,7 @@ import com.stratasmp.stratacore.StrataModule;
 import com.stratasmp.stratateams.StrataTeams;
 import com.stratasmp.stratateams.Team;
 import com.stratasmp.stratateams.TeamManager;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -19,6 +20,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
@@ -48,7 +51,9 @@ import org.bukkit.persistence.PersistentDataType;
 
 /** Overworld keystone drops and the 3-wave runs they unlock. */
 public final class StrataKeystones extends StrataModule implements Listener {
-    private final NamespacedKey runMob = new NamespacedKey("stratasmp", "keystone_mob");
+    private final NamespacedKey runMob = KeystoneMobs.KEY;
+    private File pendingFile;
+    private final Map<UUID, List<Integer>> pendingReturns = new HashMap<>();
     private final Map<UUID, KeystoneRun> runs = new HashMap<>(); // every participant -> their run
     private final Set<KeystoneRun> active = new LinkedHashSet<>();
     private TeamManager teams;
@@ -63,6 +68,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         loadSettings();
+        loadPending();
         StrataTeams teamModule = core().module(StrataTeams.class);
         if (teamModule != null) teams = teamModule.getTeamManager();
         getServer().getPluginManager().registerEvents(this, this);
@@ -106,7 +112,14 @@ public final class StrataKeystones extends StrataModule implements Listener {
         }
         Player killer = entity.getKiller();
         if (killer == null || !(entity instanceof Monster)) return;
-        if (entity.getWorld().getEnvironment() != World.Environment.NORMAL) return;
+        if (!worldAllowed(entity.getWorld(), "drops.worlds")) return;
+        // spawner and egg mobs are farmable, so they never drop keystones
+        var reason = entity.getEntitySpawnReason();
+        if (reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER
+                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.SPAWNER_EGG
+                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.TRIAL_SPAWNER
+                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.CUSTOM
+                || reason == org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason.DISPENSE_EGG) return;
         if (ThreadLocalRandom.current().nextDouble() >= getConfig().getDouble("drops.chance", 0.02)) return;
         event.getDrops().add(KeystoneItem.create(1));
         killer.sendMessage(Component.text("A Keystone dropped!", NamedTextColor.LIGHT_PURPLE));
@@ -125,8 +138,8 @@ public final class StrataKeystones extends StrataModule implements Listener {
             player.sendMessage(Component.text("You already have a keystone run active.", NamedTextColor.RED));
             return;
         }
-        if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
-            player.sendMessage(Component.text("Keystones can only be opened in the overworld.", NamedTextColor.RED));
+        if (!worldAllowed(player.getWorld(), "run.worlds")) {
+            player.sendMessage(Component.text("Keystones can't be opened in this world.", NamedTextColor.RED));
             return;
         }
         hand.setAmount(hand.getAmount() - 1);
@@ -146,6 +159,87 @@ public final class StrataKeystones extends StrataModule implements Listener {
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent event) {
         drop(event.getPlayer().getUniqueId(), "You left the keystone area.");
+    }
+
+    /** Overworld-type worlds only, and when the config lists worlds the world must be one of them. */
+    private boolean worldAllowed(World world, String path) {
+        if (world.getEnvironment() != World.Environment.NORMAL) return false;
+        List<String> allowed = getConfig().getStringList(path);
+        return allowed.isEmpty() || allowed.stream().anyMatch(w -> w.equalsIgnoreCase(world.getName()));
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onRunMobHurt(org.bukkit.event.entity.EntityDamageByEntityEvent event) {
+        if (!KeystoneMobs.isRunMob(event.getEntity())) return;
+        Entity damager = event.getDamager();
+        if (damager instanceof org.bukkit.entity.Projectile projectile && projectile.getShooter() instanceof Entity shooter) {
+            damager = shooter;
+        }
+        if (!(damager instanceof Player player)) return;
+        KeystoneRun run = runs.get(player.getUniqueId());
+        if (run != null) run.contributors.add(player.getUniqueId());
+    }
+
+    /** Run mobs (creepers especially) never break blocks. */
+    @EventHandler(ignoreCancelled = true)
+    public void onRunMobExplode(org.bukkit.event.entity.EntityExplodeEvent event) {
+        if (KeystoneMobs.isRunMob(event.getEntity())) event.blockList().clear();
+    }
+
+    @EventHandler
+    public void onJoin(org.bukkit.event.player.PlayerJoinEvent event) {
+        deliverPending(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onRespawn(org.bukkit.event.player.PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        getServer().getScheduler().runTask(this, () -> deliverPending(player));
+    }
+
+    private void loadPending() {
+        pendingFile = new File(getDataFolder(), "pending.yml");
+        pendingReturns.clear();
+        if (!pendingFile.exists()) return;
+        var yaml = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(pendingFile);
+        for (String key : yaml.getKeys(false)) {
+            try {
+                pendingReturns.put(UUID.fromString(key), new ArrayList<>(yaml.getIntegerList(key)));
+            } catch (IllegalArgumentException ignored) {
+                // a stray key in the file
+            }
+        }
+    }
+
+    private void savePending() {
+        var yaml = new org.bukkit.configuration.file.YamlConfiguration();
+        for (Map.Entry<UUID, List<Integer>> e : pendingReturns.entrySet()) yaml.set(e.getKey().toString(), e.getValue());
+        try {
+            getDataFolder().mkdirs();
+            yaml.save(pendingFile);
+        } catch (java.io.IOException e) {
+            getLogger().warning("Could not save pending keystones: " + e.getMessage());
+        }
+    }
+
+    /** Gives a keystone to its owner now, or holds it until they are online and alive. */
+    private void handBack(UUID ownerId, int level) {
+        Player owner = Bukkit.getPlayer(ownerId);
+        if (owner != null && owner.isOnline() && !owner.isDead()) {
+            give(owner, KeystoneItem.create(level));
+            return;
+        }
+        pendingReturns.computeIfAbsent(ownerId, k -> new ArrayList<>()).add(level);
+        savePending();
+    }
+
+    private void deliverPending(Player player) {
+        List<Integer> levels = pendingReturns.get(player.getUniqueId());
+        if (levels == null || player.isDead()) return;
+        pendingReturns.remove(player.getUniqueId());
+        savePending();
+        for (int level : levels) give(player, KeystoneItem.create(level));
+        player.sendMessage(Component.text("Your keystone has been returned.", NamedTextColor.LIGHT_PURPLE));
     }
 
     private void start(Player player, int level) {
@@ -235,6 +329,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
         for (Map.Entry<EntityType, Integer> entry : mobPool.entrySet()) {
             if (entry.getValue() <= run.level) eligible.add(entry.getKey());
         }
+        if (eligible.isEmpty()) eligible.add(EntityType.ZOMBIE);
         double health = 1 + getConfig().getDouble("run.health-scale-per-level", 0.15) * (run.level - 1);
         double damage = 1 + getConfig().getDouble("run.damage-scale-per-level", 0.10) * (run.level - 1);
         ThreadLocalRandom rng = ThreadLocalRandom.current();
@@ -271,23 +366,28 @@ public final class StrataKeystones extends StrataModule implements Listener {
         if (instance != null) instance.setBaseValue(instance.getBaseValue() * multiplier);
     }
 
-    /** Picks a standable spot in a ring around the player, falling back to the player's own position. */
+    /** Picks a standable, dry spot in a ring around the player, falling back to the player's own position. */
     private Location findSpawn(Location origin, Player player) {
         ThreadLocalRandom rng = ThreadLocalRandom.current();
-        double min = getConfig().getDouble("run.spawn-radius-min", 6);
-        double max = getConfig().getDouble("run.spawn-radius-max", 11);
+        double min = Math.max(2.0, getConfig().getDouble("run.spawn-radius-min", 6));
+        double max = Math.max(min + 1.0, getConfig().getDouble("run.spawn-radius-max", 11));
         World world = player.getWorld();
         Location base = player.getLocation();
-        for (int attempt = 0; attempt < 12; attempt++) {
+        int[] offsets = {0, -1, 1, -2, 2, -3, 3};
+        for (int attempt = 0; attempt < 16; attempt++) {
             double angle = rng.nextDouble(Math.PI * 2);
             double radius = rng.nextDouble(min, max);
             int x = (int) Math.floor(base.getX() + Math.cos(angle) * radius);
             int z = (int) Math.floor(base.getZ() + Math.sin(angle) * radius);
-            for (int dy = 3; dy >= -3; dy--) {
+            // closest to the player's height first, so mobs land beside them rather than on roofs or canopies
+            for (int dy : offsets) {
                 int y = base.getBlockY() + dy;
-                if (world.getBlockAt(x, y - 1, z).isSolid()
-                        && world.getBlockAt(x, y, z).isPassable()
-                        && world.getBlockAt(x, y + 1, z).isPassable()) {
+                var floor = world.getBlockAt(x, y - 1, z);
+                var feet = world.getBlockAt(x, y, z);
+                var head = world.getBlockAt(x, y + 1, z);
+                if (floor.isSolid() && !Tag.LEAVES.isTagged(floor.getType())
+                        && feet.isPassable() && !feet.isLiquid() && feet.getType() != Material.FIRE
+                        && head.isPassable() && !head.isLiquid()) {
                     return new Location(world, x + 0.5, y, z + 0.5);
                 }
             }
@@ -305,14 +405,18 @@ public final class StrataKeystones extends StrataModule implements Listener {
         List<UUID> members = new ArrayList<>(run.players);
         for (UUID id : members) runs.remove(id);
         run.players.clear();
-        Player owner = Bukkit.getPlayer(run.owner);
         if (success) {
             int next = Math.min(run.level + 1, maxLevel());
-            if (owner != null) give(owner, KeystoneItem.create(next));
+            handBack(run.owner, next);
             for (UUID id : members) {
                 Player member = Bukkit.getPlayer(id);
                 if (member == null) continue;
                 member.sendMessage(Component.text("Keystone cleared! Level " + next + " unlocked.", NamedTextColor.GREEN));
+                // rewards go to the opener and to teammates who actually fought, not to anyone standing nearby
+                if (!id.equals(run.owner) && !run.contributors.contains(id)) {
+                    member.sendMessage(Component.text("You didn't take part in the fight, so you get no reward.", NamedTextColor.GRAY));
+                    continue;
+                }
                 for (String command : getConfig().getStringList("rewards." + run.level)) {
                     Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
                             command.replace("%player%", member.getName()).replace("%level%", String.valueOf(run.level)));
@@ -325,9 +429,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
                     if (member != null) member.sendMessage(Component.text("Keystone failed: " + reason, NamedTextColor.RED));
                 }
             }
-            if (owner != null && getConfig().getBoolean("run.return-on-fail", true)) {
-                give(owner, KeystoneItem.create(run.level));
-            }
+            if (getConfig().getBoolean("run.return-on-fail", true)) handBack(run.owner, run.level);
         }
     }
 
