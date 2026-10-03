@@ -82,8 +82,16 @@ public class PeriodicBossSpawner {
          BossArenaBuilder.restore(arena.snapshot);
          return false;
       }
-      this.bossManager.makeBoss(entity, def);
-      this.bossManager.attachArena(entity.getUniqueId(), arena.snapshot);
+      try {
+         this.bossManager.makeBoss(entity, def);
+         this.bossManager.attachArena(entity.getUniqueId(), arena.snapshot);
+      } catch (RuntimeException e) {
+         // never leave a half-built boss or a permanent arena behind
+         this.plugin.getLogger().warning("Boss spawn failed for " + def.id + ": " + e);
+         entity.remove();
+         BossArenaBuilder.restore(arena.snapshot);
+         return false;
+      }
       Bukkit.broadcast(Component.text(def.displayName + " has appeared " + this.where(arena.spawnLocation) + "...", NamedTextColor.GOLD));
       return true;
    }

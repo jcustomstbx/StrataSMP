@@ -29,7 +29,10 @@ public final class Amounts {
                 s = s.substring(0, s.length() - 1);
             }
         }
-        // BigDecimal rejects Infinity/NaN and keeps "1.001m" exact
+        // checked before BigDecimal sees it: exponent forms like 1e99999999 would otherwise freeze the tick
+        if (!s.matches("\\d{1,19}(\\.\\d{1,9})?")) {
+            throw new NumberFormatException("invalid amount");
+        }
         java.math.BigDecimal base = new java.math.BigDecimal(s);
         if (base.signum() < 0) {
             throw new NumberFormatException("negative");

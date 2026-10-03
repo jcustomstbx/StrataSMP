@@ -46,8 +46,15 @@ public class SpawnBossCommand implements CommandExecutor, TabCompleter {
                   player.sendMessage("Spawn got blocked here (region protection or similar) - try a different spot.");
                   return true;
                } else {
-                  this.bossManager.makeBoss(entity, def);
-                  this.bossManager.attachArena(entity.getUniqueId(), arena.snapshot);
+                  try {
+                     this.bossManager.makeBoss(entity, def);
+                     this.bossManager.attachArena(entity.getUniqueId(), arena.snapshot);
+                  } catch (RuntimeException e) {
+                     entity.remove();
+                     BossArenaBuilder.restore(arena.snapshot);
+                     player.sendMessage("The boss could not be set up: " + e.getMessage());
+                     return true;
+                  }
                   player.sendMessage("Spawned " + def.displayName + ".");
                   return true;
                }

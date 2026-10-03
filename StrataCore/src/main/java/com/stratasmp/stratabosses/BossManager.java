@@ -322,9 +322,10 @@ public class BossManager implements Listener {
       entity.getPersistentDataContainer().set(this.bossIdKey, PersistentDataType.STRING, def.id);
       AttributeInstance maxHealthAttr = entity.getAttribute(Attribute.MAX_HEALTH);
       if (maxHealthAttr != null) {
-         double health = def.maxHealth * this.partyHealthScale(entity);
+         // vanilla caps max health at 1024; setHealth throws above whatever the attribute actually accepted
+         double health = Math.min(def.maxHealth * this.partyHealthScale(entity), 1024.0);
          maxHealthAttr.setBaseValue(health);
-         entity.setHealth(health);
+         entity.setHealth(Math.min(health, maxHealthAttr.getValue()));
       }
 
       AttributeInstance damageAttr = entity.getAttribute(Attribute.ATTACK_DAMAGE);
