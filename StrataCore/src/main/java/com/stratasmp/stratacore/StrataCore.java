@@ -88,6 +88,9 @@ public final class StrataCore extends JavaPlugin {
         for (int i = enabledModules.size() - 1; i >= 0; i--) {
             StrataModule module = enabledModules.get(i);
             try {
+                // flag the module as stopped first: shutdown code that checks isEnabled() must take its
+                // synchronous path, because the scheduler tasks are cancelled right after onDisable
+                module.stopModule();
                 module.onDisable();
             } catch (Throwable failure) {
                 getLogger().severe("Module " + module.getName() + " failed to shut down cleanly: " + failure);

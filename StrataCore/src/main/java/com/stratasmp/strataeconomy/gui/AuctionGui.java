@@ -49,7 +49,7 @@ public final class AuctionGui implements Listener {
         int pages = Gui.totalPages(listings.size());
         page = Math.max(0, Math.min(page, pages - 1));
 
-        Holder holder = new Holder(mine, page);
+        Holder holder = new Holder(mine, page, List.copyOf(listings));
         Inventory inv = Bukkit.createInventory(holder, Gui.SIZE,
                 Gui.text(mine ? "Your Listings" : "Auction House", NamedTextColor.DARK_AQUA)
                         .append(Component.text("  (" + (page + 1) + "/" + pages + ")", NamedTextColor.GRAY)));
@@ -122,9 +122,8 @@ public final class AuctionGui implements Listener {
             return;
         }
 
-        List<Auctions.Listing> list = holder.mine
-                ? plugin.auctions().bySeller(player.getUniqueId())
-                : plugin.auctions().all();
+        // the listings the player was actually shown, so a new listing can't shift what a slot means
+        List<Auctions.Listing> list = holder.shown;
         int index = holder.page * Gui.PAGE_SLOTS + slot;
         if (index >= list.size()) {
             return;
@@ -135,6 +134,13 @@ public final class AuctionGui implements Listener {
             String err = plugin.auctions().cancel(player, id);
             player.sendMessage(err != null ? Gui.text(err, NamedTextColor.RED) : plugin.msg().plain("ah-cancelled"));
             openMine(player, holder.page);
+            return;
+        }
+        Auctions.Listing chosen = list.get(index);
+        long confirmOver = plugin.getConfig().getLong("auction.confirm-over", 100000L);
+        if (chosen.price() >= confirmOver && !id.equals(holder.confirming)) {
+            holder.confirming = id;
+            player.sendMessage(Gui.text("That costs " + plugin.money(chosen.price()) + ". Click it again to confirm.", NamedTextColor.YELLOW));
             return;
         }
         String err = plugin.auctions().buy(player, id);
@@ -159,11 +165,14 @@ public final class AuctionGui implements Listener {
     static final class Holder implements InventoryHolder {
         final boolean mine;
         final int page;
+        final List<Auctions.Listing> shown;
+        UUID confirming;
         Inventory inventory;
 
-        Holder(boolean mine, int page) {
+        Holder(boolean mine, int page, List<Auctions.Listing> shown) {
             this.mine = mine;
             this.page = page;
+            this.shown = shown;
         }
 
         @Override

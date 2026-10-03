@@ -37,6 +37,7 @@ public class QueueManager {
       if (this.task != null) {
          this.task.cancel();
       }
+      this.queued.clear();
    }
 
    public boolean isQueued(UUID uuid) {
@@ -71,6 +72,8 @@ public class QueueManager {
    }
 
    private void tryPairings() {
+      // someone who got into a match another way (a challenge, say) is no longer waiting
+      this.queued.keySet().removeIf(this.matchManager::isBusy);
       if (this.queued.size() >= 2) {
          int initialRange = this.plugin.getConfig().getInt("queue.initial-range", 100);
          double widenPerSecond = this.plugin.getConfig().getDouble("queue.widen-per-second", 5.0);

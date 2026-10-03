@@ -195,7 +195,11 @@ public final class BuyOrderStore implements BuyOrders {
 
         long payout = o.pricePerItem * actual;
         int remaining = o.amount - actual;
-        ItemStack[] originalInventory = seller.getInventory().getStorageContents();
+        // real copies: the contents array can hand back live stacks that removeMaterial then shrinks
+        ItemStack[] originalInventory = seller.getInventory().getStorageContents().clone();
+        for (int i = 0; i < originalInventory.length; i++) {
+            if (originalInventory[i] != null) originalInventory[i] = originalInventory[i].clone();
+        }
         removeMaterial(seller.getInventory(), o.material, actual);
         DeliveryImpl delivery = new DeliveryImpl(UUID.randomUUID(), o.buyer, o.material, actual,
                 System.currentTimeMillis());
@@ -304,17 +308,16 @@ public final class BuyOrderStore implements BuyOrders {
         if (!canFullyFit(who.getInventory(), item)) {
             return plugin.msgRaw("ah-inventory-full");
         }
-        who.getInventory().addItem(item);
-        who.saveData();
+        // the row goes first: if it can't be deleted nothing is handed over, so a retry can't duplicate the item
         try {
             deleteDeliveryRow(d.id);
         } catch (SQLException e) {
             plugin.getLogger().severe("Buy order delivery acknowledgement failed: " + e.getMessage());
-            return "The item was delivered, but its receipt could not be saved. Contact staff before claiming again.";
+            return "The delivery could not be completed right now. Please try again.";
         }
         deliveries.remove(d.id, d);
+        who.getInventory().addItem(item);
         DeliveryMarker.clearFromInventory(plugin, who, d.id);
-        who.saveData();
         return null;
     }
 

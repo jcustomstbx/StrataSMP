@@ -148,6 +148,10 @@ public class StrataDuels extends StrataModule {
    }
 
    public void onDisable() {
+      // stop pairing first: resolving the matches below frees arenas, which would otherwise start new ones
+      if (this.queueManager != null) {
+         this.queueManager.stop();
+      }
       if (this.duelsExpansion != null && this.duelsExpansion.isRegistered()) {
          this.duelsExpansion.unregister();
       }

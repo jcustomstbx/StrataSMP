@@ -6,6 +6,9 @@ public final class Amounts {
 
     private static final DecimalFormat SHORT = new DecimalFormat("#.##");
 
+    /** Largest amount a single command may move (a quadrillion). */
+    public static final long MAX_AMOUNT = 1_000_000_000_000_000L;
+
     private Amounts() {
     }
 
@@ -26,15 +29,17 @@ public final class Amounts {
                 s = s.substring(0, s.length() - 1);
             }
         }
-        double base = Double.parseDouble(s);
-        if (base < 0) {
+        // BigDecimal rejects Infinity/NaN and keeps "1.001m" exact
+        java.math.BigDecimal base = new java.math.BigDecimal(s);
+        if (base.signum() < 0) {
             throw new NumberFormatException("negative");
         }
-        long out = (long) Math.floor(base * mult);
-        if (out < 0) {
-            throw new NumberFormatException("overflow");
+        java.math.BigDecimal out = base.multiply(java.math.BigDecimal.valueOf(mult))
+                .setScale(0, java.math.RoundingMode.FLOOR);
+        if (out.compareTo(java.math.BigDecimal.valueOf(MAX_AMOUNT)) > 0) {
+            throw new NumberFormatException("too large");
         }
-        return out;
+        return out.longValueExact();
     }
 
     public static String format(long amount, String symbol, String plural) {

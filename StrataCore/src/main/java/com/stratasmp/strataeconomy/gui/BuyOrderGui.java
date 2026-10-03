@@ -56,7 +56,7 @@ public final class BuyOrderGui implements Listener {
         int pages = Gui.totalPages(list.size());
         page = Math.max(0, Math.min(page, pages - 1));
 
-        Holder holder = new Holder(view, page);
+        Holder holder = new Holder(view, page, List.copyOf(list), List.of());
         Inventory inv = Bukkit.createInventory(holder, Gui.SIZE,
                 Gui.text(view == View.MINE ? "My Buy Orders" : "Buy Orders", NamedTextColor.DARK_AQUA)
                         .append(Component.text("  (" + (page + 1) + "/" + pages + ")", NamedTextColor.GRAY)));
@@ -95,7 +95,7 @@ public final class BuyOrderGui implements Listener {
         int pages = Gui.totalPages(list.size());
         page = Math.max(0, Math.min(page, pages - 1));
 
-        Holder holder = new Holder(View.DELIVERIES, page);
+        Holder holder = new Holder(View.DELIVERIES, page, List.of(), List.copyOf(list));
         Inventory inv = Bukkit.createInventory(holder, Gui.SIZE,
                 Gui.text("My Deliveries", NamedTextColor.LIGHT_PURPLE)
                         .append(Component.text("  (" + (page + 1) + "/" + pages + ")", NamedTextColor.GRAY)));
@@ -176,7 +176,7 @@ public final class BuyOrderGui implements Listener {
         }
 
         if (holder.view == View.DELIVERIES) {
-            List<BuyOrders.Delivery> list = plugin.buyOrders().deliveriesFor(player.getUniqueId());
+            List<BuyOrders.Delivery> list = holder.deliveries;
             int index = holder.page * Gui.PAGE_SLOTS + slot;
             if (index >= list.size()) {
                 return;
@@ -191,9 +191,7 @@ public final class BuyOrderGui implements Listener {
             return;
         }
 
-        List<BuyOrders.Order> list = holder.view == View.MINE
-                ? plugin.buyOrders().byBuyer(player.getUniqueId())
-                : plugin.buyOrders().all();
+        List<BuyOrders.Order> list = holder.orders;
         int index = holder.page * Gui.PAGE_SLOTS + slot;
         if (index >= list.size()) {
             return;
@@ -227,11 +225,15 @@ public final class BuyOrderGui implements Listener {
     static final class Holder implements InventoryHolder {
         final View view;
         final int page;
+        final List<BuyOrders.Order> orders;
+        final List<BuyOrders.Delivery> deliveries;
         Inventory inventory;
 
-        Holder(View view, int page) {
+        Holder(View view, int page, List<BuyOrders.Order> orders, List<BuyOrders.Delivery> deliveries) {
             this.view = view;
             this.page = page;
+            this.orders = orders;
+            this.deliveries = deliveries;
         }
 
         @Override

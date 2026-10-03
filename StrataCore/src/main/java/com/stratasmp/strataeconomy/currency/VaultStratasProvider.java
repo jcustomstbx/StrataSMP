@@ -57,7 +57,12 @@ public final class VaultStratasProvider implements Economy {
     @Override public boolean has(OfflinePlayer player, String world, double amount) { return has(player, amount); }
     @Override public boolean has(String playerName, String world, double amount) { return has(playerName, amount); }
 
+    private static boolean badAmount(double amount) {
+        return Double.isNaN(amount) || Double.isInfinite(amount) || amount < 0 || amount > Amounts.MAX_AMOUNT;
+    }
+
     @Override public EconomyResponse depositPlayer(OfflinePlayer player, double amount) {
+        if (badAmount(amount)) return fail(amount, "Invalid amount");
         long a = Math.round(amount);
         service.deposit(player.getUniqueId(), a);
         return new EconomyResponse(a, service.getBalance(player.getUniqueId()), ResponseType.SUCCESS, null);
@@ -70,6 +75,7 @@ public final class VaultStratasProvider implements Economy {
     @Override public EconomyResponse depositPlayer(String playerName, String world, double amount) { return depositPlayer(playerName, amount); }
 
     @Override public EconomyResponse withdrawPlayer(OfflinePlayer player, double amount) {
+        if (badAmount(amount)) return fail(amount, "Invalid amount");
         long a = Math.round(amount);
         boolean ok = service.withdraw(player.getUniqueId(), a);
         long bal = service.getBalance(player.getUniqueId());
@@ -107,8 +113,8 @@ public final class VaultStratasProvider implements Economy {
         if (p != null) {
             return p;
         }
-        OfflinePlayer off = Bukkit.getOfflinePlayer(name);
-        return off.hasPlayedBefore() || off.isOnline() ? off : null;
+        // cached only: the by-name lookup can block the tick on a Mojang request
+        return Bukkit.getOfflinePlayerIfCached(name);
     }
 
     private EconomyResponse fail(double amount, String msg) {

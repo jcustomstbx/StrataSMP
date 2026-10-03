@@ -26,15 +26,18 @@ public final class StratasCommand implements CommandExecutor {
             return eco.onCommand(sender, command, label, args);
         }
         if (args.length >= 1) {
-            OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[0]);
-            if (!target.hasPlayedBefore() && !target.isOnline()) {
+            OfflinePlayer target = plugin.getServer().getOfflinePlayerIfCached(args[0]);
+            if (target == null) {
                 plugin.msg().send(sender, "player-not-found", Map.of("player", args[0]));
                 return true;
             }
-            long bal = plugin.stratas().getBalance(target.getUniqueId());
-            plugin.msg().send(sender, "balance-other", Map.of(
-                    "player", target.getName() == null ? args[0] : target.getName(),
-                    "balance", plugin.money(bal)));
+            // an uncached balance is a database read, so keep it off the main thread
+            plugin.async(() -> {
+                long bal = plugin.stratas().getBalance(target.getUniqueId());
+                plugin.getServer().getScheduler().runTask(plugin, () -> plugin.msg().send(sender, "balance-other", Map.of(
+                        "player", target.getName() == null ? args[0] : target.getName(),
+                        "balance", plugin.money(bal))));
+            });
             return true;
         }
         if (!(sender instanceof Player p)) {

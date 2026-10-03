@@ -110,7 +110,11 @@ public class MatchManager {
 
    public void forceResolveAllActive() {
       for (DuelMatch match : new HashSet<>(this.activeByPlayer.values())) {
-         this.resolveMatch(match, MatchManager.Outcome.DRAW, null, null);
+         try {
+            this.resolveMatch(match, MatchManager.Outcome.DRAW, null, null);
+         } catch (RuntimeException e) {
+            this.plugin.getLogger().warning("Couldn't cleanly end a duel during shutdown: " + e);
+         }
       }
    }
 
@@ -125,6 +129,9 @@ public class MatchManager {
    public String startMatch(UUID uuidA, int kitA, UUID uuidB, int kitB) {
       Player playerA = Bukkit.getPlayer(uuidA);
       Player playerB = Bukkit.getPlayer(uuidB);
+      if (uuidA.equals(uuidB) || this.isBusy(uuidA) || this.isBusy(uuidB)) {
+         return "One of the duelists is already in a match.";
+      }
       if (playerA != null && playerB != null) {
          Optional<Arena> maybeArena = this.arenaManager.findFreeArena();
          if (maybeArena.isEmpty()) {
@@ -135,8 +142,13 @@ public class MatchManager {
             DuelMatch match = new DuelMatch(uuidA, uuidB, kitA, kitB, arena);
             this.activeByPlayer.put(uuidA, match);
             this.activeByPlayer.put(uuidB, match);
+            // close any open window first (a trade GUI hands its items back on close) so they land in the snapshot
+            playerA.closeInventory();
+            playerB.closeInventory();
             match.snapshotA = PlayerSnapshot.capture(playerA);
             match.snapshotB = PlayerSnapshot.capture(playerB);
+            this.pendingRestores.saveQuietly(uuidA, match.snapshotA);
+            this.pendingRestores.saveQuietly(uuidB, match.snapshotB);
             playerA.teleport(arena.location1());
             playerB.teleport(arena.location2());
             Bukkit.getScheduler().runTask(this.plugin, () -> {
@@ -182,7 +194,9 @@ public class MatchManager {
       DuelMatch match = new DuelMatch(uuid, uuid, kit, kit, arena);
       match.state = DuelMatch.State.ACTIVE;
       match.activeSince = System.currentTimeMillis();
+      player.closeInventory();
       match.snapshotA = PlayerSnapshot.capture(player);
+      this.pendingRestores.saveQuietly(uuid, match.snapshotA);
       this.activeByPlayer.put(uuid, match);
       player.teleport(arena.location1());
       Bukkit.getScheduler().runTask(this.plugin, () -> {
@@ -202,12 +216,16 @@ public class MatchManager {
       }
       this.activeByPlayer.remove(uuid);
       this.frozen.remove(uuid);
-      this.arenaManager.markInUse(match.arena, false);
       if (match.snapshotA != null) {
+         player.teleport(match.snapshotA.location());
          match.snapshotA.applyState(player);
+         this.pendingRestores.discard(uuid);
       }
-      this.arenaResetManager.resetArena(match.arena);
-      this.onArenaFreed.run();
+      // the arena only frees up once the reset has finished
+      this.arenaResetManager.resetArena(match.arena, () -> {
+         this.arenaManager.markInUse(match.arena, false);
+         this.onArenaFreed.run();
+      });
       return null;
    }
 
@@ -257,6 +275,9 @@ public class MatchManager {
    private void endMatch(DuelMatch match, MatchManager.Outcome outcome, UUID winnerUuid, UUID loserUuid) {
       if (match.state != DuelMatch.State.ENDING && match.state != DuelMatch.State.COMPLETE) {
          match.state = DuelMatch.State.ENDING;
+         match.decidedOutcome = outcome;
+         match.decidedWinner = winnerUuid;
+         match.decidedLoser = loserUuid;
          if (match.timeoutTask != null) {
             match.timeoutTask.cancel();
          }
@@ -329,6 +350,11 @@ public class MatchManager {
    public void forfeit(UUID quitter) {
       DuelMatch match = this.activeByPlayer.get(quitter);
       if (match != null) {
+         if (match.state == DuelMatch.State.ENDING && match.decidedOutcome != null) {
+            // already decided: the quitter leaving during the end delay must not change who won
+            this.resolveMatch(match, match.decidedOutcome, match.decidedWinner, match.decidedLoser);
+            return;
+         }
          UUID winner = match.opponentOf(quitter);
          this.resolveMatch(match, MatchManager.Outcome.FORFEIT, winner, quitter);
       }
@@ -363,7 +389,8 @@ public class MatchManager {
             this.arenaManager.markInUse(match.arena, false);
             this.onArenaFreed.run();
          });
-         switch (outcome) {
+         // a solo admin test (A == B) never counts towards stats or ELO
+         if (!match.playerA.equals(match.playerB)) switch (outcome) {
             case WIN:
             case FORFEIT:
                this.applyMatchResult(winnerUuid, loserUuid);
@@ -396,6 +423,7 @@ public class MatchManager {
       if (!this.plugin.isEnabled()) {
          if (player.isOnline()) {
             snapshot.applyState(player);
+            this.pendingRestores.discard(uuid);
          } else {
             this.pendingRestores.save(uuid, snapshot);
          }
@@ -403,6 +431,7 @@ public class MatchManager {
          Bukkit.getScheduler().runTask(this.plugin, () -> {
             if (player.isOnline()) {
                snapshot.applyState(player);
+               this.pendingRestores.discard(uuid);
             } else {
                this.pendingRestores.save(uuid, snapshot);
             }
@@ -520,7 +549,7 @@ public class MatchManager {
       }
    }
 
-   private static enum Outcome {
+   public static enum Outcome {
       WIN,
       DRAW,
       FORFEIT;

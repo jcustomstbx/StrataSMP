@@ -28,7 +28,12 @@ public final class StratasExpansion extends PlaceholderExpansion {
         if (player == null) {
             return "";
         }
-        long bal = plugin.stratas().getBalance(player.getUniqueId());
+        // placeholders run on the main thread: never touch the database from here
+        Long cached = plugin.stratas().cachedBalance(player.getUniqueId());
+        if (cached == null) {
+            plugin.async(() -> plugin.stratas().preload(player.getUniqueId(), null));
+        }
+        long bal = cached == null ? 0L : cached;
         return switch (params.toLowerCase()) {
             case "balance", "balance_raw" -> String.valueOf(bal);
             case "balance_formatted" -> plugin.money(bal);
@@ -38,8 +43,22 @@ public final class StratasExpansion extends PlaceholderExpansion {
         };
     }
 
+    private volatile java.util.List<java.util.Map.Entry<java.util.UUID, Long>> topCache = java.util.List.of();
+    private volatile long topCachedAt;
+    private final java.util.concurrent.atomic.AtomicBoolean refreshing = new java.util.concurrent.atomic.AtomicBoolean();
+
     private int rankOf(OfflinePlayer player) {
-        var top = plugin.stratas().top(1000);
+        if (System.currentTimeMillis() - topCachedAt > 60_000L && refreshing.compareAndSet(false, true)) {
+            plugin.async(() -> {
+                try {
+                    topCache = plugin.stratas().top(1000);
+                    topCachedAt = System.currentTimeMillis();
+                } finally {
+                    refreshing.set(false);
+                }
+            });
+        }
+        var top = topCache;
         for (int i = 0; i < top.size(); i++) {
             if (top.get(i).getKey().equals(player.getUniqueId())) {
                 return i + 1;

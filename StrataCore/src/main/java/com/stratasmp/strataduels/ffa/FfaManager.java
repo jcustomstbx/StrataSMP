@@ -387,9 +387,12 @@ public class FfaManager {
          Player player = Bukkit.getPlayer(id);
          int chosenKit = this.queue.remove(id);
          int kit = this.forcedKit() > 0 ? this.forcedKit() : chosenKit;
-         this.fighters.put(id, new Fighter(id, player.getName(), PlayerSnapshot.capture(player), kit));
-         this.frozen.add(id);
+         // close first: an open trade window hands its items back on close, before the snapshot is taken
          player.closeInventory();
+         PlayerSnapshot snapshot = PlayerSnapshot.capture(player);
+         this.pending.save(id, snapshot);
+         this.fighters.put(id, new Fighter(id, player.getName(), snapshot, kit));
+         this.frozen.add(id);
          player.setGameMode(GameMode.SURVIVAL);
          player.setFireTicks(0);
          player.setFallDistance(0.0F);
@@ -531,6 +534,7 @@ public class FfaManager {
       Bukkit.getScheduler().runTask(this.plugin, () -> {
          if (p.isOnline()) {
             snapshot.applyState(p);
+            this.pending.discard(id);
          } else {
             this.pending.save(id, snapshot);
          }
@@ -608,6 +612,7 @@ public class FfaManager {
          } else {
             p.teleport(e.getValue().location());
             e.getValue().applyState(p);
+            this.pending.discard(e.getKey());
          }
       }
       if (this.arena != null) {

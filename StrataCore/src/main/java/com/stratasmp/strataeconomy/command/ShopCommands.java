@@ -87,7 +87,8 @@ public final class ShopCommands implements CommandExecutor {
         long total = 0;
         int count = 0;
         Map<Material, Integer> sold = new java.util.EnumMap<>(Material.class);
-        ItemStack[] contents = p.getInventory().getContents();
+        // storage slots only: offhand and armour are never sold (the sell GUI excludes them too)
+        ItemStack[] contents = p.getInventory().getStorageContents();
         for (int i = 0; i < contents.length; i++) {
             ItemStack it = contents[i];
             if (it == null || it.getType().isAir()) {

@@ -17,6 +17,10 @@ public class DuelMatch {
    public PlayerSnapshot snapshotB;
    public BukkitTask countdownTask;
    public BukkitTask timeoutTask;
+   // the result decided when the match entered ENDING, so a quit during the end delay can't flip it
+   public MatchManager.Outcome decidedOutcome;
+   public UUID decidedWinner;
+   public UUID decidedLoser;
 
    public DuelMatch(UUID playerA, UUID playerB, int kitA, int kitB, Arena arena) {
       this.playerA = playerA;

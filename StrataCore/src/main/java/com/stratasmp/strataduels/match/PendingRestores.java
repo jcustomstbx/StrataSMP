@@ -36,6 +36,20 @@ public final class PendingRestores {
         }
     }
 
+    /** Safety copy taken when a match starts, so a crash can't leave the kit as someone's only inventory. */
+    public void saveQuietly(UUID uuid, PlayerSnapshot snapshot) {
+        try {
+            save(uuid, snapshot);
+        } catch (IllegalStateException e) {
+            // best effort only; the in-memory snapshot is still the primary copy
+        }
+    }
+
+    /** The match ended cleanly and the snapshot was applied, so the safety copy goes. */
+    public void discard(UUID uuid) {
+        file(uuid).delete();
+    }
+
     public PlayerSnapshot takeIfPresent(UUID uuid) {
         File f = file(uuid);
         if (!f.isFile()) {

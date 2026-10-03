@@ -109,6 +109,12 @@ public class KitManager {
 
    public void applyKit(int slot, Player player) {
       PlayerInventory inv = player.getInventory();
+      // pre-duel buffs must not carry into the fight
+      for (org.bukkit.potion.PotionEffect effect : new java.util.ArrayList<>(player.getActivePotionEffects())) {
+         player.removePotionEffect(effect.getType());
+      }
+      player.setAbsorptionAmount(0.0);
+      player.setFireTicks(0);
       inv.clear();
       inv.setArmorContents(new ItemStack[4]);
       inv.setItemInOffHand(null);

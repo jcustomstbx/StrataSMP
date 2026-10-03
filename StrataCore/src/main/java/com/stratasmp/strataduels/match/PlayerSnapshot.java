@@ -78,6 +78,11 @@ public class PlayerSnapshot {
       inv.setStorageContents(this.contents);
       inv.setArmorContents(this.armor);
       inv.setItemInOffHand(this.offhand);
+      for (org.bukkit.potion.PotionEffect effect : new ArrayList<>(player.getActivePotionEffects())) {
+         player.removePotionEffect(effect.getType());
+      }
+      player.setAbsorptionAmount(0.0);
+      player.setFireTicks(0);
       player.setLevel(this.xpLevel);
       player.setExp(this.xpProgress);
       player.setTotalExperience(this.totalExperience);

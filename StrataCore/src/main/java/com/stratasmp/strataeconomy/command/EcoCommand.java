@@ -28,8 +28,8 @@ public final class EcoCommand implements CommandExecutor {
             return true;
         }
         String action = args[0].toLowerCase();
-        OfflinePlayer target = plugin.getServer().getOfflinePlayer(args[1]);
-        if (!target.hasPlayedBefore() && !target.isOnline()) {
+        OfflinePlayer target = plugin.getServer().getOfflinePlayerIfCached(args[1]);
+        if (target == null) {
             plugin.msg().send(sender, "player-not-found", Map.of("player", args[1]));
             return true;
         }
@@ -59,8 +59,11 @@ public final class EcoCommand implements CommandExecutor {
                 plugin.msg().send(sender, "eco-given", Map.of("player", args[1], "amount", plugin.money(amount)));
             }
             case "take" -> {
-                plugin.stratas().withdraw(target.getUniqueId(), amount);
-                plugin.msg().send(sender, "eco-taken", Map.of("player", args[1], "amount", plugin.money(amount)));
+                if (plugin.stratas().withdraw(target.getUniqueId(), amount)) {
+                    plugin.msg().send(sender, "eco-taken", Map.of("player", args[1], "amount", plugin.money(amount)));
+                } else {
+                    sender.sendMessage(args[1] + " does not have " + plugin.money(amount) + ".");
+                }
             }
             case "set" -> {
                 plugin.stratas().set(target.getUniqueId(), amount);

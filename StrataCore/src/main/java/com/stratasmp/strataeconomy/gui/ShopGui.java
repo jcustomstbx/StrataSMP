@@ -308,8 +308,16 @@ public final class ShopGui implements Listener {
             plugin.msg().send(player, "shop-cant-afford");
             return;
         }
-        plugin.stratas().withdraw(player.getUniqueId(), offer.price);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), offer.command.replace("%player%", player.getName()));
+        if (!plugin.stratas().withdraw(player.getUniqueId(), offer.price)) {
+            plugin.msg().send(player, "shop-cant-afford");
+            return;
+        }
+        if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), offer.command.replace("%player%", player.getName()))) {
+            // the command didn't run (missing plugin, bad command): give the money back
+            plugin.stratas().deposit(player.getUniqueId(), offer.price);
+            player.sendMessage(Gui.text("That offer is unavailable right now. You were not charged.", NamedTextColor.RED));
+            return;
+        }
         plugin.msg().send(player, "shop-bought-special", Map.of(
                 "item", offer.name,
                 "price", plugin.money(offer.price)));
