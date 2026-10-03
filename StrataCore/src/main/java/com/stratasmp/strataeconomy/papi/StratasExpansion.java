@@ -30,8 +30,15 @@ public final class StratasExpansion extends PlaceholderExpansion {
         }
         // placeholders run on the main thread: never touch the database from here
         Long cached = plugin.stratas().cachedBalance(player.getUniqueId());
-        if (cached == null) {
-            plugin.async(() -> plugin.stratas().preload(player.getUniqueId(), null));
+        // one lookup per player at a time, so a database outage doesn't pile up a task per scoreboard refresh
+        if (cached == null && loading.add(player.getUniqueId())) {
+            plugin.async(() -> {
+                try {
+                    plugin.stratas().preload(player.getUniqueId(), null);
+                } finally {
+                    loading.remove(player.getUniqueId());
+                }
+            });
         }
         long bal = cached == null ? 0L : cached;
         return switch (params.toLowerCase()) {
@@ -43,6 +50,7 @@ public final class StratasExpansion extends PlaceholderExpansion {
         };
     }
 
+    private final java.util.Set<java.util.UUID> loading = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private volatile java.util.List<java.util.Map.Entry<java.util.UUID, Long>> topCache = java.util.List.of();
     private volatile long topCachedAt;
     private final java.util.concurrent.atomic.AtomicBoolean refreshing = new java.util.concurrent.atomic.AtomicBoolean();

@@ -49,8 +49,11 @@ public class HomeTeleporter implements Listener {
                   if (this.combat.isInCombat(player.getUniqueId())) {
                      player.sendMessage(this.msg("&cTeleport cancelled - you're in combat."));
                   } else {
-                     player.teleport(currentTeam.home);
-                     player.sendMessage(this.msg("&aTeleported to the team home."));
+                     if (player.teleport(currentTeam.home)) {
+                        player.sendMessage(this.msg("&aTeleported to the team home."));
+                     } else {
+                        player.sendMessage(this.msg("&cThe teleport was blocked."));
+                     }
                   }
                } else {
                   player.sendMessage("Your team home is no longer available.");

@@ -39,7 +39,12 @@ public class SpawnBossCommand implements CommandExecutor, TabCompleter {
                player.sendMessage("Unknown boss. Valid ids: " + String.join(", ", this.registry.all().keySet()));
                return true;
             } else {
-               BossArenaBuilder.ArenaResult arena = this.arenaBuilder.build(this.targetLocation(player), def.id);
+               Location spot = this.targetLocation(player);
+               if (this.bossManager.activeBossNear(spot, 25.0)) {
+                  player.sendMessage("Another boss is standing too close - its arena would overlap. Pick a spot further away.");
+                  return true;
+               }
+               BossArenaBuilder.ArenaResult arena = this.arenaBuilder.build(spot, def.id);
                LivingEntity entity = (LivingEntity)player.getWorld().spawnEntity(arena.spawnLocation, def.baseType);
                if (!entity.isValid()) {
                   BossArenaBuilder.restore(arena.snapshot);

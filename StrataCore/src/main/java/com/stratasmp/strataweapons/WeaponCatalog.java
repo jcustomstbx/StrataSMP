@@ -51,6 +51,10 @@ public class WeaponCatalog {
       if (weapons != null) {
          for (String key : weapons.getKeys(false)) {
             ConfigurationSection def = weapons.getConfigurationSection(key);
+            if (def == null) {
+               this.plugin.getLogger().warning("Weapon '" + key + "' is not a section, skipped.");
+               continue;
+            }
             this.definitions.put(key.toLowerCase(), def);
             Material material = Material.matchMaterial(def.getString("material", "NETHERITE_SWORD"));
             if (material == null) {

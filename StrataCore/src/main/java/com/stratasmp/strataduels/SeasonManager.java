@@ -75,7 +75,7 @@ public class SeasonManager {
 
    private void announceRollover(List<DuelPlayerData> topPlayers, String endingSeasonKey) {
       Bukkit.broadcast(
-         Component.text("Duel season " + endingSeasonKey + " has ended! Top finishers (Strata will hand out the Stratas giveaway):", NamedTextColor.GOLD)
+         Component.text("Duel season " + endingSeasonKey + " has ended! Top finishers (StrataSMP staff will hand out the Stratas giveaway):", NamedTextColor.GOLD)
       );
       int rank = 1;
 

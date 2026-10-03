@@ -76,6 +76,12 @@ final class RankRtpWarmup implements Listener {
                     if (player.isOnline()) player.sendMessage("Teleport cancelled because you moved; no cooldown was charged.");
                     return;
                 }
+                // a hit during the warmup tags the player, and the check at /rtp time no longer applies
+                if (inCombat(rank, id)) {
+                    cooldowns.remove(id);
+                    player.sendMessage("Teleport cancelled because you are in combat; no cooldown was charged.");
+                    return;
+                }
                 try {
                     Location target = (Location) findSafe.invoke(manager, player.getWorld());
                     if (target == null) { cooldowns.remove(id); player.sendMessage("No safe RTP location was found."); return; }

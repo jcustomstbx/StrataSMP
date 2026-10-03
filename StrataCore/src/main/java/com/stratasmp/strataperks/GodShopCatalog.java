@@ -46,6 +46,10 @@ public final class GodShopCatalog {
         }
         for (String id : root.getKeys(false)) {
             ConfigurationSection entry = root.getConfigurationSection(id);
+            if (entry == null) {
+                plugin.getLogger().warning("God item '" + id + "' is not a section, skipping.");
+                continue;
+            }
             Material material = Material.matchMaterial(entry.getString("material", ""));
             if (material == null) {
                 plugin.getLogger().warning("Unknown material for god item '" + id + "', skipping.");

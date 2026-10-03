@@ -445,7 +445,8 @@ public class BossManager implements Listener {
       bar.setProgress(1.0);
       BukkitTask barTask = Bukkit.getScheduler().runTaskTimer(this.plugin, () -> {
          if (!boss.isValid()) {
-            this.cleanupOrphaned(boss.getUniqueId());
+            // an entity is also "invalid" while its chunk is unloaded: the boss still exists then, so its arena stays
+            this.cleanupOrphaned(boss.getUniqueId(), boss.isDead() || boss.getLocation().isChunkLoaded());
          } else if (!boss.isDead()) {
             if (this.idleDespawnMillis > 0L) {
                long lastCombat = this.lastCombatAtMillis.getOrDefault(boss.getUniqueId(), System.currentTimeMillis());
@@ -478,7 +479,7 @@ public class BossManager implements Listener {
       this.active.put(boss.getUniqueId(), new BossManager.ActiveBoss(def, boss.getWorld(), bar, barTask, abilityTask));
    }
 
-   private void cleanupOrphaned(UUID bossUuid) {
+   private void cleanupOrphaned(UUID bossUuid, boolean entityGone) {
       this.melee.clear(bossUuid);
       this.tridents.clear(bossUuid);
       this.models.detach(bossUuid);
@@ -492,8 +493,20 @@ public class BossManager implements Listener {
          this.lastCombatAtMillis.remove(bossUuid);
          this.damageDealt.remove(bossUuid);
          BossAbilities.clearState(bossUuid);
-         BossArenaBuilder.restore(this.releaseArena(bossUuid));
+         if (entityGone) {
+            BossArenaBuilder.restore(this.releaseArena(bossUuid));
+         }
       }
+   }
+
+   /** True when an active boss is already standing within this many blocks (its arena would overlap). */
+   public boolean activeBossNear(org.bukkit.Location at, double radius) {
+      for (BossInfo info : this.activeBosses()) {
+         if (info.location().getWorld().equals(at.getWorld()) && info.location().distanceSquared(at) < radius * radius) {
+            return true;
+         }
+      }
+      return false;
    }
 
    private void despawnIdle(LivingEntity boss, BossDefinition def) {

@@ -82,6 +82,7 @@ public final class StrataEconomy extends StrataModule implements StrataApi {
 
         long starting = getConfig().getLong("currency.starting-balance", 0);
         this.stratas = new StratasService(this, database, starting);
+        this.stratas.seedStamp();
         this.prices = new PriceTable(this);
         this.purchaseLimits = new PurchaseLimits();
         this.saleLog = new SaleLog(this);

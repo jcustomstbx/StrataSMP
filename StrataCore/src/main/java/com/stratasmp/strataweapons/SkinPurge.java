@@ -232,11 +232,26 @@ public class SkinPurge implements Listener, TabExecutor {
    }
 
    private void giveBack(Player player, String key) {
-      ItemStack sword = new ItemStack(Material.WOODEN_SWORD);
-      catalog.applySkinTo(sword, key);
-      player.getInventory().addItem(sword).values()
+      // a weapon skin comes back as its own catalog item (so tridents and restricted skins are right); an armour
+      // skin is applied to a plain piece it fits
+      ItemStack item = catalog.build(key);
+      if (item == null) {
+         for (Material base : new Material[] {Material.NETHERITE_CHESTPLATE, Material.NETHERITE_HELMET}) {
+            ItemStack candidate = new ItemStack(base);
+            if (catalog.applySkinTo(candidate, key)) {
+               item = candidate;
+               break;
+            }
+         }
+      }
+      if (item == null) {
+         plugin.getLogger().warning("Could not rebuild '" + key + "' for " + player.getName() + "; nothing was given.");
+         player.sendMessage(Component.text("Your " + catalog.displayNameOf(key) + " could not be returned automatically - ask staff.", NamedTextColor.RED));
+         return;
+      }
+      player.getInventory().addItem(item).values()
          .forEach(leftover -> player.getWorld().dropItemNaturally(player.getLocation(), leftover));
-      plugin.getLogger().info("Gave " + player.getName() + " a " + key + " sword back.");
+      plugin.getLogger().info("Gave " + player.getName() + " a " + key + " back.");
       player.sendMessage(Component.text("Your " + catalog.displayNameOf(key) + " has been returned to you.", NamedTextColor.GREEN));
    }
 

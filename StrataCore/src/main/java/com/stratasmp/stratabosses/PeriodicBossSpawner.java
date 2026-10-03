@@ -73,6 +73,8 @@ public class PeriodicBossSpawner {
          Material ground = candidate.getWorld().getBlockAt(candidate.getBlockX(), candidate.getBlockY() - 1, candidate.getBlockZ()).getType();
          if ((ground == Material.WATER || ground == Material.LAVA) && !def.id.equals("abyssal_coilfang")) continue;
          if (avoidStructures && this.arenaBuilder.looksPlayerMade(candidate)) continue;
+         // two arenas must never overlap, or restoring one would leave the other's blocks behind
+         if (this.bossManager.activeBossNear(candidate, 25.0)) continue;
          roughSpot = candidate;
       }
       if (roughSpot == null) return false;

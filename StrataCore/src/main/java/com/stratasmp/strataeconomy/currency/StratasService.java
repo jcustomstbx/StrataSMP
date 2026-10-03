@@ -43,6 +43,53 @@ public final class StratasService {
         this.plugin = plugin;
         this.db = db;
         this.startingBalance = startingBalance;
+        this.journal = new java.io.File(plugin.getDataFolder(), "pending-deposits.yml");
+        loadJournal();
+    }
+
+    /* ---- deposits that arrived while the database could not be read ---- */
+
+    private final java.io.File journal;
+
+    private void loadJournal() {
+        var yaml = com.stratasmp.stratacore.AtomicYaml.load(journal, plugin.getLogger());
+        for (String key : yaml.getKeys(false)) {
+            try {
+                pendingDeltas.put(UUID.fromString(key), yaml.getLong(key));
+            } catch (IllegalArgumentException ignored) {
+                // a stray key in the file
+            }
+        }
+    }
+
+    /** Kept on disk so a restart during an outage can't lose them; they are folded in as soon as the balance can be read. */
+    private void saveJournal() {
+        var yaml = new org.bukkit.configuration.file.YamlConfiguration();
+        for (Map.Entry<UUID, Long> e : pendingDeltas.entrySet()) yaml.set(e.getKey().toString(), e.getValue());
+        try {
+            plugin.getDataFolder().mkdirs();
+            if (pendingDeltas.isEmpty()) {
+                java.nio.file.Files.deleteIfExists(journal.toPath());
+            } else {
+                com.stratasmp.stratacore.AtomicYaml.save(yaml, journal);
+            }
+        } catch (java.io.IOException e) {
+            plugin.getLogger().warning("Could not save pending-deposits.yml: " + e.getMessage());
+        }
+    }
+
+    /** Seeds the stamp clock from the newest row so a host clock that stepped back can't make writes look stale. */
+    public void seedStamp() {
+        try (Connection c = db.connection();
+             PreparedStatement ps = c.prepareStatement("SELECT MAX(updated_at) FROM stratas_balances");
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                long max = rs.getLong(1);
+                lastStamp.accumulateAndGet(max, Math::max);
+            }
+        } catch (Exception e) {
+            plugin.getLogger().warning("Could not seed balance stamps: " + e.getMessage());
+        }
     }
 
     /* ---- cache warmup ---- */
@@ -83,16 +130,23 @@ public final class StratasService {
             return null;
         }
         boolean fold = false;
-        Long delta = pendingDeltas.remove(uuid);
-        if (delta != null) {
-            bal = saturatingAdd(bal, delta);
-            fold = true;
-        }
         synchronized (this) {
+            // folded in under the monitor, together with the cache write, so a deposit can never be counted twice
+            Long delta = pendingDeltas.remove(uuid);
+            if (delta != null) {
+                bal = saturatingAdd(bal, delta);
+                fold = true;
+                saveJournal();
+            }
             Long raced = cache.putIfAbsent(uuid, bal);
             if (raced != null) {
-                if (delta != null) pendingDeltas.merge(uuid, delta, StratasService::saturatingAdd);
-                return raced;
+                if (delta != null) {
+                    long merged = saturatingAdd(raced, delta);
+                    cache.put(uuid, merged);
+                    dirty.put(uuid, new Pending(merged, nextStamp()));
+                    scheduleFlush();
+                }
+                return cache.get(uuid);
             }
         }
         if (username != null) {
@@ -172,28 +226,38 @@ public final class StratasService {
         }
     }
 
-    public synchronized void deposit(UUID uuid, long amount) {
+    public void deposit(UUID uuid, long amount) {
         if (amount <= 0) {
             return;
         }
-        Long cur = known(uuid);
-        if (cur == null) {
-            pendingDeltas.merge(uuid, amount, StratasService::saturatingAdd);
-            return;
+        // any database read happens before the monitor is taken, so the main thread never waits on it while others queue
+        Long loaded = known(uuid);
+        synchronized (this) {
+            Long current = cache.get(uuid);
+            if (current == null) current = loaded;
+            if (current == null) {
+                pendingDeltas.merge(uuid, amount, StratasService::saturatingAdd);
+                saveJournal();
+                return;
+            }
+            set(uuid, saturatingAdd(current, amount));
         }
-        set(uuid, saturatingAdd(cur, amount));
     }
 
-    public synchronized boolean withdraw(UUID uuid, long amount) {
+    public boolean withdraw(UUID uuid, long amount) {
         if (amount <= 0) {
             return true;
         }
-        Long cur = known(uuid);
-        if (cur == null || cur < amount) {
-            return false;
+        Long loaded = known(uuid);
+        synchronized (this) {
+            Long current = cache.get(uuid);
+            if (current == null) current = loaded;
+            if (current == null || current < amount) {
+                return false;
+            }
+            set(uuid, current - amount);
+            return true;
         }
-        set(uuid, cur - amount);
-        return true;
     }
 
     /**
@@ -203,15 +267,27 @@ public final class StratasService {
      *
      * @return false when any resulting balance would be negative
      */
-    public synchronized boolean applyAtomicDeltas(Map<UUID, Long> deltas,
-                                                  Database.TransactionWork relatedRows) throws SQLException {
+    public boolean applyAtomicDeltas(Map<UUID, Long> deltas, Database.TransactionWork relatedRows) throws SQLException {
+        // balances are read before the monitor is taken; only the transaction itself runs inside it
+        Map<UUID, Long> loaded = new java.util.HashMap<>();
+        for (UUID id : deltas.keySet()) {
+            Long known = known(id);
+            if (known == null) {
+                throw new SQLException("Stratas balance unavailable for " + id);
+            }
+            loaded.put(id, known);
+        }
+        synchronized (this) {
+            return applyLocked(deltas, loaded, relatedRows);
+        }
+    }
+
+    private boolean applyLocked(Map<UUID, Long> deltas, Map<UUID, Long> loaded, Database.TransactionWork relatedRows)
+            throws SQLException {
         Map<UUID, Long> updated = new ConcurrentHashMap<>();
         for (Map.Entry<UUID, Long> entry : deltas.entrySet()) {
-            Long known = known(entry.getKey());
-            if (known == null) {
-                throw new SQLException("Stratas balance unavailable for " + entry.getKey());
-            }
-            long current = known;
+            Long cached = cache.get(entry.getKey());
+            long current = cached != null ? cached : loaded.get(entry.getKey());
             long next;
             try {
                 next = Math.addExact(current, entry.getValue());
@@ -315,26 +391,14 @@ public final class StratasService {
                 plugin.getLogger().severe("flush failed, " + batch.size() + " balances stay queued: " + ex.getMessage());
             }
         }
-        flushPendingDeltas();
+        retryPending();
     }
 
-    private void flushPendingDeltas() {
-        for (Map.Entry<UUID, Long> e : new java.util.HashMap<>(pendingDeltas).entrySet()) {
-            try (Connection c = db.connection();
-                 PreparedStatement ps = c.prepareStatement(
-                         "INSERT INTO stratas_balances (uuid, username, balance, updated_at) VALUES (?,?,?,?) "
-                                 + "ON DUPLICATE KEY UPDATE balance=balance+?, updated_at=VALUES(updated_at)")) {
-                ps.setString(1, e.getKey().toString());
-                ps.setString(2, names.getOrDefault(e.getKey(), ""));
-                ps.setLong(3, saturatingAdd(startingBalance, e.getValue()));
-                ps.setLong(4, nextStamp());
-                ps.setLong(5, e.getValue());
-                ps.executeUpdate();
-                if (pendingDeltas.remove(e.getKey(), e.getValue())) {
-                    cache.computeIfPresent(e.getKey(), (k, v) -> saturatingAdd(v, e.getValue()));
-                }
-            } catch (Exception ex) {
-                plugin.getLogger().warning("pending deposit for " + e.getKey() + " still queued: " + ex.getMessage());
+    /** Folds deposits held back during a database outage into the balances now that reads work again. */
+    private void retryPending() {
+        for (UUID id : new java.util.ArrayList<>(pendingDeltas.keySet())) {
+            if (tryLoad(id, null) == null) {
+                return; // still down; try again on the next flush
             }
         }
     }
