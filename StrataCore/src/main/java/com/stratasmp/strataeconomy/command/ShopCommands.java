@@ -97,8 +97,9 @@ public final class ShopCommands implements CommandExecutor {
             if (handOnly && i != p.getInventory().getHeldItemSlot()) {
                 continue;
             }
-            if (it.hasItemMeta() && it.getItemMeta().hasCustomModelData()) {
-                continue; // never buy custom-model items (weapons/skins)
+            // custom-model, named or lored items and non-empty containers are never bought
+            if (!com.stratasmp.strataeconomy.shop.SellRules.eligible(it)) {
+                continue;
             }
             int unit = prices.sellPrice(it.getType());
             if (unit <= 0) {

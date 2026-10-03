@@ -8,7 +8,7 @@
 
 | Module | What it does |
 |---|---|
-| StrataEconomy | Stratas currency, `/shop`, `/sell`, auction house, buy orders, Vault provider, `%stratas_*%` placeholders |
+| StrataEconomy | Stratas currency, `/shop`, `/sell` (every obtainable item sells; see `shop.sell-everything` and `shop.unsellable`), auction house, buy orders, Vault provider, `%stratas_*%` placeholders |
 | StrataWeapons | custom weapons, skins, kill messages, StrataCharms |
 | StrataPerks | premium currency and shop |
 | StrataMMO | skills, daily quests (`/mmo quests`), +10% XP multiplier |

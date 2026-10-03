@@ -45,7 +45,11 @@ buyorders:
   max-price: 100000000
 
 shop:
-  # /shop buy prices and /sell prices come from prices.yml
+  # prices come from sections/*.yml. With sell-everything on, every item that has no sell price there is sold at a
+  # small default (see DefaultSellPrices) so nothing is unsellable. Prices in the section files always win.
+  sell-everything: true
+  # materials that must never be sold, even if a section file prices them (e.g. [ELYTRA, BEACON])
+  unsellable: []
   sell-tax-percent: 0.0
   # console record of /sell, for spotting item duplication. A sale is logged when it pays at least
   # min-stratas or sells at least min-items of one item; a player selling hourly-warn-stratas or more

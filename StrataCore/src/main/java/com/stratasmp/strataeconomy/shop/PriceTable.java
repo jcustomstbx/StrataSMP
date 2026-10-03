@@ -38,8 +38,16 @@ public final class PriceTable implements Prices {
     private final File stateFile;
     private volatile double multiplier = 1.0;
 
+    private final java.util.function.Predicate<Material> itemCheck;
+
     public PriceTable(StrataEconomy plugin) {
+        this(plugin, PriceTable::isObtainableItem);
+    }
+
+    /** The item check is a parameter so tests can run without a server (Material#isItem needs one). */
+    public PriceTable(StrataEconomy plugin, java.util.function.Predicate<Material> itemCheck) {
         this.plugin = plugin;
+        this.itemCheck = itemCheck;
         this.stateFile = new File(plugin.getDataFolder(), "prices-state.yml");
         reload();
         loadState();
@@ -54,7 +62,48 @@ public final class PriceTable implements Prices {
         for (Section section : Section.values()) {
             loadSection(section);
         }
+        fillDefaultSellPrices();
         plugin.getLogger().info("Prices: " + sell.size() + " sellable, " + buy.size() + " buyable materials.");
+    }
+
+    private static boolean isObtainableItem(Material m) {
+        try {
+            return m.isItem() && !m.isLegacy();
+        } catch (Throwable noServer) {
+            return false;
+        }
+    }
+
+    /**
+     * Every item that has no price in a section file gets a default sell price, so anything a player can hold can be
+     * sold. shop.sell-everything turns this off; shop.unsellable removes individual items, whoever priced them.
+     */
+    private void fillDefaultSellPrices() {
+        java.util.Set<Material> blocked = new java.util.HashSet<>();
+        for (String name : plugin.getConfig().getStringList("shop.unsellable")) {
+            Material m = Material.matchMaterial(name);
+            if (m == null) {
+                plugin.getLogger().warning("Unknown material in shop.unsellable: " + name);
+            } else {
+                blocked.add(m);
+            }
+        }
+        if (plugin.getConfig().getBoolean("shop.sell-everything", true)) {
+            for (Material m : Material.values()) {
+                if (sell.containsKey(m) || blocked.contains(m) || !itemCheck.test(m)) {
+                    continue;
+                }
+                DefaultSellPrices.Entry entry = DefaultSellPrices.of(m.name());
+                if (entry != null && entry.section().sellable) {
+                    sell.put(m, entry.price());
+                    sellSection.put(m, entry.section());
+                }
+            }
+        }
+        for (Material m : blocked) {
+            sell.remove(m);
+            sellSection.remove(m);
+        }
     }
 
     private void loadSection(Section section) {

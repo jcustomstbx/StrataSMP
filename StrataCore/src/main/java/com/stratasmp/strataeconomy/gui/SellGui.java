@@ -140,13 +140,7 @@ public final class SellGui implements Listener {
     }
 
     private boolean sellable(ItemStack it) {
-        if (it == null || it.getType().isAir()) {
-            return false;
-        }
-        if (it.hasItemMeta() && it.getItemMeta().hasCustomModelData()) {
-            return false;
-        }
-        return plugin.prices().sellPrice(it.getType()) > 0;
+        return com.stratasmp.strataeconomy.shop.SellRules.eligible(it) && plugin.prices().sellPrice(it.getType()) > 0;
     }
 
     private Preview preview(Player player) {
