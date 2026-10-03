@@ -1,5 +1,6 @@
 # Daily quests. Each player is dealt `daily-count` random quests at the daily reset.
-# type: BREW_POTION, MINE_BLOCK, CHOP_LOG, HARVEST_CROP, KILL_MOB, CATCH_FISH, ENCHANT_ITEM
+# type: BREW_POTION, MINE_BLOCK, CHOP_LOG, HARVEST_CROP, KILL_MOB, CATCH_FISH, ENCHANT_ITEM, KILL_BOSS
+#   (KILL_BOSS targets are boss ids: zekka, vaelspire, thornmaw, abyssal_coilfang, cinderjaw)
 # targets: names to match (potion type, material or entity type); leave empty to match anything of that type.
 #   potions ignore LONG_/STRONG_ prefixes, so SWIFTNESS also counts strong and extended swiftness.
 # skill: the skill that receives the xp. xp is paid exactly as written (no multiplier).
@@ -78,3 +79,10 @@ pool:
     amount: 5
     skill: ENCHANTING
     xp: 450
+  boss_slayer:
+    name: "Boss Slayer"
+    type: KILL_BOSS
+    targets: []
+    amount: 1
+    skill: SWORDS
+    xp: 800

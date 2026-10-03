@@ -46,14 +46,14 @@ public class BossRegistry {
             "cinderjaw", "Cinderjaw", EntityType.HUSK, true, Color.fromRGB(42, 26, 20), Material.IRON_AXE, 1005, "Cinderjaw Axe", BarColor.YELLOW
          )
       );
-      this.loadOverrides(plugin);
+      this.reload(plugin);
    }
 
    private void register(BossDefinition def) {
       this.byId.put(def.id, def);
    }
 
-   private void loadOverrides(StrataModule plugin) {
+   public void reload(StrataModule plugin) {
       ConfigurationSection bosses = plugin.getConfig().getConfigurationSection("bosses");
       if (bosses != null) {
          for (BossDefinition def : this.byId.values()) {
@@ -73,6 +73,15 @@ public class BossRegistry {
                def.respawnCooldownSeconds = section.getLong("respawn-cooldown-seconds", def.respawnCooldownSeconds);
                def.abilityCooldownSeconds = section.getLong("ability-cooldown-seconds", def.abilityCooldownSeconds);
                def.stratasReward = section.getDouble("stratas-reward", def.stratasReward);
+               def.bonusLoot.clear();
+               ConfigurationSection bonus = section.getConfigurationSection("bonus-loot");
+               if (bonus != null) {
+                  for (String key : bonus.getKeys(false)) {
+                     org.bukkit.Material material = Material.matchMaterial(key);
+                     if (material == null) plugin.getLogger().warning("Unknown material in " + def.id + " bonus-loot: " + key);
+                     else def.bonusLoot.add(LootRoll.fromConfig(bonus.getConfigurationSection(key), material));
+                  }
+               }
             }
          }
       }

@@ -1,6 +1,13 @@
 package com.stratasmp.stratabosses;
 
+import com.stratasmp.strataeconomy.api.StrataApi;
+import com.stratasmp.stratammo.StrataMMO;
 import io.papermc.paper.event.entity.EntityKnockbackEvent;
+import java.io.File;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.GameMode;
+import org.bukkit.configuration.file.YamlConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -63,9 +70,12 @@ public class BossManager implements Listener {
    private static final long ARENA_REVERT_DELAY_TICKS = 160L;
    private final Map<UUID, BossArenaBuilder.ArenaSnapshot> arenaSnapshots = new HashMap<>();
    private final Map<UUID, BukkitTask> arenaExpiry = new HashMap<>();
-   private final double weaponDropChance;
+   private final NamespacedKey projectileMarker;
+   private final File cooldownFile;
+   private final Map<UUID, Map<UUID, Double>> damageDealt = new HashMap<>();
+   private double weaponDropChance;
    private final List<LootRoll> supplyLoot = new ArrayList<>();
-   private final long idleDespawnMillis;
+   private long idleDespawnMillis;
    private final Map<UUID, Long> lastCombatAtMillis = new HashMap<>();
 
    public BossManager(StrataModule plugin, BossRegistry registry) {
@@ -81,20 +91,59 @@ public class BossManager implements Listener {
       plugin.getServer().getPluginManager().registerEvents(this.melee, plugin);
       this.tridents = new BossTridents(plugin, this.models, this.bossIdKey);
       plugin.getServer().getPluginManager().registerEvents(this.tridents, plugin);
-      this.idleDespawnMillis = Math.max(0L, plugin.getConfig().getLong("spawn-checks.idle-despawn-minutes", 15L)) * 60000L;
-      ConfigurationSection lootSection = plugin.getConfig().getConfigurationSection("loot");
+      this.projectileMarker = new NamespacedKey(plugin, "boss-projectile");
+      this.cooldownFile = new File(plugin.getDataFolder(), "cooldowns.yml");
+      this.loadCooldowns();
+      this.loadLoot();
+   }
+
+   /** Re-reads loot, idle timer and per-boss stats from the config (spawn schedule and worlds still need a restart). */
+   public void reload() {
+      this.plugin.reloadConfig();
+      BossAbilities.setDamageMultiplier(this.plugin.getConfig().getDouble("ability-damage-multiplier", 1.0));
+      this.registry.reload(this.plugin);
+      this.loadLoot();
+   }
+
+   private void loadLoot() {
+      this.idleDespawnMillis = Math.max(0L, this.plugin.getConfig().getLong("spawn-checks.idle-despawn-minutes", 15L)) * 60000L;
+      this.supplyLoot.clear();
+      ConfigurationSection lootSection = this.plugin.getConfig().getConfigurationSection("loot");
       this.weaponDropChance = lootSection != null ? lootSection.getDouble("weapon-drop-chance", 0.08) : 0.08;
       ConfigurationSection suppliesSection = lootSection != null ? lootSection.getConfigurationSection("supplies") : null;
       if (suppliesSection != null) {
          for (String key : suppliesSection.getKeys(false)) {
             Material material = Material.matchMaterial(key);
             if (material == null) {
-               plugin.getLogger().warning("Unknown material in loot.supplies: " + key);
+               this.plugin.getLogger().warning("Unknown material in loot.supplies: " + key);
             } else {
                this.supplyLoot.add(LootRoll.fromConfig(suppliesSection.getConfigurationSection(key), material));
             }
          }
       }
+   }
+
+   private void loadCooldowns() {
+      if (!this.cooldownFile.exists()) return;
+      YamlConfiguration yaml = YamlConfiguration.loadConfiguration(this.cooldownFile);
+      for (String id : yaml.getKeys(false)) this.lastDeathAtMillis.put(id, yaml.getLong(id));
+   }
+
+   private void saveCooldowns() {
+      YamlConfiguration yaml = new YamlConfiguration();
+      for (Map.Entry<String, Long> e : this.lastDeathAtMillis.entrySet()) yaml.set(e.getKey(), e.getValue());
+      Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
+         try {
+            this.plugin.getDataFolder().mkdirs();
+            yaml.save(this.cooldownFile);
+         } catch (java.io.IOException e) {
+            this.plugin.getLogger().warning("Couldn't save boss cooldowns: " + e.getMessage());
+         }
+      });
+   }
+
+   private void announce(String message, NamedTextColor color) {
+      Bukkit.broadcast(Component.text(message, color));
    }
 
    public void shutdown() {
@@ -273,8 +322,9 @@ public class BossManager implements Listener {
       entity.getPersistentDataContainer().set(this.bossIdKey, PersistentDataType.STRING, def.id);
       AttributeInstance maxHealthAttr = entity.getAttribute(Attribute.MAX_HEALTH);
       if (maxHealthAttr != null) {
-         maxHealthAttr.setBaseValue(def.maxHealth);
-         entity.setHealth(def.maxHealth);
+         double health = def.maxHealth * this.partyHealthScale(entity);
+         maxHealthAttr.setBaseValue(health);
+         entity.setHealth(health);
       }
 
       AttributeInstance damageAttr = entity.getAttribute(Attribute.ATTACK_DAMAGE);
@@ -319,6 +369,22 @@ public class BossManager implements Listener {
       this.registerActive(entity, def);
    }
 
+   /** More players near the spawn means a tougher boss: +health-per-extra-player for each, up to max-extra-players. */
+   private double partyHealthScale(LivingEntity boss) {
+      double perExtra = this.plugin.getConfig().getDouble("scaling.health-per-extra-player", 0.4);
+      int maxExtra = this.plugin.getConfig().getInt("scaling.max-extra-players", 4);
+      double radius = this.plugin.getConfig().getDouble("scaling.radius", 64.0);
+      int nearby = 0;
+      for (Player player : boss.getWorld().getPlayers()) {
+         GameMode mode = player.getGameMode();
+         if ((mode == GameMode.SURVIVAL || mode == GameMode.ADVENTURE)
+               && player.getLocation().distanceSquared(boss.getLocation()) <= radius * radius) {
+            nearby++;
+         }
+      }
+      return 1.0 + perExtra * Math.min(maxExtra, Math.max(0, nearby - 1));
+   }
+
    private ItemStack leatherPiece(Material material, BossDefinition def) {
       ItemStack piece = new ItemStack(material);
       LeatherArmorMeta meta = (LeatherArmorMeta)piece.getItemMeta();
@@ -343,6 +409,10 @@ public class BossManager implements Listener {
       }
 
       for (LootRoll roll : this.supplyLoot) {
+         this.addRoll(drops, roll);
+      }
+
+      for (LootRoll roll : def.bonusLoot) {
          this.addRoll(drops, roll);
       }
    }
@@ -419,6 +489,7 @@ public class BossManager implements Listener {
          this.enragedBosses.remove(bossUuid);
          this.lastReactiveProcAtMillis.remove(bossUuid);
          this.lastCombatAtMillis.remove(bossUuid);
+         this.damageDealt.remove(bossUuid);
          BossAbilities.clearState(bossUuid);
          BossArenaBuilder.restore(this.releaseArena(bossUuid));
       }
@@ -446,10 +517,11 @@ public class BossManager implements Listener {
       this.enragedBosses.remove(id);
       this.lastReactiveProcAtMillis.remove(id);
       this.lastCombatAtMillis.remove(id);
+      this.damageDealt.remove(id);
       BossAbilities.clearState(id);
       BossArenaBuilder.restore(this.releaseArena(id));
       boss.remove();
-      Bukkit.broadcastMessage(def.displayName + " loses interest and melts back into the world.");
+      this.announce(def.displayName + " loses interest and melts back into the world.", NamedTextColor.GRAY);
    }
 
    private void markCombat(UUID bossUuid) {
@@ -499,6 +571,8 @@ public class BossManager implements Listener {
             if (def != null) {
                Player attacker = this.resolvePlayerDamager(event.getDamager());
                if (attacker != null) {
+                  this.damageDealt.computeIfAbsent(boss.getUniqueId(), k -> new HashMap<>())
+                     .merge(attacker.getUniqueId(), event.getFinalDamage(), Double::sum);
                   this.maybeEnrage(boss, def);
                   this.maybeTriggerReactive(boss, def);
                }
@@ -535,7 +609,7 @@ public class BossManager implements Listener {
 
             boss.getWorld().spawnParticle(Particle.ANGRY_VILLAGER, boss.getLocation().add(0.0, 1.5, 0.0), 30, 0.6, 0.6, 0.6);
             boss.getWorld().playSound(boss.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1.2F, 1.4F);
-            Bukkit.broadcastMessage(def.displayName + " is enraged!");
+            this.announce(def.displayName + " is enraged!", NamedTextColor.RED);
          }
       }
    }
@@ -565,8 +639,7 @@ public class BossManager implements Listener {
 
    @EventHandler
    public void onProjectileExplode(EntityExplodeEvent event) {
-      NamespacedKey marker = new NamespacedKey(this.plugin, "boss-projectile");
-      if (event.getEntity().getPersistentDataContainer().has(marker, PersistentDataType.BYTE)) {
+      if (event.getEntity().getPersistentDataContainer().has(this.projectileMarker, PersistentDataType.BYTE)) {
          event.blockList().clear();
       }
    }
@@ -575,7 +648,8 @@ public class BossManager implements Listener {
       ignoreCancelled = true
    )
    public void onItemPickup(EntityPickupItemEvent event) {
-      if (!(event.getEntity() instanceof Player)) {
+      // only the bosses are barred from picking things up; every other mob keeps vanilla behaviour
+      if (event.getEntity().getPersistentDataContainer().has(this.bossIdKey, PersistentDataType.STRING)) {
          event.setCancelled(true);
       }
    }
@@ -622,17 +696,77 @@ public class BossManager implements Listener {
 
       event.getDrops().clear();
       event.setDroppedExp(0);
-      this.rollLoot(event.getDrops(), def);
+      this.saveCooldowns();
+      Map<UUID, Double> damage = this.damageDealt.remove(entity.getUniqueId());
       Player killer = entity.getKiller();
-      if (killer != null) {
-         Economy economy = this.economy();
-         if (economy != null) {
-            economy.depositPlayer(killer, def.stratasReward);
-            killer.sendMessage(def.displayName + " defeated! +" + economy.format(def.stratasReward));
+      this.payOut(entity, def, damage, killer);
+      this.announce(def.displayName + " has been slain" + (killer != null ? " by " + killer.getName() : "") + "!", NamedTextColor.GOLD);
+   }
+
+   /**
+    * Everyone who dealt at least min-damage-share of the total (and the killer) gets a personal loot roll straight
+    * into their inventory, and the Stratas reward is split by damage share. Nothing lands on the ground to steal.
+    */
+   private void payOut(LivingEntity boss, BossDefinition def, Map<UUID, Double> damage, Player killer) {
+      Map<UUID, Double> eligible = new HashMap<>();
+      double total = 0.0;
+      if (damage != null) for (double d : damage.values()) total += d;
+      double minShare = this.plugin.getConfig().getDouble("rewards.min-damage-share", 0.05);
+      if (damage != null && total > 0.0) {
+         for (Map.Entry<UUID, Double> e : damage.entrySet()) {
+            if (e.getValue() / total >= minShare) eligible.put(e.getKey(), e.getValue());
          }
       }
+      if (killer != null && !eligible.containsKey(killer.getUniqueId())) {
+         eligible.put(killer.getUniqueId(), damage != null ? damage.getOrDefault(killer.getUniqueId(), 0.0) : 0.0);
+      }
+      if (eligible.isEmpty()) return;
+      double pool = 0.0;
+      for (double d : eligible.values()) pool += d;
+      StrataApi stratas = StrataApi.get();
+      Economy vault = stratas == null ? this.economy() : null;
+      for (Map.Entry<UUID, Double> e : eligible.entrySet()) {
+         Player player = Bukkit.getPlayer(e.getKey());
+         if (player == null) continue;
+         double share = pool > 0.0 ? e.getValue() / pool : 1.0 / eligible.size();
+         long reward = Math.round(def.stratasReward * share);
+         if (stratas != null) stratas.deposit(player.getUniqueId(), reward);
+         else if (vault != null) vault.depositPlayer(player, reward);
+         player.sendMessage(Component.text(def.displayName + " defeated! ", NamedTextColor.GOLD)
+            .append(Component.text("+" + (stratas != null ? stratas.format(reward) : reward + " Stratas") + " (" + Math.round(share * 100) + "% of the damage)", NamedTextColor.YELLOW)));
+         List<ItemStack> loot = new ArrayList<>();
+         this.rollLoot(loot, def);
+         for (ItemStack item : loot) {
+            for (ItemStack left : player.getInventory().addItem(item).values()) {
+               player.getWorld().dropItemNaturally(player.getLocation(), left);
+            }
+         }
+         StrataMMO mmo = this.plugin.core().module(StrataMMO.class);
+         if (mmo != null) mmo.bossKill(player, def.id);
+      }
+   }
 
-      Bukkit.broadcastMessage(def.displayName + " has been slain" + (killer != null ? " by " + killer.getName() : "") + "!");
+   public record BossInfo(UUID id, String bossId, String displayName, org.bukkit.Location location, double health) {
+   }
+
+   public List<BossInfo> activeBosses() {
+      List<BossInfo> out = new ArrayList<>();
+      for (Map.Entry<UUID, ActiveBoss> e : this.active.entrySet()) {
+         Entity entity = Bukkit.getEntity(e.getKey());
+         if (entity instanceof LivingEntity living && living.isValid()) {
+            out.add(new BossInfo(e.getKey(), e.getValue().def().id, e.getValue().def().displayName, living.getLocation(), living.getHealth()));
+         }
+      }
+      return out;
+   }
+
+   /** Removes the boss without rewards or cooldown; its timers, bar and arena are cleaned up on the next bar tick. */
+   public boolean removeBoss(UUID id) {
+      Entity entity = Bukkit.getEntity(id);
+      if (entity == null) return false;
+      for (Entity passenger : List.copyOf(entity.getPassengers())) passenger.remove();
+      entity.remove();
+      return true;
    }
 
    private Economy economy() {

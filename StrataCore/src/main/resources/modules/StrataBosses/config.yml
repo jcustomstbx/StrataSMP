@@ -1,5 +1,5 @@
-# Custom visuals use the bundled ModelEngine blueprints. Missing models fall back
-# to the original mob appearance. Empty model-id disables a specific boss model.
+# Custom visuals use ModelEngine blueprints (installed on the server in plugins/ModelEngine/blueprints).
+# Missing models fall back to the original mob appearance. Empty model-id disables a specific boss model.
 models:
   enabled: true
 
@@ -21,6 +21,8 @@ models:
 spawn-checks:
   interval-minutes: 15
   idle-despawn-minutes: 15
+  # no boss spawns unless at least this many players are online
+  min-online-players: 2
   # bosses only ever spawn in these worlds (the SMP)
   allowed-worlds: [world]
   excluded-worlds: [duelworld, hub, duels, testworld]
@@ -29,6 +31,23 @@ spawn-checks:
 # even if the fight is still going (it is also written to arenas/ so a restart or crash can't leave it standing).
 arena:
   max-lifetime-minutes: 20
+  # skip spawn spots whose arena footprint contains player-made blocks (chests, doors, planks, glass, rails...)
+  avoid-structures: true
+
+# The spawn announcement gives the position rounded to 100 blocks. false = just the world name.
+announce:
+  show-coordinates: true
+
+# More players near the spawn = a tougher boss. +health-per-extra-player per extra player, up to max-extra-players.
+scaling:
+  health-per-extra-player: 0.4
+  max-extra-players: 4
+  radius: 64
+
+# Anyone who deals at least this share of the boss's total damage (and the killer) gets their own loot roll
+# straight into their inventory, and the Stratas reward is split by damage share.
+rewards:
+  min-damage-share: 0.05
 
 # Death loot - same table for all 5 bosses. Each line under "supplies" is rolled
 # independently (so a kill can drop several of these at once, or none at all).
@@ -119,22 +138,26 @@ bosses:
     weapon-model-id: zekka_weapon
     # Zekka the Brute - Piglin Brute base, golden axe reskin
     enabled: true
-    max-health: 1000
-    attack-damage: 6
+    max-health: 1100
+    attack-damage: 7
     knockback-resistance: 0.85
     knockback-taken-multiplier: 0.2
-    spawn-chance: 0.15
+    spawn-chance: 0.12
     max-concurrent-per-world: 1
     respawn-cooldown-seconds: 3600
     ability-cooldown-seconds: 9
-    stratas-reward: 22500
+    stratas-reward: 25000
+    # extra drops on top of the shared loot table
+    bonus-loot:
+      GOLD_BLOCK: {chance: 0.4, min: 1, max: 3}
+      GOLDEN_CARROT: {chance: 0.6, min: 8, max: 16}
 
   vaelspire:
     model-id: vaelspire
     weapon-model-id: vaelspire_weapon
     # Vaelspire the Hollow - Wither Skeleton base, iron sword reskin
     enabled: true
-    max-health: 1000
+    max-health: 900
     attack-damage: 6
     knockback-resistance: 0.85
     knockback-taken-multiplier: 0.2
@@ -142,22 +165,30 @@ bosses:
     max-concurrent-per-world: 1
     respawn-cooldown-seconds: 3600
     ability-cooldown-seconds: 10
-    stratas-reward: 22500
+    stratas-reward: 22000
+    # extra drops on top of the shared loot table
+    bonus-loot:
+      BONE: {chance: 0.6, min: 6, max: 12}
+      WITHER_SKELETON_SKULL: {chance: 0.1, min: 1, max: 1}
 
   thornmaw:
     model-id: thornmaw
     weapon-model-id: ""
     # Thornmaw - Ravager base (no armor slots, gets a color-tell passenger instead), stone axe reskin
     enabled: true
-    max-health: 1000
-    attack-damage: 6
+    max-health: 1300
+    attack-damage: 8
     knockback-resistance: 0.85
     knockback-taken-multiplier: 0.2
-    spawn-chance: 0.15
+    spawn-chance: 0.1
     max-concurrent-per-world: 1
     respawn-cooldown-seconds: 3600
     ability-cooldown-seconds: 8
-    stratas-reward: 22500
+    stratas-reward: 26000
+    # extra drops on top of the shared loot table
+    bonus-loot:
+      EMERALD: {chance: 0.5, min: 6, max: 10}
+      LEATHER: {chance: 0.6, min: 4, max: 8}
 
   abyssal_coilfang:
     model-id: abyssal_coilfang
@@ -168,23 +199,32 @@ bosses:
     attack-damage: 6
     knockback-resistance: 0.85
     knockback-taken-multiplier: 0.2
-    spawn-chance: 0.15
+    spawn-chance: 0.12
     max-concurrent-per-world: 1
     respawn-cooldown-seconds: 3600
     ability-cooldown-seconds: 10
-    stratas-reward: 22500
+    stratas-reward: 24000
+    # extra drops on top of the shared loot table
+    bonus-loot:
+      PRISMARINE_CRYSTALS: {chance: 0.6, min: 4, max: 8}
+      NAUTILUS_SHELL: {chance: 0.3, min: 1, max: 2}
+      HEART_OF_THE_SEA: {chance: 0.05, min: 1, max: 1}
 
   cinderjaw:
     model-id: cinderjaw
     weapon-model-id: cinderjaw_weapon
     # Cinderjaw - Husk base, iron axe reskin
     enabled: true
-    max-health: 1000
-    attack-damage: 6
+    max-health: 950
+    attack-damage: 7
     knockback-resistance: 0.85
     knockback-taken-multiplier: 0.2
-    spawn-chance: 0.15
+    spawn-chance: 0.12
     max-concurrent-per-world: 1
     respawn-cooldown-seconds: 3600
     ability-cooldown-seconds: 9
-    stratas-reward: 22500
+    stratas-reward: 24000
+    # extra drops on top of the shared loot table
+    bonus-loot:
+      MAGMA_CREAM: {chance: 0.6, min: 4, max: 8}
+      NETHERITE_SCRAP: {chance: 0.08, min: 1, max: 2}

@@ -29,6 +29,7 @@ public class BossDefinition {
    public long respawnCooldownSeconds = 1800L;
    public long abilityCooldownSeconds = 9L;
    public double stratasReward = 15000.0;
+   public final java.util.List<LootRoll> bonusLoot = new java.util.ArrayList<>();
 
    public BossDefinition(
       String id,

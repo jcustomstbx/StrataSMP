@@ -8,6 +8,7 @@ load: POSTWORLD
 depend: [Vault, Citizens, Votifier]
 softdepend: [ModelEngine, Multiverse-Core, AntiFloodGuard, PlaceholderAPI, RankEssentials, LuckPerms, CrazyCrates]
 commands:
+  boss: {description: Boss admin tools, usage: '/boss <list|tp|kill|reload>', permission: stratabosses.admin}
   spawnboss: {description: Spawn a boss for testing, usage: '/spawnboss <boss>'}
   cratevault: {description: Open and claim your Crate Vault, usage: /cratevault, aliases: [cvault]}
   stratas: {description: Check your Stratas balance, usage: '/stratas [player]', aliases: [bal, balance, money, strata]}

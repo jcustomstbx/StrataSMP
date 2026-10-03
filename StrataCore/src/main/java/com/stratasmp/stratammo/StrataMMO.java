@@ -98,6 +98,11 @@ public class StrataMMO extends StrataModule {
       return new ProfileContext(new MmoCommand(dataManager,curve,perks,salvage,questManager));
    }
 
+   /** Called by StrataBosses when a player earns a share of a boss kill. */
+   public void bossKill(Player player,String bossId){
+      if(questManager!=null)questManager.progress(player,com.stratasmp.stratammo.quests.ObjectiveType.KILL_BOSS,bossId,1);
+   }
+
    private Set<String> worldSet(String path,List<String> defaults){
       List<String> configured=getConfig().getStringList(path);
       if(configured.isEmpty())configured=defaults;

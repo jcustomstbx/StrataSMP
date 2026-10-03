@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.HeightMap;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.TileState;
@@ -52,10 +53,50 @@ public class BossArenaBuilder {
       return new BossArenaBuilder.ArenaResult(spawnAt, new BossArenaBuilder.ArenaSnapshot(world, new ArrayList<>(recorded.values())));
    }
 
+   /**
+    * True when the footprint of an arena at this spot contains blocks that look player-made (containers, doors,
+    * planks, glass, rails and the like). Spawning skips those spots so a boss never levels someone's base.
+    */
+   public boolean looksPlayerMade(Location origin) {
+      World world = origin.getWorld();
+      int centerX = origin.getBlockX();
+      int centerZ = origin.getBlockZ();
+      int baseY = this.averageGroundY(world, centerX, centerZ);
+      int artificial = 0;
+      for (int dx = -RADIUS; dx <= RADIUS; dx++) {
+         for (int dz = -RADIUS; dz <= RADIUS; dz++) {
+            if (dx * dx + dz * dz > RADIUS * RADIUS) continue;
+            for (int y = baseY - 1; y <= baseY + CLEARANCE_HEIGHT; y++) {
+               Block block = world.getBlockAt(centerX + dx, y, centerZ + dz);
+               Material type = block.getType();
+               if (type.isAir()) continue;
+               if (block.getState(false) instanceof TileState || isArtificial(type)) {
+                  if (++artificial >= 3) return true;
+               }
+            }
+         }
+      }
+      return false;
+   }
+
+   private static boolean isArtificial(Material type) {
+      String n = type.name();
+      return n.contains("PLANKS") || n.contains("BRICK") || n.contains("GLASS") || n.contains("WOOL") || n.contains("CONCRETE")
+         || n.contains("DOOR") || n.contains("FENCE") || n.contains("STAIRS") || n.contains("SLAB") || n.contains("TORCH")
+         || n.contains("LANTERN") || n.contains("BED") || n.contains("CARPET") || n.contains("BANNER") || n.contains("RAIL")
+         || n.contains("REDSTONE") || n.contains("HOPPER") || n.contains("PISTON") || n.contains("OBSERVER") || n.contains("LEVER")
+         || n.contains("BUTTON") || n.contains("PRESSURE_PLATE") || n.contains("LADDER") || n.contains("SCAFFOLDING")
+         || n.contains("TABLE") || n.contains("ANVIL") || n.contains("FURNACE") || n.contains("CHEST") || n.contains("BARREL")
+         || n.contains("SIGN") || n.contains("POLISHED") || n.contains("CAMPFIRE") || n.contains("BOOKSHELF")
+         || n.contains("GLAZED") || n.contains("STRIPPED") || n.contains("TNT") || n.contains("SPAWNER");
+   }
+
    public static void restore(BossArenaBuilder.ArenaSnapshot snapshot) {
       if (snapshot != null) {
          for (BossArenaBuilder.BlockChange change : snapshot.changes) {
             Block block = snapshot.world.getBlockAt(change.x(), change.y(), change.z());
+            // a block someone changed while the arena stood is theirs now; leave it
+            if (change.placed() != null && block.getType() != change.placed()) continue;
             block.setBlockData(change.original(), false);
          }
          snapshot.discard();
@@ -80,10 +121,14 @@ public class BossArenaBuilder {
                continue;
             }
             for (String line : lines.subList(1, lines.size())) {
-               String[] parts = line.split(",", 4);
-               if (parts.length == 4) {
-                  world.getBlockAt(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]))
-                     .setBlockData(Bukkit.createBlockData(parts[3]), false);
+               String[] parts = line.split(",", 5);
+               // current lines are x,y,z,PLACED_MATERIAL,originaldata; older files are x,y,z,originaldata
+               boolean current = parts.length == 5 && !parts[3].contains(":");
+               String data = current ? parts[4] : String.join(",", java.util.Arrays.copyOfRange(parts, 3, parts.length));
+               if (parts.length >= 4) {
+                  Block block = world.getBlockAt(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
+                  if (current && block.getType() != Material.valueOf(parts[3])) continue;
+                  block.setBlockData(Bukkit.createBlockData(data), false);
                }
             }
             Files.deleteIfExists(file.toPath());
@@ -102,13 +147,13 @@ public class BossArenaBuilder {
       for (int dx = -9; dx <= 9; dx += 3) {
          for (int dz = -9; dz <= 9; dz += 3) {
             if (dx * dx + dz * dz <= 81) {
-               total += world.getHighestBlockYAt(centerX + dx, centerZ + dz);
+               total += world.getHighestBlockYAt(centerX + dx, centerZ + dz, HeightMap.MOTION_BLOCKING_NO_LEAVES);
                samples++;
             }
          }
       }
 
-      int avg = samples > 0 ? (int)(total / samples) : world.getHighestBlockYAt(centerX, centerZ);
+      int avg = samples > 0 ? (int)(total / samples) : world.getHighestBlockYAt(centerX, centerZ, HeightMap.MOTION_BLOCKING_NO_LEAVES);
       return Math.min(avg, world.getMaxHeight() - 6 - 2);
    }
 
@@ -174,8 +219,11 @@ public class BossArenaBuilder {
       if (block.getState(false) instanceof TileState) {
          return;
       }
-      recorded.putIfAbsent(x + "," + y + "," + z, new BossArenaBuilder.BlockChange(x, y, z, block.getBlockData()));
-      block.setType(material);
+      String key = x + "," + y + "," + z;
+      BossArenaBuilder.BlockChange earlier = recorded.get(key);
+      // the first change keeps the true original; later ones just update what the arena left there
+      recorded.put(key, new BossArenaBuilder.BlockChange(x, y, z, earlier != null ? earlier.original() : block.getBlockData(), material));
+      block.setType(material, false);
    }
 
    public static final class ArenaResult {
@@ -206,7 +254,7 @@ public class BossArenaBuilder {
          List<String> lines = new ArrayList<>(this.changes.size() + 1);
          lines.add(this.world.getName());
          for (BossArenaBuilder.BlockChange change : this.changes) {
-            lines.add(change.x() + "," + change.y() + "," + change.z() + "," + change.original().getAsString());
+            lines.add(change.x() + "," + change.y() + "," + change.z() + "," + change.placed().name() + "," + change.original().getAsString());
          }
          Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
@@ -234,7 +282,7 @@ public class BossArenaBuilder {
       }
    }
 
-   private record BlockChange(int x, int y, int z, BlockData original) {
+   private record BlockChange(int x, int y, int z, BlockData original, Material placed) {
    }
 
    private record Theme(Material floor, Material perimeter, Material accent, int accentCount) {

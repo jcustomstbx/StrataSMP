@@ -28,6 +28,9 @@ public class StrataBosses extends StrataModule {
       SpawnBossCommand spawnBossCommand = new SpawnBossCommand(registry, bossManager);
       this.getCommand("spawnboss").setExecutor(spawnBossCommand);
       this.getCommand("spawnboss").setTabCompleter(spawnBossCommand);
+      BossAdminCommand admin = new BossAdminCommand(bossManager);
+      this.getCommand("boss").setExecutor(admin);
+      this.getCommand("boss").setTabCompleter(admin);
       this.getLogger().info("Loaded " + registry.all().size() + " boss profiles.");
    }
 

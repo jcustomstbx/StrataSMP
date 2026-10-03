@@ -7,5 +7,6 @@ public enum ObjectiveType {
    HARVEST_CROP,
    KILL_MOB,
    CATCH_FISH,
-   ENCHANT_ITEM
+   ENCHANT_ITEM,
+   KILL_BOSS
 }
