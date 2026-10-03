@@ -1,6 +1,7 @@
 package com.stratasmp.strataeconomy.shop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -30,11 +31,29 @@ class DefaultSellPricesTest {
 
     @Test
     void ordinaryItemsGetAPositivePrice() {
-        for (String name : new String[] {"STONE", "DIRT", "OAK_STAIRS", "GLASS", "CHEST", "WHITE_BED", "POPPY", "OAK_SAPLING"}) {
+        for (String name : new String[] {"STONE", "DIRT", "GLASS", "CHEST", "WHITE_BED", "POPPY", "OAK_SAPLING"}) {
             DefaultSellPrices.Entry entry = DefaultSellPrices.of(name);
             assertNotNull(entry, name);
             assertTrue(entry.price() > 0, name);
         }
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"OAK_STAIRS", "SPRUCE_SLAB", "BIRCH_FENCE", "JUNGLE_FENCE_GATE", "ACACIA_DOOR", "DARK_OAK_TRAPDOOR",
+            "MANGROVE_BUTTON", "CHERRY_PRESSURE_PLATE", "PALE_OAK_SIGN", "OAK_HANGING_SIGN", "BAMBOO_RAFT", "BAMBOO_CHEST_RAFT",
+            "OAK_BOAT", "OAK_CHEST_BOAT", "CRIMSON_STAIRS", "WARPED_DOOR", "BAMBOO_MOSAIC", "BAMBOO_MOSAIC_STAIRS",
+            "BAMBOO_MOSAIC_SLAB", "STICK", "BOWL", "LADDER", "oak_slab"})
+    void itemsCraftedFromPlanksAreNotSellableByDefault(String name) {
+        assertTrue(DefaultSellPrices.isWoodCrafted(name));
+        assertNull(DefaultSellPrices.of(name), name);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"OAK_LOG", "OAK_PLANKS", "OAK_WOOD", "STRIPPED_OAK_LOG", "OAK_SAPLING", "OAK_LEAVES", "WOODEN_SWORD",
+            "WOODEN_PICKAXE", "STONE_BUTTON", "STONE_SLAB", "STONE_STAIRS", "STONE_PRESSURE_PLATE", "COBBLESTONE_SLAB",
+            "CRIMSON_STEM", "BAMBOO_BLOCK", "CHEST", "CRAFTING_TABLE", "BARREL", "SCAFFOLDING"})
+    void raw_wood_and_non_wood_items_are_unaffected(String name) {
+        assertFalse(DefaultSellPrices.isWoodCrafted(name), name);
     }
 
     @Test

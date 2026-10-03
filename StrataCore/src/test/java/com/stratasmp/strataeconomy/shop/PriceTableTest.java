@@ -105,6 +105,32 @@ class PriceTableTest {
     }
 
     @Test
+    void woodCraftedItemsCannotBeSoldButLogsAndPlanksCan() {
+        PriceTable prices = table();
+        for (Material m : new Material[] {Material.OAK_STAIRS, Material.SPRUCE_SLAB, Material.BIRCH_FENCE, Material.OAK_DOOR,
+                Material.CHERRY_TRAPDOOR, Material.OAK_BUTTON, Material.OAK_PRESSURE_PLATE, Material.OAK_SIGN, Material.OAK_BOAT,
+                Material.STICK, Material.BOWL, Material.LADDER, Material.BAMBOO_RAFT, Material.CRIMSON_STAIRS}) {
+            assertFalse(prices.canSell(m), m + " is crafted from planks and must not sell");
+        }
+        assertEquals(4, prices.baseSellPrice(Material.OAK_LOG), "logs keep their explicit price");
+        assertEquals(1, prices.baseSellPrice(Material.OAK_PLANKS));
+        assertTrue(prices.canSell(Material.CHERRY_LOG));
+        assertTrue(prices.canSell(Material.STONE_SLAB), "only wood is affected");
+    }
+
+    @Test
+    void aSectionFilePriceBringsAWoodItemBack() throws Exception {
+        // an explicit price always wins over the default rules
+        java.nio.file.Files.createDirectories(dataDir.resolve("sections"));
+        java.nio.file.Files.writeString(dataDir.resolve("sections/building_blocks.yml"),
+                "sellable: true\nbuyable: true\nitems:\n  OAK_STAIRS: { sell: 2, buy: 60 }\n");
+
+        PriceTable prices = table();
+
+        assertEquals(2, prices.baseSellPrice(Material.OAK_STAIRS));
+    }
+
+    @Test
     void everySellableItemHasAPositivePrice() {
         PriceTable prices = table();
         for (var entry : prices.sellView().entrySet()) {

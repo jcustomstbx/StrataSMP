@@ -48,6 +48,8 @@ shop:
   # prices come from sections/*.yml. With sell-everything on, every item that has no sell price there is sold at a
   # small default (see DefaultSellPrices) so nothing is unsellable. Prices in the section files always win.
   sell-everything: true
+  # Items crafted from planks (stairs, slabs, fences, doors, signs, boats, sticks, bowls, ladders) are not sold by default,
+  # because one log makes several of them. Price one in sections/*.yml to allow it; a section price always wins.
   # materials that must never be sold, even if a section file prices them (e.g. [ELYTRA, BEACON]).
   # Shipped with the blocks and plants that can be farmed endlessly or automatically (stone generators, snow, dripstone,
   # sculk, saplings, leaves, flowers, grasses, vines, fungi, corals, seeds) so the 1-strata default can't be farmed.

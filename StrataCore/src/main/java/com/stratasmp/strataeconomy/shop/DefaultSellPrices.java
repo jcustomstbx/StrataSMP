@@ -24,6 +24,11 @@ public final class DefaultSellPrices {
     private static final String[] PIECES = {
             "_SWORD", "_PICKAXE", "_AXE", "_SHOVEL", "_HOE", "_HELMET", "_CHESTPLATE", "_LEGGINGS", "_BOOTS", "_SPEAR"};
     private static final Set<String> NEVER = new HashSet<>();
+    private static final String[] WOODS = {"OAK", "SPRUCE", "BIRCH", "JUNGLE", "ACACIA", "DARK_OAK", "MANGROVE", "CHERRY",
+            "PALE_OAK", "BAMBOO", "CRIMSON", "WARPED"};
+    /** What planks are crafted into. A log is worth about four planks, so these cannot be priced at 1 without profit. */
+    private static final String[] WOOD_CRAFTED = {"_STAIRS", "_SLAB", "_FENCE", "_FENCE_GATE", "_DOOR", "_TRAPDOOR", "_BUTTON",
+            "_PRESSURE_PLATE", "_SIGN", "_HANGING_SIGN", "_BOAT", "_CHEST_BOAT", "_RAFT", "_CHEST_RAFT"};
 
     private static void fix(int price, Section section, String... names) {
         for (String name : names) FIXED.put(name, new Entry(price, section));
@@ -116,7 +121,28 @@ public final class DefaultSellPrices {
     /** True for items that can never be sold. */
     public static boolean isNever(String name) {
         String n = name.toUpperCase(Locale.ROOT);
-        return NEVER.contains(n) || n.startsWith("LEGACY_") || n.endsWith("_SPAWN_EGG") || n.endsWith("_AIR");
+        return NEVER.contains(n) || n.startsWith("LEGACY_") || n.endsWith("_SPAWN_EGG") || n.endsWith("_AIR")
+                || isWoodCrafted(n);
+    }
+
+    /**
+     * Items crafted out of planks (stairs, slabs, fences, doors, signs, boats...) plus sticks, bowls and ladders are
+     * not sellable by default: one log makes several of them, so any price would be an arbitrage on the log price.
+     * Price one in a section file to bring it back; that always wins.
+     */
+    public static boolean isWoodCrafted(String name) {
+        String n = name.toUpperCase(Locale.ROOT);
+        if (n.equals("STICK") || n.equals("BOWL") || n.equals("LADDER") || n.equals("BAMBOO_MOSAIC")) {
+            return true;
+        }
+        for (String wood : WOODS) {
+            if (!n.startsWith(wood + "_")) continue;
+            for (String suffix : WOOD_CRAFTED) {
+                if (n.equals(wood + suffix)) return true;
+            }
+            if (n.equals(wood + "_MOSAIC_STAIRS") || n.equals(wood + "_MOSAIC_SLAB")) return true;
+        }
+        return false;
     }
 
     /** The sell price and category for an item, or null if it must not be sold. */
