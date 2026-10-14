@@ -181,13 +181,14 @@ public final class BuyOrderGui implements Listener {
             if (index >= list.size()) {
                 return;
             }
-            String err = plugin.buyOrders().claim(player, list.get(index).id());
-            if (err != null) {
-                player.sendMessage(Gui.text(err, NamedTextColor.RED));
-            } else {
-                player.sendMessage(plugin.msg().plain("bo-claimed"));
-            }
-            openDeliveries(player, holder.page);
+            plugin.buyOrders().claim(player, list.get(index).id(), err -> {
+                if (err != null) {
+                    player.sendMessage(Gui.text(err, NamedTextColor.RED));
+                } else {
+                    player.sendMessage(plugin.msg().plain("bo-claimed"));
+                }
+                if (stillOpen(player, holder)) openDeliveries(player, holder.page);
+            });
             return;
         }
 
@@ -199,19 +200,21 @@ public final class BuyOrderGui implements Listener {
         UUID id = list.get(index).id();
 
         if (holder.view == View.MINE) {
-            String err = plugin.buyOrders().cancel(player, id);
-            player.sendMessage(err != null ? Gui.text(err, NamedTextColor.RED) : plugin.msg().plain("bo-cancelled"));
-            openMine(player, holder.page);
+            plugin.buyOrders().cancel(player, id, err -> {
+                player.sendMessage(err != null ? Gui.text(err, NamedTextColor.RED) : plugin.msg().plain("bo-cancelled"));
+                if (stillOpen(player, holder)) openMine(player, holder.page);
+            });
             return;
         }
 
         // the store itself caps this to however much the seller actually has, so asking for
         // the whole remaining order just means "sell as much toward it as you can"
-        String err = plugin.buyOrders().fulfill(player, id, list.get(index).amountRemaining());
-        if (err != null) {
-            player.sendMessage(Gui.text(err, NamedTextColor.RED));
-        }
-        openBrowse(player, holder.page);
+        plugin.buyOrders().fulfill(player, id, list.get(index).amountRemaining(), err -> {
+            if (err != null) {
+                player.sendMessage(Gui.text(err, NamedTextColor.RED));
+            }
+            if (stillOpen(player, holder)) openBrowse(player, holder.page);
+        });
     }
 
     private void reopen(Player p, Holder h, int page) {
@@ -220,6 +223,11 @@ public final class BuyOrderGui implements Listener {
             case DELIVERIES -> openDeliveries(p, page);
             default -> openBrowse(p, page);
         }
+    }
+
+    /** True while the player is still looking at the screen the click came from. */
+    private static boolean stillOpen(Player player, org.bukkit.inventory.InventoryHolder holder) {
+        return player.isOnline() && player.getOpenInventory().getTopInventory().getHolder() == holder;
     }
 
     static final class Holder implements InventoryHolder {

@@ -131,9 +131,10 @@ public final class AuctionGui implements Listener {
         UUID id = list.get(index).id();
 
         if (holder.mine || event.getClick() == ClickType.RIGHT && list.get(index).seller().equals(player.getUniqueId())) {
-            String err = plugin.auctions().cancel(player, id);
-            player.sendMessage(err != null ? Gui.text(err, NamedTextColor.RED) : plugin.msg().plain("ah-cancelled"));
-            openMine(player, holder.page);
+            plugin.auctions().cancel(player, id, err -> {
+                player.sendMessage(err != null ? Gui.text(err, NamedTextColor.RED) : plugin.msg().plain("ah-cancelled"));
+                if (stillOpen(player, holder)) openMine(player, holder.page);
+            });
             return;
         }
         Auctions.Listing chosen = list.get(index);
@@ -143,15 +144,16 @@ public final class AuctionGui implements Listener {
             player.sendMessage(Gui.text("That costs " + plugin.money(chosen.price()) + ". Click it again to confirm.", NamedTextColor.YELLOW));
             return;
         }
-        String err = plugin.auctions().buy(player, id);
-        if (err != null) {
-            player.sendMessage(Gui.text(err, NamedTextColor.RED));
-        } else {
-            player.sendMessage(plugin.msg().get("ah-bought", java.util.Map.of(
-                    "item", list.get(index).item().getType().name().toLowerCase().replace('_', ' '),
-                    "price", plugin.money(list.get(index).price()))));
-        }
-        openBrowse(player, holder.page);
+        plugin.auctions().buy(player, id, err -> {
+            if (err != null) {
+                player.sendMessage(Gui.text(err, NamedTextColor.RED));
+            } else {
+                player.sendMessage(plugin.msg().get("ah-bought", java.util.Map.of(
+                        "item", chosen.item().getType().name().toLowerCase().replace('_', ' '),
+                        "price", plugin.money(chosen.price()))));
+            }
+            if (stillOpen(player, holder)) openBrowse(player, holder.page);
+        });
     }
 
     private void open(Player p, Holder h, int page) {
@@ -160,6 +162,11 @@ public final class AuctionGui implements Listener {
         } else {
             openBrowse(p, page);
         }
+    }
+
+    /** True while the player is still looking at the screen the click came from. */
+    private static boolean stillOpen(Player player, org.bukkit.inventory.InventoryHolder holder) {
+        return player.isOnline() && player.getOpenInventory().getTopInventory().getHolder() == holder;
     }
 
     static final class Holder implements InventoryHolder {

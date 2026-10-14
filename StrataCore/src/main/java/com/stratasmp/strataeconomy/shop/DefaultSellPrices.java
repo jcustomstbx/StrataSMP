@@ -141,7 +141,29 @@ public final class DefaultSellPrices {
     public static boolean isNever(String name) {
         String n = name.toUpperCase(Locale.ROOT);
         return NEVER.contains(n) || n.startsWith("LEGACY_") || n.endsWith("_SPAWN_EGG") || n.endsWith("_AIR")
-                || isWoodCrafted(n);
+                || isWoodCrafted(n) || isStoneCrafted(n) || isPotion(n);
+    }
+
+    /** Potions and tipped arrows are cheap to brew in bulk and one flat price can't fit every effect. */
+    public static boolean isPotion(String name) {
+        String n = name.toUpperCase(Locale.ROOT);
+        return n.equals("POTION") || n.equals("SPLASH_POTION") || n.equals("LINGERING_POTION") || n.equals("TIPPED_ARROW");
+    }
+
+    /**
+     * Stone, cobblestone, deepslate, basalt and blackstone plus everything crafted from them. Generators make the raw
+     * blocks for free and a stonecutter turns one into several, so any price is a free-money loop. Ores are excluded.
+     */
+    public static boolean isStoneCrafted(String name) {
+        String n = name.toUpperCase(Locale.ROOT);
+        if (n.endsWith("_ORE") || n.startsWith("GILDED_")) return false;
+        if (n.equals("STONE") || n.equals("DEEPSLATE") || n.equals("BASALT")) return true;
+        return n.contains("COBBLESTONE") || n.contains("COBBLED_DEEPSLATE") || n.contains("STONE_BRICK")
+                || n.contains("DEEPSLATE_BRICK") || n.contains("DEEPSLATE_TILE") || n.contains("POLISHED_DEEPSLATE")
+                || n.equals("CHISELED_DEEPSLATE") || n.contains("BLACKSTONE") || n.contains("BASALT")
+                || n.equals("SMOOTH_STONE") || n.equals("SMOOTH_STONE_SLAB")
+                || n.equals("STONE_STAIRS") || n.equals("STONE_SLAB") || n.equals("STONE_BUTTON")
+                || n.equals("STONE_PRESSURE_PLATE");
     }
 
     /**

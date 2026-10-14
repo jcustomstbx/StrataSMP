@@ -76,7 +76,7 @@ public final class StreakTracker {
             config.set(path + ".best", entry.getValue().best());
         }
         try {
-            config.save(file);
+            com.stratasmp.stratacore.AtomicYaml.save(config, file);
         } catch (IOException e) {
             throw new IllegalStateException("Could not save streaks.yml", e);
         }

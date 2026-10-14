@@ -89,7 +89,7 @@ public final class BoardStore {
             config.set(path + ".entity", board.entityId() == null ? null : board.entityId().toString());
         }
         try {
-            config.save(file);
+            com.stratasmp.stratacore.AtomicYaml.save(config, file);
         } catch (IOException e) {
             throw new IllegalStateException("Could not save boards.yml", e);
         }

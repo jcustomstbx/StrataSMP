@@ -242,21 +242,31 @@ public final class ShopCommands implements CommandExecutor {
                     return;
                 }
                 ItemStack listed = hand.clone();
-                try {
-                    ah.list(p, listed, price);
-                } catch (IllegalStateException e) {
-                    if (fee > 0) {
-                        plugin.stratas().deposit(p.getUniqueId(), fee);
-                    }
-                    plugin.getLogger().severe("Could not persist auction listing: " + e.getMessage());
-                    p.sendMessage("The listing could not be saved. Your item was not listed; please try again.");
-                    return;
-                }
+                // the item leaves the hand first so it can't be moved or dropped while the listing saves
                 p.getInventory().setItemInMainHand(null);
-                plugin.msg().send(p, "ah-listed", Map.of("item", describe(listed), "price", plugin.money(price)));
-                if (fee > 0) {
-                    plugin.msg().send(p, "ah-list-fee", Map.of("amount", plugin.money(fee)));
-                }
+                final long listPrice = price;
+                ah.list(p, listed, listPrice, saved -> {
+                    if (saved == null) {
+                        if (fee > 0) {
+                            plugin.stratas().deposit(p.getUniqueId(), fee);
+                        }
+                        if (p.isOnline()) {
+                            for (ItemStack left : p.getInventory().addItem(listed).values()) {
+                                p.getWorld().dropItem(p.getLocation(), left);
+                            }
+                            p.sendMessage("The listing could not be saved. Your item was returned; please try again.");
+                        } else {
+                            plugin.getLogger().severe("Auction listing failed for " + p.getName() + " (" + p.getUniqueId()
+                                    + ") after they logged out; item lost: " + listed);
+                        }
+                        return;
+                    }
+                    if (!p.isOnline()) return;
+                    plugin.msg().send(p, "ah-listed", Map.of("item", describe(listed), "price", plugin.money(listPrice)));
+                    if (fee > 0) {
+                        plugin.msg().send(p, "ah-list-fee", Map.of("amount", plugin.money(fee)));
+                    }
+                });
             }
             case "buy" -> {
                 Auctions.Listing l = pick(ah.all(), args);
@@ -264,12 +274,13 @@ public final class ShopCommands implements CommandExecutor {
                     p.sendMessage("/ah buy <number>");
                     return;
                 }
-                String err = ah.buy(p, l.id());
-                if (err != null) {
-                    p.sendMessage(err);
-                } else {
-                    plugin.msg().send(p, "ah-bought", Map.of("item", describe(l.item()), "price", plugin.money(l.price())));
-                }
+                ah.buy(p, l.id(), err -> {
+                    if (err != null) {
+                        p.sendMessage(err);
+                    } else {
+                        plugin.msg().send(p, "ah-bought", Map.of("item", describe(l.item()), "price", plugin.money(l.price())));
+                    }
+                });
             }
             case "mine" -> auctionGui.openMine(p, 0);
             case "cancel" -> {
@@ -278,12 +289,13 @@ public final class ShopCommands implements CommandExecutor {
                     p.sendMessage("/ah cancel <number>");
                     return;
                 }
-                String err = ah.cancel(p, l.id());
-                if (err != null) {
-                    p.sendMessage(err);
-                } else {
-                    plugin.msg().send(p, "ah-cancelled");
-                }
+                ah.cancel(p, l.id(), err -> {
+                    if (err != null) {
+                        p.sendMessage(err);
+                    } else {
+                        plugin.msg().send(p, "ah-cancelled");
+                    }
+                });
             }
             case "buyorder" -> buyOrder(p, args);
             case "buyorders" -> buyOrderGui.openBrowse(p, 0);
@@ -340,15 +352,19 @@ public final class ShopCommands implements CommandExecutor {
                     "min", String.valueOf(store.minPrice()), "max", String.valueOf(store.maxPrice())));
             return;
         }
-        String err = bo.create(p, hand.getType(), amount, price);
-        if (err != null) {
-            p.sendMessage(err);
-            return;
-        }
-        plugin.msg().send(p, "bo-created", Map.of(
-                "amount", String.valueOf(amount),
-                "item", hand.getType().name().toLowerCase().replace('_', ' '),
-                "price", plugin.money(price * amount)));
+        final int orderAmount = amount;
+        final long orderPrice = price;
+        final org.bukkit.Material orderMaterial = hand.getType();
+        bo.create(p, orderMaterial, orderAmount, orderPrice, err -> {
+            if (err != null) {
+                p.sendMessage(err);
+                return;
+            }
+            plugin.msg().send(p, "bo-created", Map.of(
+                    "amount", String.valueOf(orderAmount),
+                    "item", orderMaterial.name().toLowerCase().replace('_', ' '),
+                    "price", plugin.money(orderPrice * orderAmount)));
+        });
     }
 
     private Auctions.Listing pick(List<Auctions.Listing> list, String[] args) {

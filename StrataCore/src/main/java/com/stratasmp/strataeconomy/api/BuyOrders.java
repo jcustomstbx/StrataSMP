@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public interface BuyOrders {
 
@@ -42,15 +43,15 @@ public interface BuyOrders {
 
     List<Delivery> deliveriesFor(UUID buyer);
 
-    /** @return null on success, otherwise a player-facing error string. */
-    String create(Player buyer, Material material, int amount, long pricePerItem);
+    /** All of these run their database work off the main thread; {@code done} runs on the main thread with null on
+     *  success, otherwise a player-facing error string. */
+    void create(Player buyer, Material material, int amount, long pricePerItem, Consumer<String> done);
 
-    /** Seller fulfills up to {@code amount} of the order from their own inventory. @return null on success, otherwise a player-facing error string. */
-    String fulfill(Player seller, UUID orderId, int amount);
+    /** Seller fulfills up to {@code amount} of the order from their own inventory. */
+    void fulfill(Player seller, UUID orderId, int amount, Consumer<String> done);
 
-    /** @return null on success, otherwise a player-facing error string. */
-    String cancel(Player who, UUID orderId);
+    void cancel(Player who, UUID orderId, Consumer<String> done);
 
-    /** Claims one pending delivery into the player's inventory. @return null on success, otherwise a player-facing error string. */
-    String claim(Player who, UUID deliveryId);
+    /** Claims one pending delivery into the player's inventory. */
+    void claim(Player who, UUID deliveryId, Consumer<String> done);
 }

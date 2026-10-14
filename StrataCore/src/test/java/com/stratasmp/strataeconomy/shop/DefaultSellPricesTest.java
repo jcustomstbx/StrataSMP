@@ -31,7 +31,7 @@ class DefaultSellPricesTest {
 
     @Test
     void ordinaryItemsGetAPositivePrice() {
-        for (String name : new String[] {"STONE", "DIRT", "GLASS", "CHEST", "WHITE_BED", "POPPY", "OAK_SAPLING"}) {
+        for (String name : new String[] {"DIRT", "GLASS", "CHEST", "WHITE_BED", "POPPY", "OAK_SAPLING"}) {
             DefaultSellPrices.Entry entry = DefaultSellPrices.of(name);
             assertNotNull(entry, name);
             assertTrue(entry.price() > 0, name);
@@ -54,6 +54,22 @@ class DefaultSellPricesTest {
             "CRIMSON_STEM", "BAMBOO_BLOCK", "CHEST", "CRAFTING_TABLE", "BARREL", "SCAFFOLDING"})
     void raw_wood_and_non_wood_items_are_unaffected(String name) {
         assertFalse(DefaultSellPrices.isWoodCrafted(name), name);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"STONE", "COBBLESTONE", "COBBLESTONE_SLAB", "MOSSY_COBBLESTONE_WALL", "STONE_BRICKS", "STONE_BRICK_STAIRS",
+            "STONE_SLAB", "STONE_BUTTON", "SMOOTH_STONE", "COBBLED_DEEPSLATE_STAIRS", "POLISHED_DEEPSLATE", "DEEPSLATE_TILE_SLAB",
+            "DEEPSLATE", "BASALT", "POLISHED_BASALT", "BLACKSTONE", "POLISHED_BLACKSTONE_BRICK_SLAB", "CHISELED_POLISHED_BLACKSTONE",
+            "POTION", "SPLASH_POTION", "LINGERING_POTION", "TIPPED_ARROW"})
+    void cheapStoneAndPotionItemsAreNotSellable(String name) {
+        assertNull(DefaultSellPrices.of(name), name);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"DIAMOND_ORE", "DEEPSLATE_DIAMOND_ORE", "SANDSTONE", "REDSTONE", "GLOWSTONE", "END_STONE", "LODESTONE",
+            "GILDED_BLACKSTONE", "STONE_SWORD", "STONE_PICKAXE"})
+    void nearbyNamesAreStillSellable(String name) {
+        assertFalse(DefaultSellPrices.isStoneCrafted(name), name);
     }
 
     @Test
@@ -110,7 +126,7 @@ class DefaultSellPricesTest {
         assertEquals(Section.FARMING_DROPS, DefaultSellPrices.of("COOKED_BEEF").section());
         assertEquals(Section.FARMING_DROPS, DefaultSellPrices.of("RED_DYE").section());
         assertEquals(Section.MOB_DROPS, DefaultSellPrices.of("ZOMBIE_HEAD").section());
-        assertEquals(Section.BUILDING_BLOCKS, DefaultSellPrices.of("STONE").section());
+        assertEquals(Section.BUILDING_BLOCKS, DefaultSellPrices.of("DIRT").section());
     }
 
     @Test

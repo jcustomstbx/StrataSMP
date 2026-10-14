@@ -19,7 +19,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -29,6 +31,13 @@ public final class AuctionStore implements Auctions {
     private final Database db;
     private final ConcurrentHashMap<UUID, Impl> listings = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<UUID, Delivery> deliveries = new ConcurrentHashMap<>();
+    // players with a save in flight, listings and deliveries a database write is working on
+    private final Set<UUID> busy = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> inFlight = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> handedOut = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> deleting = ConcurrentHashMap.newKeySet();
+
+    private static final String WAIT = "Please wait a moment, your last auction action is still being saved.";
 
     private final int maxPerPlayer;
     private final long minPrice;
@@ -135,48 +144,71 @@ public final class AuctionStore implements Auctions {
     }
 
     @Override
-    public Listing list(Player seller, ItemStack item, long price) {
+    public void list(Player seller, ItemStack item, long price, Consumer<Listing> done) {
+        UUID sellerId = seller.getUniqueId();
+        if (!busy.add(sellerId)) {
+            done.accept(null);
+            return;
+        }
         long now = System.currentTimeMillis();
         long featuredCount = listings.values().stream()
-                .filter(existing -> existing.seller.equals(seller.getUniqueId()) && existing.featuredUntil > now)
+                .filter(existing -> existing.seller.equals(sellerId) && existing.featuredUntil > now)
                 .count();
         long featuredUntil = RankTier.of(seller) == RankTier.REGAL && featuredCount < 5
                 ? now + 24L * 60L * 60L * 1000L : 0L;
-        Impl l = new Impl(UUID.randomUUID(), seller.getUniqueId(), seller.getName(),
-                item.clone(), price, now, featuredUntil);
+        Impl l = new Impl(UUID.randomUUID(), sellerId, seller.getName(), item.clone(), price, now, featuredUntil);
         final String b64 = toB64(l.item);
-        try {
+        plugin.offload(() -> {
             db.transaction(c -> {
                 try (PreparedStatement ps = c.prepareStatement(
                         "INSERT INTO stratas_auctions (id, seller, seller_name, item_b64, price, listed_at, featured_until) VALUES (?,?,?,?,?,?,?)")) {
-                ps.setString(1, l.id.toString());
-                ps.setString(2, l.seller.toString());
-                ps.setString(3, l.sellerName);
-                ps.setString(4, b64);
-                ps.setLong(5, l.price);
-                ps.setLong(6, l.listedAt);
-                ps.setLong(7, l.featuredUntil);
-                ps.executeUpdate();
+                    ps.setString(1, l.id.toString());
+                    ps.setString(2, l.seller.toString());
+                    ps.setString(3, l.sellerName);
+                    ps.setString(4, b64);
+                    ps.setLong(5, l.price);
+                    ps.setLong(6, l.listedAt);
+                    ps.setLong(7, l.featuredUntil);
+                    ps.executeUpdate();
                 }
             });
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not persist auction listing", e);
-        }
-        listings.put(l.id, l);
-        return l;
+            return l;
+        }, (saved, failure) -> {
+            busy.remove(sellerId);
+            if (failure != null) {
+                plugin.getLogger().severe("Could not persist auction listing: " + failure.getMessage());
+                done.accept(null);
+                return;
+            }
+            listings.put(l.id, l);
+            done.accept(l);
+        });
     }
 
     @Override
-    public String buy(Player buyer, UUID listingId) {
+    public void buy(Player buyer, UUID listingId, Consumer<String> done) {
         Impl l = listings.get(listingId);
-        if (l == null) {
-            return plugin.msgRaw("ah-gone");
+        if (l == null || inFlight.contains(listingId)) {
+            done.accept(plugin.msgRaw("ah-gone"));
+            return;
         }
-        if (l.seller.equals(buyer.getUniqueId())) {
-            return plugin.msgRaw("ah-own-listing");
+        UUID buyerId = buyer.getUniqueId();
+        if (l.seller.equals(buyerId)) {
+            done.accept(plugin.msgRaw("ah-own-listing"));
+            return;
         }
-        if (!plugin.stratas().has(buyer.getUniqueId(), l.price)) {
-            return plugin.msgRaw("shop-cant-afford");
+        if (!plugin.stratas().has(buyerId, l.price)) {
+            done.accept(plugin.msgRaw("shop-cant-afford"));
+            return;
+        }
+        if (!busy.add(buyerId)) {
+            done.accept(WAIT);
+            return;
+        }
+        if (!inFlight.add(listingId)) {
+            busy.remove(buyerId);
+            done.accept(plugin.msgRaw("ah-gone"));
+            return;
         }
 
         AuctionSaleEvent event = new AuctionSaleEvent(l.seller, buyer, l.item, l.price);
@@ -185,58 +217,72 @@ public final class AuctionStore implements Auctions {
         long payout = l.price - tax;
 
         java.util.Map<UUID, Long> deltas = new java.util.HashMap<>();
-        deltas.put(buyer.getUniqueId(), -l.price);
+        deltas.put(buyerId, -l.price);
         if (payout > 0) {
             deltas.merge(l.seller, payout, Long::sum);
         }
-        Delivery delivery = new Delivery(UUID.randomUUID(), buyer.getUniqueId(), l.item.clone(),
-                System.currentTimeMillis());
-        try {
-            boolean committed = plugin.stratas().applyAtomicDeltas(deltas, c -> {
-                insertDelivery(c, delivery);
-                try (PreparedStatement ps = c.prepareStatement("DELETE FROM stratas_auctions WHERE id=?")) {
-                    ps.setString(1, listingId.toString());
-                    if (ps.executeUpdate() != 1) {
-                        throw new java.sql.SQLException("Auction listing was already removed");
-                    }
+        Delivery delivery = new Delivery(UUID.randomUUID(), buyerId, l.item.clone(), System.currentTimeMillis());
+        plugin.offload(() -> plugin.stratas().applyAtomicDeltas(deltas, c -> {
+            insertDelivery(c, delivery);
+            try (PreparedStatement ps = c.prepareStatement("DELETE FROM stratas_auctions WHERE id=?")) {
+                ps.setString(1, listingId.toString());
+                if (ps.executeUpdate() != 1) {
+                    throw new java.sql.SQLException("Auction listing was already removed");
                 }
-            });
-            if (!committed) {
-                return plugin.msgRaw("shop-cant-afford");
             }
-        } catch (java.sql.SQLException e) {
-            plugin.getLogger().severe("Auction purchase transaction failed: " + e.getMessage());
-            return "The purchase could not be saved. No Stratas were charged; please try again.";
-        }
-        listings.remove(listingId, l);
-        deliveries.put(delivery.id, delivery);
-        boolean delivered = deliverOne(buyer, delivery);
+        }), (committed, failure) -> {
+            inFlight.remove(listingId);
+            busy.remove(buyerId);
+            if (failure != null) {
+                plugin.getLogger().severe("Auction purchase transaction failed: " + failure.getMessage());
+                done.accept("The purchase could not be saved. No Stratas were charged; please try again.");
+                return;
+            }
+            if (!committed) {
+                done.accept(plugin.msgRaw("shop-cant-afford"));
+                return;
+            }
+            listings.remove(listingId, l);
+            deliveries.put(delivery.id, delivery);
+            boolean delivered = buyer.isOnline() && deliverOne(buyer, delivery);
 
-        Player sellerOnline = Bukkit.getPlayer(l.seller);
-        if (sellerOnline != null) {
-            plugin.msg().send(sellerOnline, "ah-sold", java.util.Map.of(
-                    "player", buyer.getName(),
-                    "item", l.item.getType().name().toLowerCase().replace('_', ' '),
-                    "price", plugin.money(payout)));
-        }
-        if (!delivered) {
-            buyer.sendMessage("Your purchase is safe in your item inbox. Free an inventory slot, then use /ah claimitems.");
-        }
-        return null;
+            Player sellerOnline = Bukkit.getPlayer(l.seller);
+            if (sellerOnline != null) {
+                plugin.msg().send(sellerOnline, "ah-sold", java.util.Map.of(
+                        "player", buyer.getName(),
+                        "item", l.item.getType().name().toLowerCase().replace('_', ' '),
+                        "price", plugin.money(payout)));
+            }
+            if (!delivered && buyer.isOnline()) {
+                buyer.sendMessage("Your purchase is safe in your item inbox. Free an inventory slot, then use /ah claimitems.");
+            }
+            done.accept(null);
+        });
     }
 
     @Override
-    public String cancel(Player who, UUID listingId) {
+    public void cancel(Player who, UUID listingId, Consumer<String> done) {
         Impl l = listings.get(listingId);
-        if (l == null) {
-            return plugin.msgRaw("ah-gone");
+        if (l == null || inFlight.contains(listingId)) {
+            done.accept(plugin.msgRaw("ah-gone"));
+            return;
         }
         if (!l.seller.equals(who.getUniqueId()) && !who.hasPermission("strataeconomy.admin")) {
-            return plugin.msgRaw("ah-not-yours");
+            done.accept(plugin.msgRaw("ah-not-yours"));
+            return;
         }
-        Delivery delivery = new Delivery(UUID.randomUUID(), who.getUniqueId(), l.item.clone(),
-                System.currentTimeMillis());
-        try {
+        UUID whoId = who.getUniqueId();
+        if (!busy.add(whoId)) {
+            done.accept(WAIT);
+            return;
+        }
+        if (!inFlight.add(listingId)) {
+            busy.remove(whoId);
+            done.accept(plugin.msgRaw("ah-gone"));
+            return;
+        }
+        Delivery delivery = new Delivery(UUID.randomUUID(), whoId, l.item.clone(), System.currentTimeMillis());
+        plugin.offload(() -> {
             db.transaction(c -> {
                 insertDelivery(c, delivery);
                 try (PreparedStatement ps = c.prepareStatement("DELETE FROM stratas_auctions WHERE id=?")) {
@@ -246,22 +292,28 @@ public final class AuctionStore implements Auctions {
                     }
                 }
             });
-        } catch (java.sql.SQLException e) {
-            plugin.getLogger().severe("Auction cancellation transaction failed: " + e.getMessage());
-            return "The cancellation could not be saved. Your item was not returned; please try again.";
-        }
-        listings.remove(listingId, l);
-        deliveries.put(delivery.id, delivery);
-        if (!deliverOne(who, delivery)) {
-            who.sendMessage("Your returned item is safe in your item inbox. Free a slot, then use /ah claimitems.");
-        }
-        return null;
+            return true;
+        }, (ok, failure) -> {
+            inFlight.remove(listingId);
+            busy.remove(whoId);
+            if (failure != null) {
+                plugin.getLogger().severe("Auction cancellation transaction failed: " + failure.getMessage());
+                done.accept("The cancellation could not be saved. Your item was not returned; please try again.");
+                return;
+            }
+            listings.remove(listingId, l);
+            deliveries.put(delivery.id, delivery);
+            if (who.isOnline() && !deliverOne(who, delivery)) {
+                who.sendMessage("Your returned item is safe in your item inbox. Free a slot, then use /ah claimitems.");
+            }
+            done.accept(null);
+        });
     }
 
     @Override
     public boolean adminRemove(UUID listingId) {
         Impl l = listings.get(listingId);
-        if (l == null) {
+        if (l == null || inFlight.contains(listingId)) {
             return false;
         }
         try {
@@ -284,7 +336,7 @@ public final class AuctionStore implements Auctions {
         int claimed = 0;
         for (Delivery delivery : deliveries.values()) {
             if (!delivery.buyer.equals(player.getUniqueId())) continue;
-            if (DeliveryMarker.present(player, plugin, delivery.id)) continue;
+            if (handedOut.contains(delivery.id) || DeliveryMarker.present(player, plugin, delivery.id)) continue;
             if (deliverOne(player, delivery)) claimed++;
         }
         return claimed;
@@ -296,14 +348,12 @@ public final class AuctionStore implements Auctions {
         for (ItemStack item : contents) {
             UUID id = DeliveryMarker.id(plugin, item);
             if (id == null) continue;
-            if (deliveries.containsKey(id)) {
-                try {
-                    deleteDelivery(id);
-                    deliveries.remove(id);
-                } catch (java.sql.SQLException e) {
-                    plugin.getLogger().severe("Auction delivery reconciliation failed: " + e.getMessage());
-                    continue;
-                }
+            Delivery delivery = deliveries.get(id);
+            if (delivery != null) {
+                // the marker stays on the item until the row is really gone
+                handedOut.add(id);
+                scheduleDelete(player.getUniqueId(), delivery);
+                continue;
             }
             changed |= DeliveryMarker.clear(plugin, item);
         }
@@ -313,22 +363,38 @@ public final class AuctionStore implements Auctions {
         }
     }
 
+    /** Puts the item in the inventory under a marker; the row is deleted in the background and the marker then cleared. */
     private boolean deliverOne(Player player, Delivery delivery) {
         ItemStack marked = DeliveryMarker.mark(plugin, delivery.item, delivery.id);
         if (!canFullyFit(player, marked)) return false;
         java.util.Map<Integer, ItemStack> overflow = player.getInventory().addItem(marked);
         if (!overflow.isEmpty()) return false;
+        handedOut.add(delivery.id);
         player.saveData();
-        try {
+        scheduleDelete(player.getUniqueId(), delivery);
+        return true;
+    }
+
+    private void scheduleDelete(UUID playerId, Delivery delivery) {
+        if (!deleting.add(delivery.id)) return;
+        plugin.offload(() -> {
             deleteDelivery(delivery.id);
-            deliveries.remove(delivery.id, delivery);
-            DeliveryMarker.clearFromInventory(plugin, player, delivery.id);
-            player.saveData();
             return true;
-        } catch (java.sql.SQLException e) {
-            plugin.getLogger().severe("Auction delivery acknowledgement failed: " + e.getMessage());
-            return false;
-        }
+        }, (ok, failure) -> {
+            deleting.remove(delivery.id);
+            if (failure != null) {
+                // stays handed out, so it can't be given again this session; the next join retries the delete
+                plugin.getLogger().severe("Auction delivery acknowledgement failed: " + failure.getMessage());
+                return;
+            }
+            deliveries.remove(delivery.id, delivery);
+            handedOut.remove(delivery.id);
+            Player online = Bukkit.getPlayer(playerId);
+            if (online != null) {
+                DeliveryMarker.clearFromInventory(plugin, online, delivery.id);
+                online.saveData();
+            }
+        });
     }
 
     private boolean canFullyFit(Player player, ItemStack item) {

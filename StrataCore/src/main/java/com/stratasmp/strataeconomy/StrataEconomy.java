@@ -246,6 +246,31 @@ public final class StrataEconomy extends StrataModule implements StrataApi {
         }
     }
 
+    /** Runs on the main thread; inline when the module is shutting down. */
+    public void sync(Runnable r) {
+        if (isEnabled()) {
+            getServer().getScheduler().runTask(this, r);
+        } else {
+            r.run();
+        }
+    }
+
+    /** Runs {@code work} off the main thread, then hands its result or failure back on the main thread. */
+    public <T> void offload(java.util.concurrent.Callable<T> work, java.util.function.BiConsumer<T, Exception> then) {
+        async(() -> {
+            T result = null;
+            Exception failure = null;
+            try {
+                result = work.call();
+            } catch (Exception e) {
+                failure = e;
+            }
+            final T finalResult = result;
+            final Exception finalFailure = failure;
+            sync(() -> then.accept(finalResult, finalFailure));
+        });
+    }
+
     public StratasService stratas() {
         return stratas;
     }

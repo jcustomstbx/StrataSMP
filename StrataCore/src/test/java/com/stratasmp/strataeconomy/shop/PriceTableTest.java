@@ -89,9 +89,10 @@ class PriceTableTest {
     @Test
     void everythingElseGetsADefaultSellPrice() {
         PriceTable prices = table();
-        // STONE only had a buy price, so it used to be unsellable
-        assertTrue(prices.canSell(Material.STONE));
-        assertEquals(1, prices.baseSellPrice(Material.STONE));
+        // DIRT only had a buy price, so it used to be unsellable
+        assertTrue(prices.canSell(Material.DIRT));
+        assertEquals(1, prices.baseSellPrice(Material.DIRT));
+        assertFalse(prices.canSell(Material.STONE), "stone is generator-farmable");
         assertTrue(prices.canSell(Material.NETHER_STAR));
         assertTrue(prices.canSell(Material.DIAMOND_PICKAXE));
         assertTrue(prices.canSell(Material.HOPPER));
@@ -119,7 +120,7 @@ class PriceTableTest {
         assertEquals(4, prices.baseSellPrice(Material.OAK_LOG), "logs keep their explicit price");
         assertEquals(1, prices.baseSellPrice(Material.OAK_PLANKS));
         assertTrue(prices.canSell(Material.CHERRY_LOG));
-        assertTrue(prices.canSell(Material.STONE_SLAB), "only wood is affected");
+        assertTrue(prices.canSell(Material.SANDSTONE_SLAB), "only wood is affected");
     }
 
     @Test
@@ -273,7 +274,7 @@ class PriceTableTest {
         assertEquals(2.0, prices.getGlobalMultiplier(), 1e-9, "clamped to 2x");
         prices.setGlobalMultiplier(0.0);
         assertEquals(0.5, prices.getGlobalMultiplier(), 1e-9, "clamped to 0.5x");
-        assertEquals(1, prices.sellPrice(Material.STONE), "a priced item never rounds down to free");
+        assertEquals(1, prices.sellPrice(Material.DIRT), "a priced item never rounds down to free");
     }
 
     @Test
