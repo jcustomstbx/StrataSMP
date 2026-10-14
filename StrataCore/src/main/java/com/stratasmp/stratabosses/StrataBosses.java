@@ -2,6 +2,7 @@ package com.stratasmp.stratabosses;
 
 import com.stratasmp.stratacore.StrataCore;
 import com.stratasmp.stratacore.StrataModule;
+import java.util.List;
 
 
 public class StrataBosses extends StrataModule {
@@ -11,6 +12,7 @@ public class StrataBosses extends StrataModule {
 
    private PeriodicBossSpawner spawner;
    private BossManager bossManager;
+   private BossRegistry registry;
 
    public void onEnable() {
       this.saveDefaultConfig();
@@ -19,7 +21,8 @@ public class StrataBosses extends StrataModule {
       if (leftovers > 0) {
          this.getLogger().info("Restored " + leftovers + " boss arena(s) left standing by the last shutdown.");
       }
-      BossRegistry registry = new BossRegistry(this);
+      this.registry = new BossRegistry(this);
+      BossRegistry registry = this.registry;
       this.bossManager = new BossManager(this, registry);
       this.getServer().getPluginManager().registerEvents(bossManager, this);
       bossManager.patchAlreadyActiveBosses();
@@ -43,5 +46,22 @@ public class StrataBosses extends StrataModule {
 
    public boolean throwTrident(org.bukkit.entity.LivingEntity boss) {
       return this.bossManager != null && this.bossManager.throwTrident(boss);
+   }
+
+   /** Spawns a boss for a scheduled event. A blank or unknown id picks a random enabled boss. Returns the boss's display name, or null if nothing spawned. */
+   public String spawnEventBoss(String bossId) {
+      if (this.spawner == null || this.registry == null) return null;
+      BossDefinition def = bossId == null || bossId.isBlank() ? null : this.registry.byId(bossId);
+      List<BossDefinition> order = new java.util.ArrayList<>();
+      if (def != null) {
+         order.add(def);
+      } else {
+         for (BossDefinition candidate : this.registry.all().values()) if (candidate.enabled) order.add(candidate);
+         java.util.Collections.shuffle(order);
+      }
+      for (BossDefinition candidate : order) {
+         if (this.spawner.spawnEvent(candidate)) return candidate.displayName;
+      }
+      return null;
    }
 }

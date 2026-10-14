@@ -51,8 +51,12 @@ commands:
   ffa: {description: Queue for the free-for-all arena, usage: '/ffa [join <kit>|leave|status]'}
   combat: {description: Check your combat tag or administer it, usage: '/combat [reload|check <player>|untag <player>]'}
   services: {description: Spend Stratas on keystones and more, usage: '/services [reload]', aliases: [svc]}
+  koth: {description: King of the Hill, usage: '/koth [start|stop|setzone|delzone|list]'}
+  daily: {description: Show your daily login streak, usage: /daily}
+  events: {description: See upcoming events, usage: '/events [reload|boss]'}
   vote: {description: Get a clickable link to vote for StrataSMP, usage: /vote}
 permissions:
+  strataevents.admin: {description: Manage events and KOTH zones, default: op}
   strataservices.admin: {description: Reload services, default: op}
   stratacombat.admin: {description: Administer combat tags, default: op}
   stratacombat.bypass: {description: Never combat tagged, default: false}

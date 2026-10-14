@@ -57,7 +57,8 @@ public final class StrataCore extends JavaPlugin {
                 new StrataDuels(this),
                 new StrataVoteReward(this),
                 new com.stratasmp.stratacombat.StrataCombat(this),
-                new com.stratasmp.strataservices.StrataServices(this));
+                new com.stratasmp.strataservices.StrataServices(this),
+                new com.stratasmp.strataevents.StrataEvents(this));
 
         for (StrataModule module : startupOrder) {
             modules.put(module.getName(), module);

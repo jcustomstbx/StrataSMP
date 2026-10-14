@@ -65,6 +65,22 @@ public class PeriodicBossSpawner {
       if (target == null || this.bossManager.activeCountInWorld(def, target.getWorld()) >= def.maxConcurrentPerWorld) {
          return false;
       }
+      return this.spawnNear(def, target);
+   }
+
+   /**
+    * Spawns a boss for a scheduled event: no chance roll and no cooldown, but the same arena, overlap and
+    * concurrency rules as a natural spawn. Returns false when there was nobody eligible or no safe spot.
+    */
+   public boolean spawnEvent(BossDefinition def) {
+      Player target = this.randomEligiblePlayer();
+      if (target == null || this.bossManager.activeCountInWorld(def, target.getWorld()) >= def.maxConcurrentPerWorld) {
+         return false;
+      }
+      return this.spawnNear(def, target);
+   }
+
+   private boolean spawnNear(BossDefinition def, Player target) {
       boolean avoidStructures = this.plugin.getConfig().getBoolean("arena.avoid-structures", true);
       Location roughSpot = null;
       for (int attempt = 0; attempt < 8 && roughSpot == null; attempt++) {

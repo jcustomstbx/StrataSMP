@@ -1,0 +1,54 @@
+# StrataEvents - login streaks, a weekly boss and King of the Hill.
+
+# when "a day" starts and when events run (an IANA name such as Europe/London); blank = the server's timezone
+timezone: ""
+
+login:
+  enabled: true
+  # seconds after joining before the reward is given (lets the player finish loading in)
+  delay-seconds: 5
+  # day N pays base + per-day * (N - 1), levelling off at max-day
+  stratas:
+    base: 25
+    per-day: 25
+    max-day: 7
+  # extra rewards on an exact streak day: Stratas and/or console commands (%player%)
+  milestones:
+    7:
+      stratas: 250
+    14:
+      stratas: 500
+    30:
+      stratas: 2000
+
+weekly-boss:
+  enabled: true
+  # a StrataBosses id, or blank for a random enabled boss
+  boss: ""
+  # "DAY HH:mm" in the timezone above; add as many as you like
+  slots: ["SATURDAY 18:00"]
+  # countdown announcements, in minutes before the slot
+  warn-minutes: [10, 1]
+  # if the server was down or nobody was eligible at the exact time, keep trying for this long
+  catch-up-minutes: 30
+  min-online: 1
+
+koth:
+  enabled: true
+  # create zones in-game with /koth setzone <name> <radius> [half-height]; one is picked at random
+  slots: ["SUNDAY 20:00"]
+  warn-minutes: [10, 1]
+  catch-up-minutes: 15
+  min-online: 2
+  # how long one holder (a player or a team) must hold the zone alone
+  capture-seconds: 120
+  # progress drains while the zone is empty instead of being kept
+  drain-when-empty: true
+  # the KOTH ends with no winner after this long
+  max-minutes: 15
+  announce-every-seconds: 30
+  # paid to the winner, or every team member standing in the zone. Items: "MATERIAL amount[-max] [chance%]"
+  rewards:
+    stratas: 1000
+    items: ["DIAMOND 2-4", "EXPERIENCE_BOTTLE 8-16"]
+    commands: []

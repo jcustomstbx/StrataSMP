@@ -19,3 +19,6 @@ You also need a MariaDB/MySQL database for the economy (see the root README) and
 (set `resource-pack` and `resource-pack-sha1` in `server.properties`).
 
 Build StrataCore: `mvn -f StrataCore/pom.xml clean package` (Java 21) -> `StrataCore/target/StrataCore-1.0.0.jar`.
+
+Claims, homes/warps/TPA, AFK and chat come from companion plugins (GriefPrevention, EssentialsX); the exact settings are in
+`COMPANION-PLUGINS.md`.

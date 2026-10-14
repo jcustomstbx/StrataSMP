@@ -74,8 +74,13 @@ public final class KeystoneRewards {
 
     /** Rolls one player's share. Each participant rolls separately. */
     public Payout roll(int level, int partySize, Random random) {
+        return new Payout(stratasFor(level, partySize), rollDrops(dropsFor(level), random, stackSize));
+    }
+
+    /** Rolls a list of drops into legal stacks. Shared with other modules that pay out items. */
+    public static List<Stack> rollDrops(List<Drop> drops, Random random, java.util.function.ToIntFunction<Material> stackSize) {
         List<Stack> stacks = new ArrayList<>();
-        for (Drop drop : dropsFor(level)) {
+        for (Drop drop : drops) {
             if (random.nextDouble() >= drop.chance()) continue;
             int amount = drop.min() == drop.max() ? drop.min() : drop.min() + random.nextInt(drop.max() - drop.min() + 1);
             if (amount <= 0) continue;
@@ -86,7 +91,7 @@ public final class KeystoneRewards {
                 amount -= part;
             }
         }
-        return new Payout(stratasFor(level, partySize), stacks);
+        return stacks;
     }
 
     /** "DIAMOND 1-3 25%" - amount is a number or a range, the chance is optional and defaults to 100%. */
