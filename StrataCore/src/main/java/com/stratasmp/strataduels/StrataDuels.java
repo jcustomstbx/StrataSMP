@@ -45,6 +45,11 @@ public class StrataDuels extends StrataModule {
    private DuelMainMenuGUI mainMenuGUI;
    private DuelsExpansion duelsExpansion;
 
+   /** True while the player is in a duel, the queue's match or the FFA arena. */
+   public boolean isDueling(java.util.UUID id) {
+      return this.matchManager != null && this.matchManager.isBusy(id);
+   }
+
    public void onEnable() {
       this.saveDefaultConfig();
       double startingElo = this.getConfig().getDouble("elo.starting-elo", 1000.0);

@@ -49,8 +49,13 @@ commands:
   duelarena: {description: Manage duel arenas, usage: '/duelarena <create|setpos1|setpos2|setbound1|setbound2|savebaseline|cleanup|list|delete|toggle|ffa|addspawn|clearspawns>'}
   duelkit: {description: Manage the six duel kits, usage: '/duelkit <set|clear> <1-6>'}
   ffa: {description: Queue for the free-for-all arena, usage: '/ffa [join <kit>|leave|status]'}
+  combat: {description: Check your combat tag or administer it, usage: '/combat [reload|check <player>|untag <player>]'}
+  services: {description: Spend Stratas on keystones and more, usage: '/services [reload]', aliases: [svc]}
   vote: {description: Get a clickable link to vote for StrataSMP, usage: /vote}
 permissions:
+  strataservices.admin: {description: Reload services, default: op}
+  stratacombat.admin: {description: Administer combat tags, default: op}
+  stratacombat.bypass: {description: Never combat tagged, default: false}
   strataduels.use: {description: Use duel commands, default: true}
   strataduels.admin: {description: Manage duel arenas, kits and testing, default: op}
   stratakeystones.admin: {description: Manage keystones, default: op}

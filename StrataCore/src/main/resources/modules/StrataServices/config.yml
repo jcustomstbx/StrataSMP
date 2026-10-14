@@ -1,0 +1,51 @@
+# StrataServices - things players can spend Stratas on. Every purchase takes Stratas out of the economy.
+
+# decides when "daily-limit" resets (an IANA name such as Europe/London); blank = the server's timezone
+timezone: ""
+
+# Each service:
+#   name, icon (a Material), price (Stratas), lore (menu text), daily-limit (per player, 0 = none),
+#   permission (optional - hide it from players without it), commands (run by console, %player% = the buyer)
+# If any command fails the purchase is refunded.
+services:
+  keystone-1:
+    name: "Keystone Lv. 1"
+    icon: ECHO_SHARD
+    price: 500
+    lore: ["A level 1 keystone to start a run."]
+    daily-limit: 3
+    commands: ["keystone give %player% 1"]
+  keystone-2:
+    name: "Keystone Lv. 2"
+    icon: ECHO_SHARD
+    price: 1200
+    lore: ["A level 2 keystone."]
+    daily-limit: 2
+    commands: ["keystone give %player% 2"]
+  keystone-3:
+    name: "Keystone Lv. 3"
+    icon: ECHO_SHARD
+    price: 2500
+    lore: ["A level 3 keystone."]
+    daily-limit: 1
+    commands: ["keystone give %player% 3"]
+  xp-bottles:
+    name: "32 Bottles o' Enchanting"
+    icon: EXPERIENCE_BOTTLE
+    price: 400
+    daily-limit: 5
+    commands: ["give %player% experience_bottle 32"]
+
+  # --- examples to copy (crate keys need your crate plugin's give command, cosmetics a permissions plugin) ---
+  # crate-key:
+  #   name: "Vote Crate Key"
+  #   icon: TRIPWIRE_HOOK
+  #   price: 1500
+  #   daily-limit: 2
+  #   commands: ["crates give physical vote 1 %player%"]
+  # flame-trail:
+  #   name: "Flame Trail (permanent)"
+  #   icon: BLAZE_POWDER
+  #   price: 25000
+  #   daily-limit: 1
+  #   commands: ["lp user %player% permission set cosmetics.trail.flame true"]

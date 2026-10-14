@@ -469,6 +469,10 @@ public class MatchManager {
    public void clearCombatTags(UUID uuid) {
       this.clearTeamsCombatTag(uuid);
       this.clearRankEssentialsCombatTag(uuid);
+      com.stratasmp.stratacombat.StrataCombat combat = this.plugin.core().module(com.stratasmp.stratacombat.StrataCombat.class);
+      if (combat != null) {
+         combat.untag(uuid);
+      }
    }
 
    /**

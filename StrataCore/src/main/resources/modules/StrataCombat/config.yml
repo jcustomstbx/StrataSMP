@@ -1,0 +1,37 @@
+# StrataCombat
+
+# seconds a tag lasts; every hit between players refreshes it
+duration-seconds: 15
+# logging out while tagged kills the player (their items drop where they stood)
+kill-on-quit: true
+# mobs tagging the player: ordinary monsters, and StrataBosses bosses
+tag-on-mobs: false
+tag-on-bosses: true
+# stops /tp-style teleports and plugin teleports while tagged (ender pearls and chorus fruit are fine)
+block-teleports: true
+# worlds where nobody is ever tagged (put the lobby here)
+exempt-worlds: [hub]
+# commands that don't work while tagged (no slash, aliases need listing too)
+blocked-commands:
+  - tpa
+  - tpahere
+  - tpaccept
+  - tpyes
+  - tpo
+  - tp
+  - home
+  - homes
+  - sethome
+  - spawn
+  - warp
+  - warps
+  - back
+  - hub
+  - lobby
+  - rtp
+  - wild
+  - thome
+  - trade
+  - cratevault
+  - duel
+  - ffa
