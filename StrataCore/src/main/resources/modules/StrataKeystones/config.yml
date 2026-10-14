@@ -39,7 +39,28 @@ run:
     VINDICATOR: 6
     RAVAGER: 9
 
-# Commands run by console on a cleared run at that level. Placeholders: %player%, %level%
+# What a cleared run pays. Everyone who took part gets their own roll (the opener and teammates who fought).
+loot:
+  stratas:
+    # a level L clear pays base + per-level * (L - 1)
+    base: 50
+    per-level: 50
+    # extra Stratas per additional party member (0.1 = +10% each); 0 = no bonus
+    party-bonus-per-extra-member: 0
+  # items by keystone level, as "MATERIAL amount[-max] [chance%]"; the chance defaults to 100%
+  items:
+    1: ["IRON_INGOT 2-4", "COOKED_BEEF 6"]
+    2: ["IRON_INGOT 3-6", "GOLD_INGOT 1-3", "COOKED_BEEF 8"]
+    3: ["IRON_INGOT 4-8", "GOLD_INGOT 2-4", "LAPIS_LAZULI 4-8", "EXPERIENCE_BOTTLE 2-4"]
+    4: ["GOLD_INGOT 3-6", "REDSTONE 8-16", "EXPERIENCE_BOTTLE 3-6", "DIAMOND 1 15%"]
+    5: ["DIAMOND 1 35%", "EXPERIENCE_BOTTLE 4-8", "EMERALD 1-3"]
+    6: ["DIAMOND 1-2 45%", "EXPERIENCE_BOTTLE 6-10", "EMERALD 2-4"]
+    7: ["DIAMOND 1-2 60%", "EMERALD 3-5", "EXPERIENCE_BOTTLE 8-12", "GOLDEN_APPLE 1 15%"]
+    8: ["DIAMOND 2-3 60%", "EMERALD 4-6", "EXPERIENCE_BOTTLE 10-16", "GOLDEN_APPLE 1 25%"]
+    9: ["DIAMOND 2-4 70%", "EMERALD 5-8", "NETHERITE_SCRAP 1 10%", "GOLDEN_APPLE 1-2 30%"]
+    10: ["DIAMOND 3-5 80%", "EMERALD 6-10", "NETHERITE_SCRAP 1 20%", "GOLDEN_APPLE 1-2 40%", "ENCHANTED_GOLDEN_APPLE 1 3%"]
+
+# Extra commands run by console on a cleared run at that level. Placeholders: %player%, %level%
 rewards:
   1: []
   2: []

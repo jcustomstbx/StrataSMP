@@ -2,6 +2,7 @@ package com.stratasmp.stratakeystones;
 
 import com.stratasmp.stratacore.StrataCore;
 import com.stratasmp.stratacore.StrataModule;
+import com.stratasmp.strataeconomy.StrataEconomy;
 import com.stratasmp.stratateams.StrataTeams;
 import com.stratasmp.stratateams.Team;
 import com.stratasmp.stratateams.TeamManager;
@@ -60,6 +61,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
     private final Map<UUID, KeystoneRun> invites = new HashMap<>(); // invited teammate -> run they may join
     private final Map<EntityType, Integer> mobPool = new java.util.LinkedHashMap<>();
     private List<Integer> waveSizes;
+    private KeystoneRewards rewards;
 
     public StrataKeystones(StrataCore core) {
         super(core, "StrataKeystones");
@@ -85,6 +87,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
 
     private void loadSettings() {
         reloadConfig();
+        rewards = new KeystoneRewards(getConfig(), getLogger()::warning);
         waveSizes = getConfig().getIntegerList("run.wave-sizes");
         if (waveSizes.size() != 3) waveSizes = List.of(4, 6, 9);
         mobPool.clear();
@@ -529,6 +532,7 @@ public final class StrataKeystones extends StrataModule implements Listener {
                     member.sendMessage(Component.text("You didn't take part in the fight, so you get no reward.", NamedTextColor.GRAY));
                     continue;
                 }
+                payOut(member, run.level, members.size());
                 for (String command : getConfig().getStringList("rewards." + run.level)) {
                     try {
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(),
@@ -546,6 +550,27 @@ public final class StrataKeystones extends StrataModule implements Listener {
                 }
             }
             if (alwaysReturn || getConfig().getBoolean("run.return-on-fail", true)) handBack(run.owner, run.level);
+        }
+    }
+
+    private void payOut(Player member, int level, int partySize) {
+        KeystoneRewards.Payout payout = rewards.roll(level, partySize, ThreadLocalRandom.current());
+        List<String> lines = new ArrayList<>();
+        if (payout.stratas() > 0) {
+            StrataEconomy economy = core().module(StrataEconomy.class);
+            if (economy != null && economy.isEnabled()) {
+                economy.stratas().deposit(member.getUniqueId(), payout.stratas());
+                lines.add(economy.money(payout.stratas()));
+            } else {
+                getLogger().warning("StrataEconomy is not running, so " + member.getName() + " got no Stratas for a level " + level + " clear.");
+            }
+        }
+        for (KeystoneRewards.Stack stack : payout.items()) {
+            give(member, stack.toItem());
+            lines.add(stack.amount() + "x " + stack.material().name().toLowerCase(Locale.ROOT).replace('_', ' '));
+        }
+        if (!lines.isEmpty()) {
+            member.sendMessage(Component.text("Rewards: " + String.join(", ", lines), NamedTextColor.GOLD));
         }
     }
 
