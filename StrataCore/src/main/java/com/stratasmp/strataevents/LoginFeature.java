@@ -82,6 +82,10 @@ final class LoginFeature implements Listener {
         }
     }
 
+    int currentStreak(java.util.UUID id, LocalDate today) {
+        return streaks.currentStreak(id, today);
+    }
+
     void showStatus(Player player) {
         LocalDate today = plugin.today();
         int current = streaks.currentStreak(player.getUniqueId(), today);

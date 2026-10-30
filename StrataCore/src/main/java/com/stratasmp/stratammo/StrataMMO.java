@@ -33,6 +33,8 @@ public class StrataMMO extends StrataModule {
    private Set<String> smpWorlds;
    private QuestManager questManager;
 
+   public QuestManager questManager() { return questManager; }
+
    @Override
    public void onEnable() {
       saveDefaultConfig();

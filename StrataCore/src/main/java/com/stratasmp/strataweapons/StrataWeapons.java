@@ -17,6 +17,14 @@ public class StrataWeapons extends StrataModule {
       }
    }
 
+   private volatile StrataCharmService charms;
+
+   /** StrataCharm balance for placeholders; 0 until the module has started. */
+   public int charmsOf(java.util.UUID id) {
+      StrataCharmService service = this.charms;
+      return service == null ? 0 : service.getBalance(id);
+   }
+
    public void onEnable() {
       this.saveDefaultConfig();
       WeaponCatalog catalog = new WeaponCatalog(this);
@@ -29,14 +37,15 @@ public class StrataWeapons extends StrataModule {
       this.getCommand("skinpurge").setExecutor(purge);
       SkinsGui skinsGui = new SkinsGui(this, catalog);
       this.getServer().getPluginManager().registerEvents(skinsGui, this);
-      this.getCommand("skins").setExecutor(new SkinsCommand(skinsGui));
       this.getCommand("unskin").setExecutor(new UnskinCommand(catalog));
       StrataCharmService charmService = new StrataCharmService(this);
+      this.charms = charmService;
       StrataCharmGui charmGui = new StrataCharmGui(this, catalog, charmService);
       skinsGui.setCharmGui(charmGui);
       charmGui.setSkinsGui(skinsGui);
       this.getServer().getPluginManager().registerEvents(charmGui, this);
       this.getCommand("stratacharm").setExecutor(charmGui);
+      this.getCommand("skins").setExecutor(new SkinsCommand(skinsGui, charmGui));
       this.getCommand("givestratacharm").setExecutor(new GiveStrataCharmCommand(this, charmService));
       KillMessageManager killMessages = new KillMessageManager(this);
       this.getCommand("killmsg").setExecutor(new KillMessageCommand(this, killMessages));

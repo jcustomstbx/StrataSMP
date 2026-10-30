@@ -120,6 +120,23 @@ public final class QuestManager {
       });
    }
 
+   /** {done, total} of the player's loaded daily quests, or null while they are still loading. Safe to call off the main thread. */
+   public int[] summary(UUID id) {
+      State state = this.states.get(id);
+      if (state == null) return null;
+      try {
+         int done = 0;
+         int total = 0;
+         for (Entry entry : state.entries.values()) {
+            total++;
+            if (entry.done) done++;
+         }
+         return new int[]{done, total};
+      } catch (java.util.ConcurrentModificationException e) {
+         return null;
+      }
+   }
+
    public void unload(Player player) {
       State state = this.states.remove(player.getUniqueId());
       if (state != null) this.write(player.getUniqueId(), snapshot(state), true);

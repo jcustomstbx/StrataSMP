@@ -77,6 +77,11 @@ public class StrataEvents extends StrataModule {
         return zone;
     }
 
+    /** Current daily-login streak, for placeholders. */
+    public int streakOf(java.util.UUID id) {
+        return login == null ? 0 : login.currentStreak(id, today());
+    }
+
     LocalDate today() {
         return LocalDate.now(zone);
     }

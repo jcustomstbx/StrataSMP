@@ -23,7 +23,7 @@ commands:
   stratacharm: {description: Browse and unlock weapon skins, usage: /stratacharm, aliases: [charms, stratacharms]}
   givestratacharm: {description: Grant StrataCharm, usage: '/givestratacharm <player> <amount>', permission: strataweapons.charm.give}
   givecw: {description: Give a catalog weapon, usage: '/givecw <key> <player>', permission: strataweapons.give}
-  skins: {description: Open the weapon skins menu, usage: /skins}
+  skins: {description: "Browse every weapon and armour skin - add owned to see only yours", usage: "/skins [owned]"}
   unskin: {description: Remove a skin from the item in hand, usage: /unskin}
   killmsg: {description: Manage custom kill messages, usage: '/killmsg <help|set|reset|preview|clear>'}
   transferenchants: {description: Transfer donor enchantments to a catalog weapon, usage: /transferenchants, permission: strataweapons.transferenchants}

@@ -26,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class StrataCore extends JavaPlugin {
     private final List<StrataModule> enabledModules = new ArrayList<>();
     private final Map<String, StrataModule> modules = new LinkedHashMap<>();
+    private StrataExpansion expansion;
 
     @Override
     public void onEnable() {
@@ -84,6 +85,19 @@ public final class StrataCore extends JavaPlugin {
                 modules.remove(module.getName());
             }
         }
+        registerExpansion();
+    }
+
+    private void registerExpansion() {
+        if (getServer().getPluginManager().getPlugin("PlaceholderAPI") == null) {
+            return;
+        }
+        expansion = new StrataExpansion(this);
+        if (expansion.register()) {
+            getLogger().info("PlaceholderAPI expansion 'strata' registered.");
+        } else {
+            getLogger().warning("Couldn't register PlaceholderAPI expansion 'strata'.");
+        }
     }
 
     @Override
@@ -100,6 +114,9 @@ public final class StrataCore extends JavaPlugin {
     }
 
     private void disableModules() {
+        if (expansion != null && expansion.isRegistered()) {
+            expansion.unregister();
+        }
         for (int i = enabledModules.size() - 1; i >= 0; i--) {
             shutDown(enabledModules.get(i));
         }
