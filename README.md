@@ -40,7 +40,7 @@
   `MillyLeaderboards`, `MillyBosses` and `MillyRanks` is copied into the matching `plugins/Strata*` folder. Existing files are
   never overwritten and a finished import leaves a `.legacy-imported` marker. Do this before the server has created
   new data, and check the folder names against your live `plugins/` directory first. Old database tables are not migrated.
-- Before launch, replace the placeholder `stratasmp.com` links (store, vote, web APIs) in the module configs and in
+- Before launch, replace the placeholder `stratasmp.co.uk` links (store, vote, web APIs) in the module configs and in
   `StrataStore`, `StoreLink`, `RankShowcase` and `VoteReminder`.
 
 ## Layout

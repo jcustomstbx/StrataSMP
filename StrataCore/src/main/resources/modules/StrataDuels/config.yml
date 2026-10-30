@@ -48,14 +48,14 @@ challenge:
 autosave-interval-minutes: 5
 leaderboard-refresh-interval-seconds: 60
 
-# pushes the leaderboard to stratasmp.com's Stats page over HTTP, same
+# pushes the leaderboard to stratasmp.co.uk's Stats page over HTTP, same
 # push-not-pull pattern as StrataMMO. api/strataduels.php exists and is live
 # (verified 2026-09-12 - it 401s an unauthenticated request instead of 404ing,
 # and this plugin's pushes with the configured key aren't erroring).
 web:
   # Enable only after setting the API key in this server's local config.
   push-enabled: false
-  api-url: "https://stratasmp.com/api/strataduels.php"
+  api-url: "https://stratasmp.co.uk/api/strataduels.php"
   api-key: ""
   push-interval-seconds: 60
 

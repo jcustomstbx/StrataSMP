@@ -8,7 +8,7 @@ cooldown-seconds: 259200
 # the rank menu the hub NPCs open (/rankpreview <rank>). Homes and vaults are read from
 # RankEssentials' config and the kit from kits.yml, so only these two are set here.
 showcase:
-  store-url: "https://stratasmp.com/store"
+  store-url: "https://stratasmp.co.uk/store"
   ender-chest-rows: 6
 
 # worlds where a kit can be claimed. Kit gear and crate keys are SMP items, so the

@@ -14,7 +14,7 @@ final class StoreLink {
     }
 
     static void send(StrataWeapons plugin, Player player) {
-        String url = plugin.getConfig().getString("store-url", "https://stratasmp.com/store");
+        String url = plugin.getConfig().getString("store-url", "https://stratasmp.co.uk/store");
         player.closeInventory();
         player.sendMessage(Component.text("» Click here to open the store", NamedTextColor.AQUA, TextDecoration.UNDERLINED)
                 .clickEvent(ClickEvent.openUrl(url))

@@ -18,15 +18,15 @@ public class StrataStore extends StrataModule implements CommandExecutor {
       super(core, "StrataStore");
    }
 
-   private static final String STORE_URL = "https://stratasmp.com/store";
+   private static final String STORE_URL = "https://stratasmp.co.uk/store";
 
    public void onEnable() {
       this.getCommand("store").setExecutor(this);
    }
 
    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-      Component link = ((TextComponent)Component.text("stratasmp.com/store", NamedTextColor.GOLD, new TextDecoration[]{TextDecoration.UNDERLINED})
-            .clickEvent(ClickEvent.openUrl("https://stratasmp.com/store")))
+      Component link = ((TextComponent)Component.text("stratasmp.co.uk/store", NamedTextColor.GOLD, new TextDecoration[]{TextDecoration.UNDERLINED})
+            .clickEvent(ClickEvent.openUrl("https://stratasmp.co.uk/store")))
          .hoverEvent(HoverEvent.showText(Component.text("Click to open in your browser")));
       sender.sendMessage(Component.text("Grab ranks and perks at ", NamedTextColor.YELLOW).append(link));
       return true;

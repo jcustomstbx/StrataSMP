@@ -55,7 +55,7 @@ public final class SkinsGui implements Listener {
                 charmGui.openCatalog(player, 0, armour);
                 return;
             }
-            player.sendMessage(Component.text("You don't own any skins yet - grab StrataCharm at stratasmp.com/store",
+            player.sendMessage(Component.text("You don't own any skins yet - grab StrataCharm at stratasmp.co.uk/store",
                     NamedTextColor.YELLOW));
             return;
         }

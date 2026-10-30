@@ -15,12 +15,12 @@ level-cap: 0
 # how often (in minutes) player data autosaves in the background, on top of save-on-quit
 autosave-interval: 5
 
-# pushes the leaderboard to stratasmp.com's Stats page over HTTP - the game server
+# pushes the leaderboard to stratasmp.co.uk's Stats page over HTTP - the game server
 # never talks to Hostinger's database directly, this just POSTs a JSON snapshot
 web:
   # Enable only after setting the API key in this server's local config.
   push-enabled: false
-  api-url: "https://stratasmp.com/api/stratammo.php"
+  api-url: "https://stratasmp.co.uk/api/stratammo.php"
   api-key: ""
   push-interval-seconds: 60
 

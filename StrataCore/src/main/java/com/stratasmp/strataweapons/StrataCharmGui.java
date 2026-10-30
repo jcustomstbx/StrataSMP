@@ -172,7 +172,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
         int balance = balanceOf(player);
         inv.setItem(SLOT_BALANCE, button(Material.NETHER_STAR, NamedTextColor.LIGHT_PURPLE,
                 "StrataCharm: " + balance,
-                List.of(line("Get more at stratasmp.com/store", NamedTextColor.GRAY))));
+                List.of(line("Get more at stratasmp.co.uk/store", NamedTextColor.GRAY))));
 
         player.openInventory(inv);
     }
@@ -228,7 +228,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
         int cost = catalog.charmCostOf(key);
         if (!charms.withdraw(id, cost)) {
             player.sendMessage(Component.text("You need " + cost + " " + charmWord(cost) + " - you have " + balanceOf(player)
-                    + ". Get more at stratasmp.com/store", NamedTextColor.RED));
+                    + ". Get more at stratasmp.co.uk/store", NamedTextColor.RED));
             player.closeInventory();
             return;
         }
@@ -347,7 +347,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
         int cost = catalog.charmCostOf(key);
         if (balanceOf(player) < cost) {
             player.sendMessage(Component.text("You need " + cost + " " + charmWord(cost) + " for that - you have "
-                    + balanceOf(player) + ". Get more at stratasmp.com/store", NamedTextColor.RED));
+                    + balanceOf(player) + ". Get more at stratasmp.co.uk/store", NamedTextColor.RED));
             return;
         }
         openConfirm(player, key, catalogHolder.page, catalogHolder.armour);

@@ -38,7 +38,7 @@ public class VoteReminder implements Runnable {
 
    public static Component buildVoteMessage(StrataModule plugin) {
       String message = plugin.getConfig().getString("reminder.message", "&e★ &fVote for StrataSMP and get &6350 Stratas&f! &e★");
-      String link = plugin.getConfig().getString("reminder.link", "https://stratasmp.com/vote");
+      String link = plugin.getConfig().getString("reminder.link", "https://stratasmp.co.uk/vote");
       return LegacyComponentSerializer.legacyAmpersand()
          .deserialize(message)
          .append(

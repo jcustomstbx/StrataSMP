@@ -186,7 +186,7 @@ final class RankShowcase implements Listener {
         ItemStack kitButton = named(first(kit, "_CHESTPLATE") != null ? first(kit, "_CHESTPLATE").material() : Material.CHEST, "&fRank Kit", kitLore);
         inv.setItem(SLOT_KIT, kitButton);
 
-        String url = plugin.getConfig().getString("showcase.store-url", "https://stratasmp.com/store");
+        String url = plugin.getConfig().getString("showcase.store-url", "https://stratasmp.co.uk/store");
         inv.setItem(SLOT_STORE, named(Material.EMERALD, "&aGet this rank", List.of("&7" + url.replace("https://", ""), "", "&eClick for the link")));
         inv.setItem(SLOT_CLOSE, named(Material.BARRIER, "&cClose", List.of()));
         player.openInventory(inv);
@@ -211,7 +211,7 @@ final class RankShowcase implements Listener {
         switch (event.getSlot()) {
             case SLOT_KIT -> kitGui.open(player, holder.kit);
             case SLOT_STORE -> {
-                String url = plugin.getConfig().getString("showcase.store-url", "https://stratasmp.com/store");
+                String url = plugin.getConfig().getString("showcase.store-url", "https://stratasmp.co.uk/store");
                 player.closeInventory();
                 player.sendMessage(Component.text("Get the ", NamedTextColor.GRAY)
                         .append(Text.color(holder.kit.displayName()))

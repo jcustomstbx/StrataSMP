@@ -14,7 +14,7 @@ vote-key:
 
 # announce votes to the whole server
 broadcast: true
-broadcast-message: "&e%player% &fjust voted for the server and got &6%amount% Stratas&f! Vote at &bstratasmp.com/vote"
+broadcast-message: "&e%player% &fjust voted for the server and got &6%amount% Stratas&f! Vote at &bstratasmp.co.uk/vote"
 
 # periodic reminder broadcast telling players to go vote - only fires when
 # someone's actually online, click the message in chat to open the link
@@ -22,7 +22,7 @@ reminder:
   enabled: true
   interval-minutes: 30
   message: "&e★ &fVote for StrataSMP and get &6500 Stratas per vote&f! &e★"
-  link: "https://stratasmp.com/vote"
+  link: "https://stratasmp.co.uk/vote"
 
 # a permanent LuckPerms suffix shown after the player's name (tab list, nametag and chat) after this vote total.
 # Counting starts from the first vote after this feature went live.
