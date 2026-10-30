@@ -87,6 +87,9 @@ public class StrataMMO extends StrataModule {
       PluginManager manager=getServer().getPluginManager();
       manager.registerEvents(new JoinQuitListener(dataManager,worlds),this);
       manager.registerEvents(new QuestListener(questManager,notifier,placed),this);
+      com.stratasmp.stratammo.quests.QuestGui questGui=new com.stratasmp.stratammo.quests.QuestGui(questManager);
+      manager.registerEvents(questGui,this);
+      if(getCommand("quests")!=null)getCommand("quests").setExecutor(questGui);
       manager.registerEvents(new MiningListener(xp,notifier,placed,antiFarm,settings,cooldowns,ultimates,this),this);
       manager.registerEvents(new WoodcuttingListener(xp,notifier,placed,antiFarm,settings,cooldowns,ultimates,this),this);
       manager.registerEvents(new FarmingListener(xp,notifier,settings,cooldowns,ultimates,this),this);

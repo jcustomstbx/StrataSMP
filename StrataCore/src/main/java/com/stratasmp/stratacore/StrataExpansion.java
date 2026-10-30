@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Cross-module profile placeholders for TAB, scoreboards and holograms:
  * %strata_charms%, %strata_quests%, %strata_quests_done%, %strata_quests_total%, %strata_streak%,
- * %strata_kills%, %strata_deaths%. Called from other threads, so every lookup is null-safe and
+ * %strata_weekly%, %strata_chain%, %strata_kills%, %strata_deaths%. Called from other threads, so every lookup is null-safe and
  * falls back to the last value that was read.
  */
 final class StrataExpansion extends PlaceholderExpansion {
@@ -49,6 +49,8 @@ final class StrataExpansion extends PlaceholderExpansion {
                     yield weapons == null ? "0" : String.valueOf(weapons.charmsOf(id));
                 }
                 case "quests", "quests_done", "quests_total" -> quests(id, key);
+                case "weekly" -> weekly(id);
+                case "chain" -> chain(id);
                 case "streak" -> {
                     StrataEvents events = core.module(StrataEvents.class);
                     yield events == null ? "0" : String.valueOf(events.streakOf(id));
@@ -80,6 +82,19 @@ final class StrataExpansion extends PlaceholderExpansion {
             case "quests_total" -> String.valueOf(summary[1]);
             default -> summary[0] + "/" + summary[1];
         };
+    }
+
+    private String weekly(UUID id) {
+        StrataMMO mmo = core.module(StrataMMO.class);
+        QuestManager manager = mmo == null ? null : mmo.questManager();
+        int[] summary = manager == null ? null : manager.extra().weeklySummary(id);
+        return summary == null ? "0/0" : summary[0] + "/" + summary[1];
+    }
+
+    private String chain(UUID id) {
+        StrataMMO mmo = core.module(StrataMMO.class);
+        QuestManager manager = mmo == null ? null : mmo.questManager();
+        return manager == null ? "None" : manager.extra().chainSummary(id);
     }
 
     private static String stat(OfflinePlayer player, Statistic statistic) {

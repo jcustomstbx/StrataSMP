@@ -3,7 +3,11 @@ package com.stratasmp.stratammo.quests;
 import com.stratasmp.stratammo.Skill;
 import java.util.Set;
 
-public record QuestDef(String id, String name, ObjectiveType type, Set<String> targets, int amount, Skill skill, int xp) {
+public record QuestDef(String id, String name, ObjectiveType type, Set<String> targets, int amount, Skill skill, int xp, long stratas) {
+   public QuestDef(String id, String name, ObjectiveType type, Set<String> targets, int amount, Skill skill, int xp) {
+      this(id, name, type, targets, amount, skill, xp, 0L);
+   }
+
    public boolean matches(ObjectiveType objective, String key) {
       if (objective != this.type) return false;
       if (this.targets.isEmpty()) return true;

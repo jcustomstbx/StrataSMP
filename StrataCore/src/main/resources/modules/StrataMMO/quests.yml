@@ -86,3 +86,163 @@ pool:
     amount: 1
     skill: SWORDS
     xp: 800
+
+# ---- Weekly quests -------------------------------------------------------------------------
+# Three are picked per player each week (different skills first) and reset at midnight on reset-day in
+# settings.timezone. They pay Stratas as well as skill XP. Same fields as the daily pool, plus stratas.
+weekly:
+  count: 3
+  reset-day: MONDAY
+  pool:
+    weekly_miner:
+      name: "Deep Delver"
+      type: MINE_BLOCK
+      targets: []
+      amount: 800
+      skill: MINING
+      xp: 2000
+      stratas: 200
+    weekly_diamonds:
+      name: "Diamond Fever"
+      type: MINE_BLOCK
+      targets: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE]
+      amount: 40
+      skill: MINING
+      xp: 2500
+      stratas: 300
+    weekly_lumber:
+      name: "Timber Baron"
+      type: CHOP_LOG
+      targets: []
+      amount: 600
+      skill: WOODCUTTING
+      xp: 2000
+      stratas: 200
+    weekly_farmer:
+      name: "Harvest Festival"
+      type: HARVEST_CROP
+      targets: []
+      amount: 800
+      skill: FARMING
+      xp: 2000
+      stratas: 200
+    weekly_hunter:
+      name: "Monster Purge"
+      type: KILL_MOB
+      targets: []
+      amount: 200
+      skill: SWORDS
+      xp: 2000
+      stratas: 250
+    weekly_archer:
+      name: "Marksman Week"
+      type: KILL_MOB
+      targets: [SKELETON, STRAY, PILLAGER]
+      amount: 80
+      skill: ARCHERY
+      xp: 2000
+      stratas: 250
+    weekly_angler:
+      name: "Master Angler"
+      type: CATCH_FISH
+      targets: []
+      amount: 60
+      skill: FISHING
+      xp: 2000
+      stratas: 200
+    weekly_brewer:
+      name: "Potion Master"
+      type: BREW_POTION
+      targets: []
+      amount: 60
+      skill: ALCHEMY
+      xp: 2000
+      stratas: 200
+    weekly_enchanter:
+      name: "Arcane Study"
+      type: ENCHANT_ITEM
+      targets: []
+      amount: 15
+      skill: ENCHANTING
+      xp: 2000
+      stratas: 250
+    weekly_boss:
+      name: "Boss Breaker"
+      type: KILL_BOSS
+      targets: []
+      amount: 3
+      skill: SWORDS
+      xp: 3000
+      stratas: 400
+
+# ---- Story chains --------------------------------------------------------------------------
+# Each chain is a list of steps done in order; finishing a step pays its own reward and unlocks the next.
+# The finale pays when the last step is done. A chain can only be completed once per player.
+# icon is any Bukkit material name for the /quests menu.
+chains:
+  miners_path:
+    name: "The Miner's Path"
+    description: "From your first swing to the deepest diamonds."
+    icon: IRON_PICKAXE
+    finale: {stratas: 500, xp: 2500, skill: MINING}
+    steps:
+      s1: {name: "Dig In", type: MINE_BLOCK, targets: [], amount: 100, skill: MINING, xp: 300, stratas: 30}
+      s2: {name: "Coal Rush", type: MINE_BLOCK, targets: [COAL_ORE, DEEPSLATE_COAL_ORE], amount: 64, skill: MINING, xp: 400, stratas: 40}
+      s3: {name: "Iron Will", type: MINE_BLOCK, targets: [IRON_ORE, DEEPSLATE_IRON_ORE], amount: 64, skill: MINING, xp: 500, stratas: 50}
+      s4: {name: "Gold Fever", type: MINE_BLOCK, targets: [GOLD_ORE, DEEPSLATE_GOLD_ORE, NETHER_GOLD_ORE], amount: 32, skill: MINING, xp: 600, stratas: 60}
+      s5: {name: "Diamond Hunter", type: MINE_BLOCK, targets: [DIAMOND_ORE, DEEPSLATE_DIAMOND_ORE], amount: 16, skill: MINING, xp: 800, stratas: 80}
+  hunters_oath:
+    name: "The Hunter's Oath"
+    description: "Swear to keep the night at bay."
+    icon: DIAMOND_SWORD
+    finale: {stratas: 600, xp: 3000, skill: SWORDS}
+    steps:
+      s1: {name: "Undead Patrol", type: KILL_MOB, targets: [ZOMBIE, HUSK, DROWNED], amount: 25, skill: SWORDS, xp: 300, stratas: 30}
+      s2: {name: "Bone Collector", type: KILL_MOB, targets: [SKELETON, STRAY], amount: 25, skill: ARCHERY, xp: 400, stratas: 40}
+      s3: {name: "Creeper Control", type: KILL_MOB, targets: [CREEPER], amount: 15, skill: SWORDS, xp: 500, stratas: 50}
+      s4: {name: "Web Cutter", type: KILL_MOB, targets: [SPIDER, CAVE_SPIDER], amount: 30, skill: SWORDS, xp: 600, stratas: 60}
+      s5: {name: "Void Stalker", type: KILL_MOB, targets: [ENDERMAN], amount: 15, skill: SWORDS, xp: 800, stratas: 80}
+  farmers_year:
+    name: "The Farmer's Year"
+    description: "A full season of harvests."
+    icon: GOLDEN_HOE
+    finale: {stratas: 450, xp: 2500, skill: FARMING}
+    steps:
+      s1: {name: "Spring Wheat", type: HARVEST_CROP, targets: [WHEAT], amount: 100, skill: FARMING, xp: 300, stratas: 30}
+      s2: {name: "Root Vegetables", type: HARVEST_CROP, targets: [CARROTS, POTATOES], amount: 150, skill: FARMING, xp: 400, stratas: 40}
+      s3: {name: "Red Harvest", type: HARVEST_CROP, targets: [BEETROOTS], amount: 80, skill: FARMING, xp: 500, stratas: 50}
+      s4: {name: "Bumper Crop", type: HARVEST_CROP, targets: [], amount: 300, skill: FARMING, xp: 600, stratas: 60}
+      s5: {name: "Hellish Harvest", type: HARVEST_CROP, targets: [NETHER_WART], amount: 64, skill: FARMING, xp: 800, stratas: 80}
+  lumberjacks_trail:
+    name: "The Lumberjack's Trail"
+    description: "Fell the forest, one log at a time."
+    icon: IRON_AXE
+    finale: {stratas: 450, xp: 2500, skill: WOODCUTTING}
+    steps:
+      s1: {name: "First Cut", type: CHOP_LOG, targets: [], amount: 100, skill: WOODCUTTING, xp: 300, stratas: 30}
+      s2: {name: "Oak and Birch", type: CHOP_LOG, targets: [OAK_LOG, BIRCH_LOG], amount: 150, skill: WOODCUTTING, xp: 400, stratas: 40}
+      s3: {name: "Deep Forest", type: CHOP_LOG, targets: [DARK_OAK_LOG, SPRUCE_LOG], amount: 150, skill: WOODCUTTING, xp: 500, stratas: 50}
+      s4: {name: "Jungle Trail", type: CHOP_LOG, targets: [JUNGLE_LOG, ACACIA_LOG, MANGROVE_LOG, CHERRY_LOG], amount: 150, skill: WOODCUTTING, xp: 600, stratas: 60}
+      s5: {name: "Timber", type: CHOP_LOG, targets: [], amount: 500, skill: WOODCUTTING, xp: 800, stratas: 80}
+  alchemists_apprentice:
+    name: "The Alchemist's Apprentice"
+    description: "Learn the brewing stand, potion by potion."
+    icon: BREWING_STAND
+    finale: {stratas: 450, xp: 2500, skill: ALCHEMY}
+    steps:
+      s1: {name: "First Brew", type: BREW_POTION, targets: [], amount: 10, skill: ALCHEMY, xp: 300, stratas: 30}
+      s2: {name: "Healing Hands", type: BREW_POTION, targets: [HEALING], amount: 10, skill: ALCHEMY, xp: 400, stratas: 40}
+      s3: {name: "Swift Steps", type: BREW_POTION, targets: [SWIFTNESS], amount: 10, skill: ALCHEMY, xp: 500, stratas: 50}
+      s4: {name: "Strong Arm", type: BREW_POTION, targets: [STRENGTH], amount: 8, skill: ALCHEMY, xp: 600, stratas: 60}
+      s5: {name: "Fire Walker", type: BREW_POTION, targets: [FIRE_RESISTANCE], amount: 8, skill: ALCHEMY, xp: 800, stratas: 80}
+  boss_slayer:
+    name: "The Boss Slayer"
+    description: "Take on the arena bosses."
+    icon: NETHER_STAR
+    finale: {stratas: 1000, xp: 5000, skill: SWORDS}
+    steps:
+      s1: {name: "First Blood", type: KILL_BOSS, targets: [], amount: 1, skill: SWORDS, xp: 500, stratas: 100}
+      s2: {name: "Getting Warmer", type: KILL_BOSS, targets: [], amount: 3, skill: SWORDS, xp: 600, stratas: 120}
+      s3: {name: "Veteran", type: KILL_BOSS, targets: [], amount: 5, skill: SWORDS, xp: 800, stratas: 150}
+      s4: {name: "Champion", type: KILL_BOSS, targets: [], amount: 8, skill: SWORDS, xp: 1000, stratas: 200}
+      s5: {name: "Legend", type: KILL_BOSS, targets: [], amount: 12, skill: SWORDS, xp: 1500, stratas: 300}

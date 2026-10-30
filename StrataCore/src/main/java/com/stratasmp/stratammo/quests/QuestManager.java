@@ -41,6 +41,7 @@ public final class QuestManager {
    }
 
    private final StrataModule plugin;
+   private final ExtraQuests extra;
    private final XpNotifier notifier;
    private final LevelCurve curve;
    private final File folder;
@@ -62,6 +63,7 @@ public final class QuestManager {
       this.folder = new File(plugin.getDataFolder(), "quests");
       this.folder.mkdirs();
       this.loadPool();
+      this.extra = new ExtraQuests(plugin, notifier, YamlConfiguration.loadConfiguration(new File(plugin.getDataFolder(), "quests.yml")));
       plugin.getServer().getScheduler().runTaskTimer(plugin, this::saveDirty, 6000L, 6000L);
    }
 
@@ -98,6 +100,7 @@ public final class QuestManager {
    }
 
    public void load(Player player) {
+      this.extra.load(player);
       UUID id = player.getUniqueId();
       io.execute(() -> {
          State state = new State();
@@ -138,6 +141,7 @@ public final class QuestManager {
    }
 
    public void unload(Player player) {
+      this.extra.unload(player);
       State state = this.states.remove(player.getUniqueId());
       if (state != null) this.write(player.getUniqueId(), snapshot(state), true);
    }
@@ -166,7 +170,9 @@ public final class QuestManager {
    }
 
    public void progress(Player player, ObjectiveType type, String key, int amount) {
-      if (this.pool.isEmpty() || !this.notifier.accepts(player)) return;
+      if (!this.notifier.accepts(player)) return;
+      this.extra.progress(player, type, key, amount);
+      if (this.pool.isEmpty()) return;
       State state = this.current(player.getUniqueId());
       if (state == null) return;
       for (Map.Entry<String, Entry> e : state.entries.entrySet()) {
@@ -236,6 +242,7 @@ public final class QuestManager {
    }
 
    private void saveDirty() {
+      this.extra.saveAll(true);
       for (Map.Entry<UUID, State> e : this.states.entrySet()) {
          if (e.getValue().dirty) {
             e.getValue().dirty = false;
@@ -244,7 +251,31 @@ public final class QuestManager {
       }
    }
 
+   public ExtraQuests extra() {
+      return this.extra;
+   }
+
+   /** Today's daily quests as menu lines; empty while they are still loading. */
+   public List<ExtraQuests.Line> dailyView(UUID id) {
+      List<ExtraQuests.Line> lines = new ArrayList<>();
+      State state = this.current(id);
+      if (state == null) return lines;
+      for (Map.Entry<String, Entry> e : state.entries.entrySet()) {
+         QuestDef def = this.pool.get(e.getKey());
+         if (def == null) continue;
+         lines.add(new ExtraQuests.Line(def.name(), def.describe(), e.getValue().progress, def.amount(), e.getValue().done,
+               def.xp() + " " + def.skill().displayName() + " XP"));
+      }
+      return lines;
+   }
+
+   public Duration untilDailyReset() {
+      ZonedDateTime now = ZonedDateTime.now(this.zone);
+      return Duration.between(now, now.toLocalDate().plusDays(1).atStartOfDay(this.zone));
+   }
+
    public void saveAllNow() {
+      this.extra.shutdown();
       // finish whatever is queued first, then write the rest here so shutdown never loses progress
       io.shutdown();
       try {
