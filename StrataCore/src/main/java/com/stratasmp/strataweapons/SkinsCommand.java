@@ -7,7 +7,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-/** /skins opens the full skin catalog; /skins owned opens just the skins the player has unlocked. */
+/** /sskins opens the full skin catalog; /sskins owned opens just the skins the player has unlocked. */
 public final class SkinsCommand implements CommandExecutor {
 
     private final SkinsGui ownedGui;

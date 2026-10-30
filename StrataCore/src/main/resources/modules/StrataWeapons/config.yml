@@ -148,6 +148,1392 @@ weapons:
     gradient: ["#8F142B", "#FF6979"]
     aura-color: "#FF344F"
 
+  ravenous_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 1
+    display-name: "Ravenous Blade"
+    gradient: ["#177cCF", "#7671F4"]
+    aura-color: "#2597F4"
+
+  nocturne:
+    material: NETHERITE_SWORD
+    custom-model-data: 2
+    display-name: "Nocturne"
+    gradient: ["#4517CF", "#de71F4"]
+    aura-color: "#5925F4"
+
+  phantomguard_greatsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 3
+    display-name: "Phantomguard Greatsword"
+    gradient: ["#42cf17", "#71f49F"]
+    aura-color: "#55f425"
+
+  heavenly_partisan:
+    material: NETHERITE_SWORD
+    custom-model-data: 4
+    display-name: "Heavenly Partisan"
+    gradient: ["#91cf17", "#7cf471"]
+    aura-color: "#aff425"
+
+  black_iron_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 5
+    display-name: "Black Iron Greataxe"
+    gradient: ["#cf1757", "#f49071"]
+    aura-color: "#f4256D"
+
+  amethyst_greatblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 6
+    display-name: "Amethyst Great Blade"
+    gradient: ["#17cf73", "#71e9F4"]
+    aura-color: "#25f48C"
+
+  valhakyra:
+    material: NETHERITE_SWORD
+    custom-model-data: 7
+    display-name: "Valhakyra"
+    gradient: ["#8bcf17", "#78f471"]
+    aura-color: "#a8f425"
+
+  black_iron_greatsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 8
+    display-name: "Black Iron Greatsword"
+    gradient: ["#67cf17", "#71f485"]
+    aura-color: "#7ef425"
+
+  phantomguard_partisan:
+    material: NETHERITE_SWORD
+    custom-model-data: 9
+    display-name: "Phantomguard Partisan"
+    gradient: ["#a4cf17", "#89f471"]
+    aura-color: "#c3f425"
+
+  viridian_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 10
+    display-name: "Viridian Greataxe"
+    gradient: ["#cf1739", "#f4a571"]
+    aura-color: "#f4254B"
+
+  talonbrand:
+    material: NETHERITE_SWORD
+    custom-model-data: 11
+    display-name: "Talonbrand"
+    gradient: ["#cfaa17", "#c2f471"]
+    aura-color: "#f4ca25"
+
+  crescent_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 12
+    display-name: "Crescent Greataxe"
+    gradient: ["#91cf17", "#7cf471"]
+    aura-color: "#aff425"
+
+  berserkers_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 13
+    display-name: "Berserkers Greataxe"
+    gradient: ["#17b9CF", "#7198F4"]
+    aura-color: "#25dbF4"
+
+  berserkers_cleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 14
+    display-name: "Berserkers Cleaver"
+    gradient: ["#17a4CF", "#7189F4"]
+    aura-color: "#25c3F4"
+
+  revenants_gravescepter:
+    material: NETHERITE_SWORD
+    custom-model-data: 15
+    display-name: "Revenants Gravescepter"
+    gradient: ["#5dcf17", "#71f48B"]
+    aura-color: "#74f425"
+
+  windreaper:
+    material: NETHERITE_SWORD
+    custom-model-data: 16
+    display-name: "Wind Reaper"
+    gradient: ["#1754CF", "#9271F4"]
+    aura-color: "#256aF4"
+
+  crystal_frostscythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 17
+    display-name: "Crystal Frost Scythe"
+    gradient: ["#9ecf17", "#85f471"]
+    aura-color: "#bcf425"
+
+  black_iron_clobberer:
+    material: NETHERITE_SWORD
+    custom-model-data: 18
+    display-name: "Black Iron Clobberer"
+    gradient: ["#cf172F", "#f4ac71"]
+    aura-color: "#f42541"
+
+  revenants_gravecleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 19
+    display-name: "Revenants Gravecleaver"
+    gradient: ["#172cCF", "#ae71F4"]
+    aura-color: "#253dF4"
+
+  crystal_frostblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 21
+    display-name: "Crystal Frost Blade"
+    gradient: ["#cf9717", "#cff471"]
+    aura-color: "#f4b625"
+
+  lycanbane:
+    material: NETHERITE_SWORD
+    custom-model-data: 22
+    display-name: "Lycan Bane"
+    gradient: ["#c217CF", "#f471B0"]
+    aura-color: "#e625F4"
+
+  grand_claymore:
+    material: NETHERITE_SWORD
+    custom-model-data: 23
+    display-name: "Grand Claymore"
+    gradient: ["#cf174E", "#f49671"]
+    aura-color: "#f42563"
+
+  gloomsteel_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 25
+    display-name: "Gloomsteel Greataxe"
+    gradient: ["#aa17CF", "#f471C2"]
+    aura-color: "#ca25F4"
+
+  gloomsteel_katana:
+    material: NETHERITE_SWORD
+    custom-model-data: 26
+    display-name: "Gloomsteel Katana"
+    gradient: ["#17cf7C", "#71e2F4"]
+    aura-color: "#25f497"
+
+  gloomsteel_knife:
+    material: NETHERITE_SWORD
+    custom-model-data: 27
+    display-name: "Gloomsteel Knife"
+    gradient: ["#cf17CF", "#f471A8"]
+    aura-color: "#f425F4"
+
+  vesper:
+    material: NETHERITE_SWORD
+    custom-model-data: 28
+    display-name: "Vesper"
+    gradient: ["#17cf54", "#71f4E9"]
+    aura-color: "#25f46A"
+
+  calamity_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 29
+    display-name: "Calamity Blade"
+    gradient: ["#bc17CF", "#f471B5"]
+    aura-color: "#df25F4"
+
+  emerald_greatcleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 30
+    display-name: "Emerald Great Cleaver"
+    gradient: ["#1776CF", "#7a71F4"]
+    aura-color: "#2590F4"
+
+  ancient_greatslab:
+    material: NETHERITE_SWORD
+    custom-model-data: 31
+    display-name: "Ancient Greatslab"
+    gradient: ["#17cf4B", "#71f4E2"]
+    aura-color: "#25f45F"
+
+  demons_blood_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 32
+    display-name: "Demons Blood Blade"
+    gradient: ["#8217CF", "#f471DE"]
+    aura-color: "#9d25F4"
+
+  demonslayers_greatsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 33
+    display-name: "Demonslayers Greatsword"
+    gradient: ["#cf178B", "#f47178"]
+    aura-color: "#f425A8"
+
+  sacrificial_cleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 34
+    display-name: "Sacrificial Cleaver"
+    gradient: ["#8bcf17", "#78f471"]
+    aura-color: "#a8f425"
+
+  moonlight:
+    material: NETHERITE_SWORD
+    custom-model-data: 35
+    display-name: "Moonlight"
+    gradient: ["#cf17CF", "#f471A8"]
+    aura-color: "#f425F4"
+
+  oculus:
+    material: NETHERITE_SWORD
+    custom-model-data: 36
+    display-name: "Oculus"
+    gradient: ["#cf2917", "#f4ca71"]
+    aura-color: "#f43a25"
+
+  azure_greatsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 37
+    display-name: "Azure Greatsword"
+    gradient: ["#cf1726", "#f4b371"]
+    aura-color: "#f42536"
+
+  azure_dagger:
+    material: NETHERITE_SWORD
+    custom-model-data: 38
+    display-name: "Azure Dagger"
+    gradient: ["#a1cf17", "#87f471"]
+    aura-color: "#c0f425"
+
+  azure_sabre:
+    material: NETHERITE_SWORD
+    custom-model-data: 39
+    display-name: "Azure Sabre"
+    gradient: ["#cf17CF", "#f471A8"]
+    aura-color: "#f425F4"
+
+  azure_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 40
+    display-name: "Azure Greataxe"
+    gradient: ["#1736CF", "#a871F4"]
+    aura-color: "#2547F4"
+
+  azure_scythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 41
+    display-name: "Azure Scythe"
+    gradient: ["#17cf3F", "#71f4DA"]
+    aura-color: "#25f452"
+
+  crimson_cleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 42
+    display-name: "Crimson Cleaver"
+    gradient: ["#1acf17", "#71f4BB"]
+    aura-color: "#28f425"
+
+  dragon_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 43
+    display-name: "Dragon Sword"
+    gradient: ["#17cf17", "#71f4BD"]
+    aura-color: "#25f425"
+
+  spider_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 44
+    display-name: "Spider Sword"
+    gradient: ["#cf2917", "#f4ca71"]
+    aura-color: "#f43a25"
+
+  skeleton_axe:
+    material: NETHERITE_SWORD
+    custom-model-data: 45
+    display-name: "Skeleton Axe"
+    gradient: ["#17cf57", "#71f4EB"]
+    aura-color: "#25f46D"
+
+  piercer:
+    material: NETHERITE_SWORD
+    custom-model-data: 46
+    display-name: "Piercer"
+    gradient: ["#cf2617", "#f4c871"]
+    aura-color: "#f43625"
+
+  runic_piercer:
+    material: NETHERITE_SWORD
+    custom-model-data: 47
+    display-name: "Runic Piercer"
+    gradient: ["#1757CF", "#9071F4"]
+    aura-color: "#256dF4"
+
+  demonic_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 48
+    display-name: "Demonic Sword"
+    gradient: ["#1736CF", "#a871F4"]
+    aura-color: "#2547F4"
+
+  nature_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 49
+    display-name: "Nature Sword"
+    gradient: ["#b617CF", "#f471B9"]
+    aura-color: "#d825F4"
+
+  vengeance_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 50
+    display-name: "Vengeance Blade"
+    gradient: ["#1791CF", "#717cF4"]
+    aura-color: "#25afF4"
+
+  vindicator:
+    material: NETHERITE_SWORD
+    custom-model-data: 51
+    display-name: "Vindicator"
+    gradient: ["#cf7f17", "#e0f471"]
+    aura-color: "#f49a25"
+
+  treacherous_bludgeon:
+    material: NETHERITE_SWORD
+    custom-model-data: 52
+    display-name: "Treacherous Bludgeon"
+    gradient: ["#cf1739", "#f4a571"]
+    aura-color: "#f4254B"
+
+  treacherous_cleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 53
+    display-name: "Treacherous Cleaver"
+    gradient: ["#174bCF", "#9871F4"]
+    aura-color: "#255fF4"
+
+  treacherous_axe:
+    material: NETHERITE_SWORD
+    custom-model-data: 54
+    display-name: "Treacherous Axe"
+    gradient: ["#cf8817", "#daf471"]
+    aura-color: "#f4a425"
+
+  wooden_bludgeon:
+    material: NETHERITE_SWORD
+    custom-model-data: 55
+    display-name: "Wooden Bludgeon"
+    gradient: ["#17c8CF", "#71a3F4"]
+    aura-color: "#25edF4"
+
+  iron_mace:
+    material: NETHERITE_SWORD
+    custom-model-data: 56
+    display-name: "Iron Mace"
+    gradient: ["#cf7317", "#e9f471"]
+    aura-color: "#f48c25"
+
+  wooden_tonfa:
+    material: NETHERITE_SWORD
+    custom-model-data: 57
+    display-name: "Wooden Tonfa"
+    gradient: ["#17cfCF", "#71a8F4"]
+    aura-color: "#25f4F4"
+
+  iron_sai:
+    material: NETHERITE_SWORD
+    custom-model-data: 58
+    display-name: "Iron Sai"
+    gradient: ["#17cfA7", "#71c4F4"]
+    aura-color: "#25f4C7"
+
+  iron_dagger:
+    material: NETHERITE_SWORD
+    custom-model-data: 59
+    display-name: "Iron Dagger"
+    gradient: ["#17cf97", "#71cfF4"]
+    aura-color: "#25f4B6"
+
+  iron_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 60
+    display-name: "Iron Greataxe"
+    gradient: ["#17c5CF", "#71a1F4"]
+    aura-color: "#25e9F4"
+
+  iron_polearm:
+    material: NETHERITE_SWORD
+    custom-model-data: 61
+    display-name: "Iron Polearm"
+    gradient: ["#17c2CF", "#719fF4"]
+    aura-color: "#25e6F4"
+
+  iron_halberd:
+    material: NETHERITE_SWORD
+    custom-model-data: 62
+    display-name: "Iron Halberd"
+    gradient: ["#cf17BC", "#f4719B"]
+    aura-color: "#f425DF"
+
+  iron_broadsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 63
+    display-name: "Iron Broadsword"
+    gradient: ["#cfc517", "#aef471"]
+    aura-color: "#f4e925"
+
+  iron_battle_axe:
+    material: NETHERITE_SWORD
+    custom-model-data: 64
+    display-name: "Iron Battle Axe"
+    gradient: ["#a117CF", "#f471C8"]
+    aura-color: "#c025F4"
+
+  uchigatana:
+    material: NETHERITE_SWORD
+    custom-model-data: 67
+    display-name: "Uchigatana"
+    gradient: ["#17cf91", "#71d3F4"]
+    aura-color: "#25f4AF"
+
+  iron_hay_sickle:
+    material: NETHERITE_SWORD
+    custom-model-data: 68
+    display-name: "Iron Hay Sickle"
+    gradient: ["#cf17BC", "#f4719B"]
+    aura-color: "#f425DF"
+
+  winterthorn:
+    material: NETHERITE_SWORD
+    custom-model-data: 69
+    display-name: "Winter Thorn"
+    gradient: ["#172cCF", "#ae71F4"]
+    aura-color: "#253dF4"
+
+  revenants_darkscepter:
+    material: NETHERITE_SWORD
+    custom-model-data: 70
+    display-name: "Revenants Dark Scepter"
+    gradient: ["#1dcf17", "#71f4B9"]
+    aura-color: "#2cf425"
+
+  void_oculus:
+    material: NETHERITE_SWORD
+    custom-model-data: 71
+    display-name: "Void Oculus"
+    gradient: ["#70cf17", "#71f47E"]
+    aura-color: "#89f425"
+
+  ethereal_frostblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 72
+    display-name: "Ethereal Frost Blade"
+    gradient: ["#1723CF", "#b571F4"]
+    aura-color: "#2533F4"
+
+  gilded_phoenix_greataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 73
+    display-name: "Gilded Phoenix Greataxe"
+    gradient: ["#5a17CF", "#ed71F4"]
+    aura-color: "#7125F4"
+
+  pheonixgrace:
+    material: NETHERITE_SWORD
+    custom-model-data: 74
+    display-name: "Pheonixgrace"
+    gradient: ["#7917CF", "#f471E4"]
+    aura-color: "#9325F4"
+
+  abominablegreatsaber:
+    material: NETHERITE_SWORD
+    custom-model-data: 75
+    display-name: "Abominablegreatsaber"
+    gradient: ["#cf6a17", "#eff471"]
+    aura-color: "#f48225"
+
+  abominableblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 76
+    display-name: "Abominableblade"
+    gradient: ["#cf7017", "#ebf471"]
+    aura-color: "#f48925"
+
+  abominablescythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 77
+    display-name: "Abominablescythe"
+    gradient: ["#17cf94", "#71d1F4"]
+    aura-color: "#25f4B2"
+
+  aciddemon:
+    material: NETHERITE_SWORD
+    custom-model-data: 78
+    display-name: "Aciddemon"
+    gradient: ["#17cf82", "#71deF4"]
+    aura-color: "#25f49D"
+
+  amethyst_shuriken:
+    material: NETHERITE_SWORD
+    custom-model-data: 79
+    display-name: "Amethyst Shuriken"
+    gradient: ["#17c2CF", "#719fF4"]
+    aura-color: "#25e6F4"
+
+  ancient_royal_great_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 80
+    display-name: "Ancient Royal Great Sword"
+    gradient: ["#174bCF", "#9871F4"]
+    aura-color: "#255fF4"
+
+  aquantic_sacred_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 81
+    display-name: "Aquantic Sacred Blade"
+    gradient: ["#b917CF", "#f471B7"]
+    aura-color: "#db25F4"
+
+  aquantictrident:
+    material: NETHERITE_SWORD
+    custom-model-data: 82
+    display-name: "Aquantictrident"
+    gradient: ["#17cf70", "#71ebF4"]
+    aura-color: "#25f489"
+
+  ashura_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 83
+    display-name: "Ashura Blade"
+    gradient: ["#17cf4E", "#71f4E4"]
+    aura-color: "#25f463"
+
+  bloodedge:
+    material: NETHERITE_SWORD
+    custom-model-data: 84
+    display-name: "Blood Edge"
+    gradient: ["#17cf36", "#71f4D3"]
+    aura-color: "#25f447"
+
+  bloodydeath:
+    material: NETHERITE_SWORD
+    custom-model-data: 85
+    display-name: "Bloody Death"
+    gradient: ["#4817CF", "#e071F4"]
+    aura-color: "#5c25F4"
+
+  cariansword:
+    material: NETHERITE_SWORD
+    custom-model-data: 86
+    display-name: "Carian Sword"
+    gradient: ["#17cf3C", "#71f4D7"]
+    aura-color: "#25f44E"
+
+  chrono_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 87
+    display-name: "Chrono Blade"
+    gradient: ["#171aCF", "#bb71F4"]
+    aura-color: "#2528F4"
+
+  corruptedmythicblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 88
+    display-name: "Corrupted Mythic Blade"
+    gradient: ["#cf4b17", "#f4e271"]
+    aura-color: "#f45f25"
+
+  creationsplitter:
+    material: NETHERITE_SWORD
+    custom-model-data: 89
+    display-name: "Creationsplitter"
+    gradient: ["#5d17CF", "#ef71F4"]
+    aura-color: "#7425F4"
+
+  crescentrose:
+    material: NETHERITE_SWORD
+    custom-model-data: 90
+    display-name: "Crescent Rose"
+    gradient: ["#a117CF", "#f471C8"]
+    aura-color: "#c025F4"
+
+  cyberkatana:
+    material: NETHERITE_SWORD
+    custom-model-data: 91
+    display-name: "Cyber Katana"
+    gradient: ["#cf1717", "#f4bd71"]
+    aura-color: "#f42525"
+
+  cybermantisblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 92
+    display-name: "Cybermantisblade"
+    gradient: ["#17cf85", "#71dcF4"]
+    aura-color: "#25f4A1"
+
+  cybernetickatana:
+    material: NETHERITE_SWORD
+    custom-model-data: 93
+    display-name: "Cybernetic Katana"
+    gradient: ["#63cf17", "#71f487"]
+    aura-color: "#7bf425"
+
+  cyberneticknife:
+    material: NETHERITE_SWORD
+    custom-model-data: 94
+    display-name: "Cyberneticknife"
+    gradient: ["#cf3617", "#f4d371"]
+    aura-color: "#f44725"
+
+  cyberneticsawblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 95
+    display-name: "Cybernetic Saw Blade"
+    gradient: ["#cf1723", "#f4b571"]
+    aura-color: "#f42533"
+
+  cybersword:
+    material: NETHERITE_SWORD
+    custom-model-data: 96
+    display-name: "Cyber Sword"
+    gradient: ["#17adCF", "#7190F4"]
+    aura-color: "#25ceF4"
+
+  dainsleif:
+    material: NETHERITE_SWORD
+    custom-model-data: 97
+    display-name: "Dainsleif"
+    gradient: ["#b017CF", "#f471BD"]
+    aura-color: "#d125F4"
+
+  dark_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 98
+    display-name: "Dark Blade"
+    gradient: ["#cf7917", "#e4f471"]
+    aura-color: "#f49325"
+
+  dark_cleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 99
+    display-name: "Dark Cleaver"
+    gradient: ["#1760CF", "#8971F4"]
+    aura-color: "#2578F4"
+
+  death_knight_dagger:
+    material: NETHERITE_SWORD
+    custom-model-data: 100
+    display-name: "Death Knight Dagger"
+    gradient: ["#cf7317", "#e9f471"]
+    aura-color: "#f48c25"
+
+  death_knight_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 101
+    display-name: "Death Knight Sword"
+    gradient: ["#45cf17", "#71f49D"]
+    aura-color: "#59f425"
+
+  demigodsunholyhalberd:
+    material: NETHERITE_SWORD
+    custom-model-data: 102
+    display-name: "Demigodsunholyhalberd"
+    gradient: ["#cf2317", "#f4c671"]
+    aura-color: "#f43325"
+
+  demigodsunholyblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 103
+    display-name: "Demigodsunholyblade"
+    gradient: ["#6d17CF", "#f471ED"]
+    aura-color: "#8525F4"
+
+  demonicblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 104
+    display-name: "Demonic Blade"
+    gradient: ["#c817CF", "#f471AC"]
+    aura-color: "#ed25F4"
+
+  demoniccleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 105
+    display-name: "Demonic Cleaver"
+    gradient: ["#17cf7F", "#71e0F4"]
+    aura-color: "#25f49A"
+
+  demonlordsgreataxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 106
+    display-name: "Demonlordsgreataxe"
+    gradient: ["#1acf17", "#71f4BB"]
+    aura-color: "#28f425"
+
+  demonlordsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 107
+    display-name: "Demon Lord Sword"
+    gradient: ["#6d17CF", "#f471ED"]
+    aura-color: "#8525F4"
+
+  divine_justice:
+    material: NETHERITE_SWORD
+    custom-model-data: 108
+    display-name: "Divine Justice"
+    gradient: ["#79cf17", "#71f478"]
+    aura-color: "#93f425"
+
+  divine_reaper:
+    material: NETHERITE_SWORD
+    custom-model-data: 109
+    display-name: "Divine Reaper"
+    gradient: ["#cf1791", "#f4717C"]
+    aura-color: "#f425AF"
+
+  divinepunisher:
+    material: NETHERITE_SWORD
+    custom-model-data: 110
+    display-name: "Divine Punisher"
+    gradient: ["#1717CF", "#bd71F4"]
+    aura-color: "#2525F4"
+
+  divineaxerhitta:
+    material: NETHERITE_SWORD
+    custom-model-data: 111
+    display-name: "Divineaxerhitta"
+    gradient: ["#cf4e17", "#f4e471"]
+    aura-color: "#f46325"
+
+  dragonslayingblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 112
+    display-name: "Dragon Slaying Blade"
+    gradient: ["#172cCF", "#ae71F4"]
+    aura-color: "#253dF4"
+
+  edgeoftheastralplane:
+    material: NETHERITE_SWORD
+    custom-model-data: 113
+    display-name: "Edge of the Astral Plane"
+    gradient: ["#cf1788", "#f47176"]
+    aura-color: "#f425A4"
+
+  epicsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 114
+    display-name: "Epicsword"
+    gradient: ["#cf1a17", "#f4c071"]
+    aura-color: "#f42825"
+
+  estoc:
+    material: NETHERITE_SWORD
+    custom-model-data: 115
+    display-name: "Estoc"
+    gradient: ["#8ecf17", "#7af471"]
+    aura-color: "#abf425"
+
+  fallengodspear:
+    material: NETHERITE_SWORD
+    custom-model-data: 116
+    display-name: "Fallen God Spear"
+    gradient: ["#54cf17", "#71f492"]
+    aura-color: "#6af425"
+
+  fallengodsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 117
+    display-name: "Fallen God Sword"
+    gradient: ["#2317CF", "#c671F4"]
+    aura-color: "#3325F4"
+
+  floral_longsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 118
+    display-name: "Floral Longsword"
+    gradient: ["#cf177C", "#f47671"]
+    aura-color: "#f42597"
+
+  floral_sabre:
+    material: NETHERITE_SWORD
+    custom-model-data: 119
+    display-name: "Floral Sabre"
+    gradient: ["#17cfA7", "#71c4F4"]
+    aura-color: "#25f4C7"
+
+  forest_guardian_glaive:
+    material: NETHERITE_SWORD
+    custom-model-data: 120
+    display-name: "Forest Guardian Glaive"
+    gradient: ["#17cf8E", "#71d5F4"]
+    aura-color: "#25f4AB"
+
+  frostaxe:
+    material: NETHERITE_SWORD
+    custom-model-data: 121
+    display-name: "Frost Axe"
+    gradient: ["#70cf17", "#71f47E"]
+    aura-color: "#89f425"
+
+  frostblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 122
+    display-name: "Frost Blade"
+    gradient: ["#cf1776", "#f47a71"]
+    aura-color: "#f42590"
+
+  frostscythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 123
+    display-name: "Frost Scythe"
+    gradient: ["#2617CF", "#c871F4"]
+    aura-color: "#3625F4"
+
+  greenscythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 124
+    display-name: "Greenscythe"
+    gradient: ["#79cf17", "#71f478"]
+    aura-color: "#93f425"
+
+  herosword:
+    material: NETHERITE_SWORD
+    custom-model-data: 125
+    display-name: "Hero Sword"
+    gradient: ["#b017CF", "#f471BD"]
+    aura-color: "#d125F4"
+
+  holymoonlightsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 126
+    display-name: "Holy Moonlight Sword"
+    gradient: ["#1acf17", "#71f4BB"]
+    aura-color: "#28f425"
+
+  hornetsneedle:
+    material: NETHERITE_SWORD
+    custom-model-data: 127
+    display-name: "Hornetsneedle"
+    gradient: ["#cf6317", "#f4f471"]
+    aura-color: "#f47b25"
+
+  jadehalberd:
+    material: NETHERITE_SWORD
+    custom-model-data: 128
+    display-name: "Jade Halberd"
+    gradient: ["#adcf17", "#90f471"]
+    aura-color: "#cef425"
+
+  legendarysword:
+    material: NETHERITE_SWORD
+    custom-model-data: 130
+    display-name: "Legendary Sword"
+    gradient: ["#cf2c17", "#f4cd71"]
+    aura-color: "#f43d25"
+
+  masamune:
+    material: NETHERITE_SWORD
+    custom-model-data: 132
+    display-name: "Masamune"
+    gradient: ["#176dCF", "#8171F4"]
+    aura-color: "#2585F4"
+
+  moltenblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 134
+    display-name: "Molten Blade"
+    gradient: ["#23cf17", "#71f4B5"]
+    aura-color: "#33f425"
+
+  moltensword:
+    material: NETHERITE_SWORD
+    custom-model-data: 135
+    display-name: "Molten Sword"
+    gradient: ["#cf8e17", "#d5f471"]
+    aura-color: "#f4ab25"
+
+  muramasa:
+    material: NETHERITE_SWORD
+    custom-model-data: 136
+    display-name: "Muramasa"
+    gradient: ["#cf3c17", "#f4d771"]
+    aura-color: "#f44e25"
+
+  mysticalspellblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 137
+    display-name: "Mystical Spell Blade"
+    gradient: ["#cf1776", "#f47a71"]
+    aura-color: "#f42590"
+
+  mythicblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 138
+    display-name: "Mythic Blade"
+    gradient: ["#cf4517", "#f4de71"]
+    aura-color: "#f45925"
+
+  partisan:
+    material: NETHERITE_SWORD
+    custom-model-data: 139
+    display-name: "Partisan"
+    gradient: ["#9b17CF", "#f471CD"]
+    aura-color: "#b925F4"
+
+  pharaohs_treasure:
+    material: NETHERITE_SWORD
+    custom-model-data: 140
+    display-name: "Pharaohs Treasure"
+    gradient: ["#1776CF", "#7a71F4"]
+    aura-color: "#2590F4"
+
+  powerfusehammer:
+    material: NETHERITE_SWORD
+    custom-model-data: 141
+    display-name: "Power Fuse Hammer"
+    gradient: ["#1776CF", "#7a71F4"]
+    aura-color: "#2590F4"
+
+  powerfusesword:
+    material: NETHERITE_SWORD
+    custom-model-data: 142
+    display-name: "Power Fuse Sword"
+    gradient: ["#cfaa17", "#c2f471"]
+    aura-color: "#f4ca25"
+
+  riversofblood:
+    material: NETHERITE_SWORD
+    custom-model-data: 143
+    display-name: "Riversofblood"
+    gradient: ["#17bfCF", "#719dF4"]
+    aura-color: "#25e2F4"
+
+  royalchakram:
+    material: NETHERITE_SWORD
+    custom-model-data: 144
+    display-name: "Royal Chakram"
+    gradient: ["#9bcf17", "#83f471"]
+    aura-color: "#b9f425"
+
+  royalrapier:
+    material: NETHERITE_SWORD
+    custom-model-data: 145
+    display-name: "Royal Rapier"
+    gradient: ["#cf176A", "#f48371"]
+    aura-color: "#f42582"
+
+  sculkcleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 147
+    display-name: "Sculk Cleaver"
+    gradient: ["#cf17C5", "#f471A1"]
+    aura-color: "#f425E9"
+
+  scissorblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 148
+    display-name: "Scissor Blade"
+    gradient: ["#5717CF", "#eb71F4"]
+    aura-color: "#6d25F4"
+
+  sculkscythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 149
+    display-name: "Sculk Scythe"
+    gradient: ["#cf5117", "#f4e771"]
+    aura-color: "#f46625"
+
+  sculksword:
+    material: NETHERITE_SWORD
+    custom-model-data: 150
+    display-name: "Sculk Sword"
+    gradient: ["#17cf48", "#71f4E0"]
+    aura-color: "#25f45C"
+
+  silverine_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 151
+    display-name: "Silverine Blade"
+    gradient: ["#cf1763", "#f48771"]
+    aura-color: "#f4257B"
+
+  sentinels_will:
+    material: NETHERITE_SWORD
+    custom-model-data: 152
+    display-name: "Sentinels Will"
+    gradient: ["#17b9CF", "#7198F4"]
+    aura-color: "#25dbF4"
+
+  soul_devourer:
+    material: NETHERITE_SWORD
+    custom-model-data: 153
+    display-name: "Soul Devourer"
+    gradient: ["#17cf82", "#71deF4"]
+    aura-color: "#25f49D"
+
+  soul_collector:
+    material: NETHERITE_SWORD
+    custom-model-data: 154
+    display-name: "Soul Collector"
+    gradient: ["#97cf17", "#81f471"]
+    aura-color: "#b6f425"
+
+  souledge:
+    material: NETHERITE_SWORD
+    custom-model-data: 155
+    display-name: "Soul Edge"
+    gradient: ["#cf17C5", "#f471A1"]
+    aura-color: "#f425E9"
+
+  soulclaws:
+    material: NETHERITE_SWORD
+    custom-model-data: 156
+    display-name: "Soul Claws"
+    gradient: ["#42cf17", "#71f49F"]
+    aura-color: "#55f425"
+
+  steelsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 157
+    display-name: "Steel Sword"
+    gradient: ["#cfa117", "#c8f471"]
+    aura-color: "#f4c025"
+
+  soulharvester:
+    material: NETHERITE_SWORD
+    custom-model-data: 158
+    display-name: "Soulharvester"
+    gradient: ["#1785CF", "#7174F4"]
+    aura-color: "#25a1F4"
+
+  tengensblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 159
+    display-name: "Tengensblade"
+    gradient: ["#3fcf17", "#71f4A1"]
+    aura-color: "#52f425"
+
+  stop_sign:
+    material: NETHERITE_SWORD
+    custom-model-data: 160
+    display-name: "Stop Sign"
+    gradient: ["#17b9CF", "#7198F4"]
+    aura-color: "#25dbF4"
+
+  thunderbringer:
+    material: NETHERITE_SWORD
+    custom-model-data: 162
+    display-name: "Thunderbringer"
+    gradient: ["#cf17CF", "#f471A8"]
+    aura-color: "#f425F4"
+
+  terrablade:
+    material: NETHERITE_SWORD
+    custom-model-data: 163
+    display-name: "Terra Blade"
+    gradient: ["#cf17BF", "#f4719D"]
+    aura-color: "#f425E2"
+
+  thousanddemondaggers:
+    material: NETHERITE_SWORD
+    custom-model-data: 164
+    display-name: "Thousanddemondaggers"
+    gradient: ["#cf5717", "#f4eb71"]
+    aura-color: "#f46d25"
+
+  yoru:
+    material: NETHERITE_SWORD
+    custom-model-data: 165
+    display-name: "Yoru"
+    gradient: ["#23cf17", "#71f4B5"]
+    aura-color: "#33f425"
+
+  toxic_longsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 166
+    display-name: "Toxic Longsword"
+    gradient: ["#17cf54", "#71f4E9"]
+    aura-color: "#25f46A"
+
+  vampiricneedle:
+    material: NETHERITE_SWORD
+    custom-model-data: 167
+    display-name: "Vampiric Needle"
+    gradient: ["#17cf94", "#71d1F4"]
+    aura-color: "#25f4B2"
+
+  whisperwind:
+    material: NETHERITE_SWORD
+    custom-model-data: 169
+    display-name: "Whisper Wind"
+    gradient: ["#cf8e17", "#d5f471"]
+    aura-color: "#f4ab25"
+
+  wickpiercer:
+    material: NETHERITE_SWORD
+    custom-model-data: 170
+    display-name: "Wick Piercer"
+    gradient: ["#cfcb17", "#aaf471"]
+    aura-color: "#f4f025"
+
+  thunderbrand:
+    material: NETHERITE_SWORD
+    custom-model-data: 171
+    display-name: "Thunderbrand"
+    gradient: ["#b017CF", "#f471BD"]
+    aura-color: "#d125F4"
+
+  watcher_claymore:
+    material: NETHERITE_SWORD
+    custom-model-data: 172
+    display-name: "Watcher Claymore"
+    gradient: ["#cfcf17", "#a8f471"]
+    aura-color: "#f4f425"
+
+  watching_warglaive:
+    material: NETHERITE_SWORD
+    custom-model-data: 173
+    display-name: "Watching Warglaive"
+    gradient: ["#1776CF", "#7a71F4"]
+    aura-color: "#2590F4"
+
+  waxweaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 174
+    display-name: "Wax Weaver"
+    gradient: ["#17cfCB", "#71aaF4"]
+    aura-color: "#25f4F0"
+
+  stars_edge:
+    material: NETHERITE_SWORD
+    custom-model-data: 175
+    display-name: "Stars Edge"
+    gradient: ["#7fcf17", "#71f474"]
+    aura-color: "#9af425"
+
+  stormbringer:
+    material: NETHERITE_SWORD
+    custom-model-data: 176
+    display-name: "Stormbringer"
+    gradient: ["#17cfC5", "#71aeF4"]
+    aura-color: "#25f4E9"
+
+  storms_edge:
+    material: NETHERITE_SWORD
+    custom-model-data: 177
+    display-name: "Storms Edge"
+    gradient: ["#17cfA1", "#71c8F4"]
+    aura-color: "#25f4C0"
+
+  ribboncleaver:
+    material: NETHERITE_SWORD
+    custom-model-data: 178
+    display-name: "Ribboncleaver"
+    gradient: ["#20cf17", "#71f4B7"]
+    aura-color: "#2ff425"
+
+  righteous_relic:
+    material: NETHERITE_SWORD
+    custom-model-data: 179
+    display-name: "Righteous Relic"
+    gradient: ["#ad17CF", "#f471C0"]
+    aura-color: "#ce25F4"
+
+  soulrender:
+    material: NETHERITE_SWORD
+    custom-model-data: 180
+    display-name: "Soulrender"
+    gradient: ["#5acf17", "#71f48E"]
+    aura-color: "#71f425"
+
+  soulstealer:
+    material: NETHERITE_SWORD
+    custom-model-data: 181
+    display-name: "Soulstealer"
+    gradient: ["#73cf17", "#71f47C"]
+    aura-color: "#8cf425"
+
+  hearthflame:
+    material: NETHERITE_SWORD
+    custom-model-data: 183
+    display-name: "Hearthflame"
+    gradient: ["#cf1785", "#f47174"]
+    aura-color: "#f425A1"
+
+  icewhisper:
+    material: NETHERITE_SWORD
+    custom-model-data: 184
+    display-name: "Ice Whisper"
+    gradient: ["#c817CF", "#f471AC"]
+    aura-color: "#ed25F4"
+
+  magiscythe:
+    material: NETHERITE_SWORD
+    custom-model-data: 185
+    display-name: "Magi Scythe"
+    gradient: ["#1763CF", "#8771F4"]
+    aura-color: "#257bF4"
+
+  arcanethyst:
+    material: NETHERITE_SWORD
+    custom-model-data: 186
+    display-name: "Arcanethyst"
+    gradient: ["#1a17CF", "#c071F4"]
+    aura-color: "#2825F4"
+
+  awakened_lichblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 187
+    display-name: "Awakened Lich Blade"
+    gradient: ["#1797CF", "#7181F4"]
+    aura-color: "#25b6F4"
+
+  bramblethorn:
+    material: NETHERITE_SWORD
+    custom-model-data: 188
+    display-name: "Bramble Thorn"
+    gradient: ["#9bcf17", "#83f471"]
+    aura-color: "#b9f425"
+
+  brimstone_claymore:
+    material: NETHERITE_SWORD
+    custom-model-data: 189
+    display-name: "Brimstone Claymore"
+    gradient: ["#cf17BF", "#f4719D"]
+    aura-color: "#f425E2"
+
+  emberblade:
+    material: NETHERITE_SWORD
+    custom-model-data: 190
+    display-name: "Ember Blade"
+    gradient: ["#a417CF", "#f471C6"]
+    aura-color: "#c325F4"
+
+  requiem_of_hell:
+    material: NETHERITE_SWORD
+    custom-model-data: 192
+    display-name: "Requiem of Hell"
+    gradient: ["#9bcf17", "#83f471"]
+    aura-color: "#b9f425"
+
+  aquatic_rage:
+    material: NETHERITE_SWORD
+    custom-model-data: 194
+    display-name: "Aquatic Rage"
+    gradient: ["#5dcf17", "#71f48B"]
+    aura-color: "#74f425"
+
+  death_knight_spear:
+    material: NETHERITE_SWORD
+    custom-model-data: 203
+    display-name: "Death Knight Spear"
+    gradient: ["#175dCF", "#8b71F4"]
+    aura-color: "#2574F4"
+
+  demonking_longsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 206
+    display-name: "Demon King Longsword"
+    gradient: ["#cf1788", "#f47176"]
+    aura-color: "#f425A4"
+
+  elucidator:
+    material: NETHERITE_SWORD
+    custom-model-data: 212
+    display-name: "Elucidator"
+    gradient: ["#cbcf17", "#a5f471"]
+    aura-color: "#f0f425"
+
+  excalibur:
+    material: NETHERITE_SWORD
+    custom-model-data: 214
+    display-name: "Excalibur"
+    gradient: ["#85cf17", "#74f471"]
+    aura-color: "#a1f425"
+
+  murasama:
+    material: NETHERITE_SWORD
+    custom-model-data: 231
+    display-name: "Murasama"
+    gradient: ["#2f17CF", "#cf71F4"]
+    aura-color: "#4125F4"
+
+  noragami:
+    material: NETHERITE_SWORD
+    custom-model-data: 232
+    display-name: "Noragami"
+    gradient: ["#cbcf17", "#a5f471"]
+    aura-color: "#f0f425"
+
+  scarlet_piercer:
+    material: NETHERITE_SWORD
+    custom-model-data: 238
+    display-name: "Scarlet Piercer"
+    gradient: ["#17cf6D", "#71edF4"]
+    aura-color: "#25f485"
+
+  yamato:
+    material: NETHERITE_SWORD
+    custom-model-data: 244
+    display-name: "Yamato"
+    gradient: ["#9ecf17", "#85f471"]
+    aura-color: "#bcf425"
+
+  shadow_blade:
+    material: NETHERITE_SWORD
+    custom-model-data: 246
+    display-name: "Shadow Blade"
+    gradient: ["#cf5417", "#f4e971"]
+    aura-color: "#f46a25"
+
+  phantom_dagger:
+    material: NETHERITE_SWORD
+    custom-model-data: 247
+    display-name: "Phantom Dagger"
+    gradient: ["#1745CF", "#9d71F4"]
+    aura-color: "#2559F4"
+
+  staff_of_homa:
+    material: NETHERITE_SWORD
+    custom-model-data: 248
+    display-name: "Staff of Homa"
+    gradient: ["#177cCF", "#7671F4"]
+    aura-color: "#2597F4"
+
+  lumidouce_elegy:
+    material: NETHERITE_SWORD
+    custom-model-data: 249
+    display-name: "Lumidouce Elegy"
+    gradient: ["#1788CF", "#7176F4"]
+    aura-color: "#25a4F4"
+
+  favonius_greatsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 250
+    display-name: "Favonius Greatsword"
+    gradient: ["#3217CF", "#d171F4"]
+    aura-color: "#4425F4"
+
+  primordial_jade_cutter:
+    material: NETHERITE_SWORD
+    custom-model-data: 251
+    display-name: "Primordial Jade Cutter"
+    gradient: ["#8817CF", "#f471DA"]
+    aura-color: "#a425F4"
+
+  bloodsword:
+    material: NETHERITE_SWORD
+    custom-model-data: 252
+    display-name: "Blood Sword"
+    gradient: ["#9ecf17", "#85f471"]
+    aura-color: "#bcf425"
+
+  enderdragon_sword:
+    material: NETHERITE_SWORD
+    custom-model-data: 253
+    display-name: "Ender Dragon Sword"
+    gradient: ["#79cf17", "#71f478"]
+    aura-color: "#93f425"
+
+  tung_tung:
+    material: NETHERITE_SWORD
+    custom-model-data: 254
+    display-name: "Tung Tung"
+    gradient: ["#9717CF", "#f471CF"]
+    aura-color: "#b625F4"
+
 # Two independent spear tweaks - either can be on without the other.
 #
 # remove-attack-cooldown: true takes the vanilla jab (attack) cooldown off, so the swing bar refills instantly

@@ -45,7 +45,7 @@ public class StrataWeapons extends StrataModule {
       charmGui.setSkinsGui(skinsGui);
       this.getServer().getPluginManager().registerEvents(charmGui, this);
       this.getCommand("stratacharm").setExecutor(charmGui);
-      this.getCommand("skins").setExecutor(new SkinsCommand(skinsGui, charmGui));
+      this.getCommand("strataskins").setExecutor(new SkinsCommand(skinsGui, charmGui));
       this.getCommand("givestratacharm").setExecutor(new GiveStrataCharmCommand(this, charmService));
       KillMessageManager killMessages = new KillMessageManager(this);
       this.getCommand("killmsg").setExecutor(new KillMessageCommand(this, killMessages));

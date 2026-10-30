@@ -264,7 +264,7 @@ public final class StrataCharmGui implements Listener, CommandExecutor {
                     if (player.isOnline()) {
                         player.sendMessage(Component.text("Unlocked ", NamedTextColor.GREEN)
                                 .append(Component.text(catalog.displayNameOf(key), NamedTextColor.GOLD))
-                                .append(Component.text("! Use /skins to apply it.", NamedTextColor.GREEN)));
+                                .append(Component.text("! Use /sskins to apply it.", NamedTextColor.GREEN)));
                         openCatalog(player, returnPage, armour);
                     }
                 }));

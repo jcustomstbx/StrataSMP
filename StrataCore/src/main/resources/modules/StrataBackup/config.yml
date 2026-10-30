@@ -1,0 +1,26 @@
+# StrataBackup asks the host-side script (/usr/local/bin/strata-backup.sh on the VPS) to take a backup.
+# The plugin pauses world saving, writes a request file, waits for the script's result, then resumes saving.
+# Backups are written on the VPS under /root/backups (database, data, world).
+
+schedule:
+  enabled: true
+  every-days: 3
+  time: "04:30"            # time of day the backup may start
+  timezone: "Europe/London"
+  type: full               # full = database + data + world, quick = database + data only
+
+# /backup with no argument uses this type
+command-default: full
+
+# how many copies the host script keeps of each kind
+keep:
+  database: 10
+  data: 10
+  world: 1                 # world backups are big (the pre-generated world is tens of GB)
+
+# pause Chunky pre-generation while saving is switched off, then continue it afterwards
+chunky-pause: true
+
+# give up waiting for the host script
+pickup-timeout-seconds: 120    # the script must start within this long
+total-timeout-minutes: 120

@@ -217,7 +217,7 @@ public class SkinPurge implements Listener, TabExecutor {
          if (removed > 0) {
             plugin.getLogger().info("Purged " + removed + " '" + entry.getKey() + "' from " + player.getName() + " on login.");
             player.sendMessage(Component.text("Your " + catalog.displayNameOf(entry.getKey())
-               + " weapon was removed - if you own the skin you can apply it again from /skins.", NamedTextColor.RED));
+               + " weapon was removed - if you own the skin you can apply it again from /sskins.", NamedTextColor.RED));
          }
       }
       for (Map.Entry<String, Set<UUID>> entry : restore.entrySet()) {

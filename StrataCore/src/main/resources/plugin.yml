@@ -23,7 +23,7 @@ commands:
   stratacharm: {description: Browse and unlock weapon skins, usage: /stratacharm, aliases: [charms, stratacharms]}
   givestratacharm: {description: Grant StrataCharm, usage: '/givestratacharm <player> <amount>', permission: strataweapons.charm.give}
   givecw: {description: Give a catalog weapon, usage: '/givecw <key> <player>', permission: strataweapons.give}
-  skins: {description: "Browse every weapon and armour skin - add owned to see only yours", usage: "/skins [owned]"}
+  strataskins: {description: "Browse every weapon and armour skin - add owned to see only yours", usage: "/sskins [owned]", aliases: [sskins, cskins, weaponskins]}
   unskin: {description: Remove a skin from the item in hand, usage: /unskin}
   killmsg: {description: Manage custom kill messages, usage: '/killmsg <help|set|reset|preview|clear>'}
   transferenchants: {description: Transfer donor enchantments to a catalog weapon, usage: /transferenchants, permission: strataweapons.transferenchants}
@@ -34,6 +34,7 @@ commands:
   rankstyle: {description: Choose paid-rank cosmetic styles, usage: '/rankstyle <name|chat|particle|join> <choice>'}
   name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
   repair: {description: Repair the item in hand with Regal, usage: /repair}
+  backup: {description: "Back up the database, data and worlds now", usage: "/backup [full|quick|status]", permission: strata.backup}
   quests: {description: "Daily, weekly and story quests", usage: "/quests [daily|weekly|story]", aliases: [quest, q]}
   mmo: {description: RPG stats and leaderboards, usage: '/mmo [stats|top]', aliases: [stratammo]}
   strataperks: {description: Check StrataPerks balance, usage: '/strataperks [player]', aliases: [perks, strataperk]}
@@ -77,6 +78,7 @@ permissions:
   strataweapons.killmessage.admin: {description: Moderate custom kill messages, default: op}
   strataweapons.transferenchants: {description: Transfer donor enchantments, default: true}
   strataskins.*: {description: Unlock every weapon skin, default: op}
+  strata.backup: {description: Run /backup, default: op}
   stratahub.admin: {description: Manage hub NPCs and lockdown, default: op}
   stratahub.lockdown.bypass: {description: Enter SMP worlds during lockdown, default: false}
   stratahub.closedworld.bypass: {description: Enter closed worlds, default: op}

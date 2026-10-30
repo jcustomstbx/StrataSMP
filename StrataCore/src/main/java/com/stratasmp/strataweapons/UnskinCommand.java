@@ -36,7 +36,7 @@ public final class UnskinCommand implements CommandExecutor {
         player.sendMessage(Component.text("Removed ", NamedTextColor.GREEN)
                 .append(Component.text(catalog.displayNameOf(key), NamedTextColor.GOLD))
                 .append(Component.text(" from your " + held.getType().name().toLowerCase().replace('_', ' ')
-                        + ". You still own the skin - apply it again from /skins.", NamedTextColor.GREEN)));
+                        + ". You still own the skin - apply it again from /sskins.", NamedTextColor.GREEN)));
         return true;
     }
 }
