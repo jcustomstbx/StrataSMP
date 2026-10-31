@@ -101,9 +101,13 @@ public class WeaponCatalog {
       return this.armorKeys.contains(key.toLowerCase());
    }
 
-   /** Armour skins list before weapon skins in the menus. */
+   /** Menu order: crowns first, then armour sets, then weapon skins. */
    public int menuOrder(String key) {
-      return isArmorSkin(key) ? 0 : 1;
+      if (!isArmorSkin(key)) {
+         return 2;
+      }
+      ConfigurationSection def = this.definitions.get(key.toLowerCase());
+      return def != null && isCrown(def) ? 0 : 1;
    }
 
    public ItemStack build(String key) {
