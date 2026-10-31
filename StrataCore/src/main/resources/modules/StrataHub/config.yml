@@ -108,10 +108,10 @@ op-beacon-beam-color: "#33C8FF"
 # for more zones, /stratahub reload to apply. color is a hex RGB.
 safe-zone-outlines:
   - world: world
-    min-x: -6
-    max-x: 4
-    min-z: -5
-    max-z: 5
+    min-x: -496
+    max-x: -426
+    min-z: -618
+    max-z: -550
     color: "#FF2020"
 
 # Same boxes as safe-zone-outlines above, but enforced: a tagged (in-combat) player crossing in from

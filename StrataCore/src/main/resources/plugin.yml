@@ -34,6 +34,7 @@ commands:
   rankstyle: {description: Choose paid-rank cosmetic styles, usage: '/rankstyle <name|chat|particle|join> <choice>'}
   name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
   repair: {description: Repair the item in hand with Regal, usage: /repair}
+  clearitems: {description: "Clear dropped items now or show the countdown", usage: "/clearitems [now|status]", permission: strata.clear, aliases: [clearlag, lagclear]}
   backup: {description: "Back up the database, data and worlds now", usage: "/backup [full|quick|status]", permission: strata.backup}
   quests: {description: "Daily, weekly and story quests", usage: "/quests [daily|weekly|story]", aliases: [quest, q]}
   mmo: {description: RPG stats and leaderboards, usage: '/mmo [stats|top]', aliases: [stratammo]}
@@ -79,6 +80,7 @@ permissions:
   strataweapons.transferenchants: {description: Transfer donor enchantments, default: true}
   strataskins.*: {description: Unlock every weapon skin, default: op}
   strata.backup: {description: Run /backup, default: op}
+  strata.clear: {description: Run /clearitems, default: op}
   stratahub.admin: {description: Manage hub NPCs and lockdown, default: op}
   stratahub.lockdown.bypass: {description: Enter SMP worlds during lockdown, default: false}
   stratahub.closedworld.bypass: {description: Enter closed worlds, default: op}

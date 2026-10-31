@@ -1,0 +1,22 @@
+# StrataClear removes dropped items on a timer, with countdown warnings.
+enabled: true
+
+# minutes between clears
+interval-minutes: 10
+
+# seconds before each clear at which players are warned (largest first)
+warnings: [60, 30, 10, 5, 4, 3, 2, 1]
+
+# worlds to clear; empty = every world
+worlds: []
+
+# items that survive a clear
+keep:
+  named-items: true        # anything with a custom name (skins, keystones, named gear)
+  newer-than-seconds: 5    # items dropped in the last few seconds, so a fresh drop is not wiped mid-air
+
+messages:
+  prefix: "&9&lClear &8» &7"
+  warning: "Dropped items will be cleared in &b{seconds} &7second(s)!"
+  cleared: "Cleared &b{count} &7dropped item(s)."
+  nothing: "No dropped items to clear."
