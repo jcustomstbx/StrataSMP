@@ -1,0 +1,31 @@
+# StrataVaults - personal vaults (/pv), separate from ender chests. How many a player gets depends on their
+# paid tier: the highest tierN LuckPerms group they are in (each tier inherits the one below). The numbers were
+# carried over from the RankEssentials config: monarch to regal map to tier1 to tier10 in order.
+
+# worlds where vaults can be opened (the Hub and Duels keep their own inventories)
+allowed-worlds:
+  - world
+  - world_nether
+  - world_the_end
+
+vault-limits:
+  op: 10
+  default: 0
+  tier1: 3
+  tier2: 4
+  tier3: 5
+  tier4: 6
+  tier5: 7
+  tier6: 7
+  tier7: 8
+  tier8: 8
+  tier9: 10
+  tier10: 10
+
+messages:
+  prefix: "&9&lVaults &8» &7"
+  none: "You don't have a personal vault yet. Get a tier at &bstratasmp.co.uk/store&7."
+  loading: "Your vaults are still loading, try again in a moment."
+  wrong-world: "Personal vaults can only be opened in the SMP worlds."
+  bad-number: "Pick a vault from 1 to {max}."
+  unreadable: "That vault could not be read. Tell a staff member; your items are safe on disk."

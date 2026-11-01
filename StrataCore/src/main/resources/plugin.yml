@@ -11,6 +11,8 @@ commands:
   boss: {description: Boss admin tools, usage: '/boss <list|tp|kill|reload>', permission: stratabosses.admin}
   spawnboss: {description: Spawn a boss for testing, usage: '/spawnboss <boss>'}
   cratevault: {description: Open and claim your Crate Vault, usage: /cratevault, aliases: [cvault]}
+  pv: {description: "Open your personal vaults", usage: "/pv [number]"}
+  pvsee: {description: "View another player's personal vault (read only)", usage: "/pvsee <player> <number>", permission: stratavaults.see}
   stratas: {description: Check your Stratas balance, usage: '/stratas [player]', aliases: [bal, balance, money, strata]}
   pay: {description: Pay Stratas to another player, usage: '/pay <player> <amount>'}
   baltop: {description: Top Stratas holders, usage: '/baltop [page]', aliases: [stratatop, moneytop]}
@@ -69,6 +71,7 @@ permissions:
   stratabosses.admin: {description: Spawn bosses, default: op}
   stratacratevault.use: {description: Open your Crate Vault, default: true}
   stratacratevault.admin: {description: Deposit items into a player's Crate Vault, default: op}
+  stratavaults.see: {description: "View other players' personal vaults read only", default: op}
   strataeconomy.admin: {description: Administer Stratas and auctions, default: op}
   strataeconomy.auction.use: {description: Use the auction house, default: true}
   strataeconomy.shop.use: {description: Use Stratas shop and sell, default: true}

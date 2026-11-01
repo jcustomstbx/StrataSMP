@@ -3,6 +3,7 @@ package com.stratasmp.stratacore;
 import com.stratasmp.strataeconomy.StrataEconomy;
 import com.stratasmp.stratabosses.StrataBosses;
 import com.stratasmp.stratacratevault.StrataCrateVault;
+import com.stratasmp.stratavaults.StrataVaults;
 import com.stratasmp.stratateams.StrataTeams;
 import com.stratasmp.strataweapons.StrataWeapons;
 import com.stratasmp.stratahub.StrataHub;
@@ -44,6 +45,7 @@ public final class StrataCore extends JavaPlugin {
                 new StrataEconomy(this),
                 new StrataBosses(this),
                 new StrataCrateVault(this),
+                new StrataVaults(this),
                 new StrataTeams(this),
                 new StrataWeapons(this),
                 new StrataHub(this),

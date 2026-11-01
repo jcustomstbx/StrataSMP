@@ -6,7 +6,7 @@
 cooldown-seconds: 259200
 
 # the rank menu the hub NPCs open (/rankpreview <rank>). Homes and vaults are read from
-# RankEssentials' config and the kit from kits.yml, so only these two are set here.
+# the StrataVaults and Essentials configs and the kit from kits.yml, so only these two are set here.
 showcase:
   store-url: "https://stratasmp.co.uk/store"
   ender-chest-rows: 6
@@ -17,20 +17,3 @@ allowed-worlds:
   - world
   - world_nether
   - world_the_end
-# Personal vaults per tier (/pv). Shown on the rank menu. The vault plugin enforces the same numbers through
-# LuckPerms: each tier group has playervaults.amount.N, so change both together.
-vault-limits:
-  tier1: 1
-  tier2: 2
-  tier3: 3
-  tier4: 4
-  tier5: 5
-  tier6: 6
-  tier7: 7
-  tier8: 8
-  tier9: 9
-  tier10: 10
-
-# Homes per tier shown on the rank menu (leave a tier out to hide the line). Set the real limits in
-# EssentialsX (sethome-multiple) with essentials.sethome.multiple.<name> on each tier group.
-home-limits: {}
