@@ -1,6 +1,14 @@
 package com.stratasmp.stratammo.quests;
 
+import com.stratasmp.stratammo.Skill;
+
 import java.time.DayOfWeek;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 
@@ -13,6 +21,28 @@ public final class QuestRules {
     /** The date the current week started: the most recent {@code resetDay} on or before {@code today}. */
     public static String weekKey(LocalDate today, DayOfWeek resetDay) {
         return today.with(TemporalAdjusters.previousOrSame(resetDay)).toString();
+    }
+
+    /**
+     * Picks up to {@code count} weekly quests from the pool, preferring a different skill for each so a week
+     * is not three mining quests, and only repeating a skill when the pool has fewer skills than {@code count}.
+     */
+    public static List<QuestDef> pickWeekly(List<QuestDef> pool, int count, Random random) {
+        List<QuestDef> shuffled = new ArrayList<>(pool);
+        Collections.shuffle(shuffled, random);
+        Set<Skill> usedSkills = new HashSet<>();
+        List<QuestDef> picked = new ArrayList<>();
+        for (QuestDef def : shuffled) {
+            if (picked.size() < count && usedSkills.add(def.skill())) {
+                picked.add(def);
+            }
+        }
+        for (QuestDef def : shuffled) {
+            if (picked.size() < count && !picked.contains(def)) {
+                picked.add(def);
+            }
+        }
+        return picked;
     }
 
     public enum Result { NONE, STEP_DONE, CHAIN_DONE }

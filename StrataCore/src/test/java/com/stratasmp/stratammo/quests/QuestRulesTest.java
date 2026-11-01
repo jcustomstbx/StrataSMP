@@ -6,6 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import com.stratasmp.stratammo.Skill;
 import org.junit.jupiter.api.Test;
 
 class QuestRulesTest {
@@ -72,6 +77,39 @@ class QuestRulesTest {
         assertEquals(7, chain.progress());
         assertEquals(QuestRules.Result.STEP_DONE, chain.add(3, 10, 5));
         assertEquals(3, chain.step());
+    }
+
+    private static QuestDef weekly(String id, Skill skill) {
+        return new QuestDef(id, id, ObjectiveType.MINE_BLOCK, Set.of(), 10, skill, 100, 50L);
+    }
+
+    @Test
+    void weeklyPicksPreferDifferentSkills() {
+        List<QuestDef> pool = List.of(weekly("a", Skill.MINING), weekly("b", Skill.MINING), weekly("c", Skill.MINING),
+                weekly("d", Skill.FARMING), weekly("e", Skill.FISHING));
+        for (long seed = 0; seed < 50; seed++) {
+            List<QuestDef> picked = QuestRules.pickWeekly(pool, 3, new Random(seed));
+            assertEquals(3, picked.size());
+            Set<Skill> skills = new HashSet<>();
+            picked.forEach(q -> skills.add(q.skill()));
+            assertEquals(3, skills.size(), "seed " + seed);
+        }
+    }
+
+    @Test
+    void weeklyRepeatsASkillOnlyWhenThePoolRunsOutOfSkills() {
+        List<QuestDef> pool = List.of(weekly("a", Skill.MINING), weekly("b", Skill.MINING), weekly("c", Skill.FARMING));
+        List<QuestDef> picked = QuestRules.pickWeekly(pool, 3, new Random(1));
+        assertEquals(3, picked.size());
+        assertEquals(3, new HashSet<>(picked).size());
+    }
+
+    @Test
+    void weeklyNeverReturnsMoreThanThePoolOrDuplicates() {
+        List<QuestDef> pool = List.of(weekly("a", Skill.MINING), weekly("b", Skill.FARMING));
+        assertEquals(2, QuestRules.pickWeekly(pool, 5, new Random(7)).size());
+        assertEquals(0, QuestRules.pickWeekly(List.of(), 3, new Random(7)).size());
+        assertEquals(0, QuestRules.pickWeekly(pool, 0, new Random(7)).size());
     }
 
     @Test

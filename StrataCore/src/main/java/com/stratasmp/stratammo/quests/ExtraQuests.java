@@ -22,12 +22,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -261,21 +261,7 @@ public final class ExtraQuests {
         if (!week.equals(state.week) || (state.weekly.isEmpty() && !weeklyPool.isEmpty())) {
             state.week = week;
             state.weekly.clear();
-            List<QuestDef> shuffled = new ArrayList<>(weeklyPool.values());
-            Collections.shuffle(shuffled);
-            Set<Skill> usedSkills = new HashSet<>();
-            List<QuestDef> picked = new ArrayList<>();
-            for (QuestDef def : shuffled) {
-                if (picked.size() < weeklyCount && usedSkills.add(def.skill())) {
-                    picked.add(def);
-                }
-            }
-            for (QuestDef def : shuffled) {
-                if (picked.size() < weeklyCount && !picked.contains(def)) {
-                    picked.add(def);
-                }
-            }
-            for (QuestDef def : picked) {
+            for (QuestDef def : QuestRules.pickWeekly(new ArrayList<>(weeklyPool.values()), weeklyCount, new Random())) {
                 state.weekly.put(def.id(), new Weekly());
             }
             state.dirty = true;
