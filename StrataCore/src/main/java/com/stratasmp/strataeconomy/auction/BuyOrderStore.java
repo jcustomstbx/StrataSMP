@@ -100,8 +100,8 @@ public final class BuyOrderStore implements BuyOrders {
 
     public int maxPerPlayer(Player player) {
         return maxPerPlayer + switch (RankTier.of(player)) {
-            case ORNATE -> 1;
-            case REGAL -> 4;
+            case TIER_VIII -> 1;
+            case TIER_X -> 4;
             default -> 0;
         };
     }

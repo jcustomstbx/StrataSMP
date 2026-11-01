@@ -48,8 +48,8 @@ final class RtpCooldownLimiter extends BukkitRunnable {
             Map<UUID, Long> cooldowns = (Map<UUID, Long>) cooldownsField.get(tpManager);
             for (Map.Entry<UUID, Long> entry : cooldowns.entrySet()) {
                 Player player = plugin.getServer().getPlayer(entry.getKey());
-                long seconds = player != null && RankTier.of(player).ordinal() >= RankTier.ORNATE.ordinal()
-                        ? plugin.getConfig().getLong("ornate-rtp-cooldown-seconds", 90L) : capSeconds;
+                long seconds = player != null && RankTier.of(player).ordinal() >= RankTier.TIER_VIII.ordinal()
+                        ? plugin.getConfig().getLong("tier8-rtp-cooldown-seconds", 90L) : capSeconds;
                 long cap = System.currentTimeMillis() + seconds * 1000L;
                 if (entry.getValue() > cap) {
                     entry.setValue(cap);

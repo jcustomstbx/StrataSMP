@@ -1,5 +1,5 @@
 # StrataKits - one kit per ladder rank, claimable every 72 hours. The kits themselves
-# are in kits.yml, listed lowest rank first; each kit id is the LuckPerms group
+# are in kits.yml, listed lowest tier first; each kit id (tier1 ... tier10) is the LuckPerms group
 # that unlocks it.
 
 # how long after claiming a kit before the same kit can be claimed again (72 hours, by player vote 2026-09-22)
@@ -17,3 +17,20 @@ allowed-worlds:
   - world
   - world_nether
   - world_the_end
+# Personal vaults per tier (/pv). Shown on the rank menu. The vault plugin enforces the same numbers through
+# LuckPerms: each tier group has playervaults.amount.N, so change both together.
+vault-limits:
+  tier1: 1
+  tier2: 2
+  tier3: 3
+  tier4: 4
+  tier5: 5
+  tier6: 6
+  tier7: 7
+  tier8: 8
+  tier9: 9
+  tier10: 10
+
+# Homes per tier shown on the rank menu (leave a tier out to hide the line). Set the real limits in
+# EssentialsX (sethome-multiple) with essentials.sethome.multiple.<name> on each tier group.
+home-limits: {}

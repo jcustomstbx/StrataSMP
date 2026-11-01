@@ -60,8 +60,8 @@ public final class ShopCommands implements CommandExecutor {
         switch (command.getName().toLowerCase()) {
             case "sell" -> sell(player, args);
             case "sellall" -> {
-                if (com.stratasmp.strataranks.RankTier.of(player).ordinal() < com.stratasmp.strataranks.RankTier.ORNATE.ordinal()) {
-                    player.sendMessage("/sellall requires Ornate or Regal.");
+                if (com.stratasmp.strataranks.RankTier.of(player).ordinal() < com.stratasmp.strataranks.RankTier.TIER_VIII.ordinal()) {
+                    player.sendMessage("/sellall requires Tier VIII or higher.");
                 } else if (!java.util.Set.of("world", "world_nether", "world_the_end").contains(player.getWorld().getName())) {
                     player.sendMessage("/sellall is available in the SMP worlds.");
                 } else {

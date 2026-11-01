@@ -3,6 +3,7 @@ package com.stratasmp.stratakits;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import com.stratasmp.strataranks.RankTier;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -139,10 +140,12 @@ final class RankShowcase implements Listener {
             inv.setItem(i, pane());
         }
 
-        boolean paid = List.of("imperial", "ornate", "regal").contains(kit.id());
-        ItemStack title = named(kit.icon(), kit.displayName(), paid
-                ? List.of("&7Includes the earlier perks in", "&7the Imperial rank line.")
-                : List.of("&7Includes every perk of the", "&7ranks below it as well."));
+        int tier = RankTier.levelOfGroup(kit.id());
+        boolean paid = tier >= RankTier.TIER_VI.minLevel();
+        boolean top = tier >= RankTier.TIER_X.minLevel();
+        boolean economy = tier >= RankTier.TIER_VIII.minLevel();
+        ItemStack title = named(kit.icon(), kit.displayName(),
+                List.of("&7Includes every perk of the", "&7tiers below it as well."));
         ItemMeta titleMeta = title.getItemMeta();
         titleMeta.setEnchantmentGlintOverride(true);
         title.setItemMeta(titleMeta);
@@ -163,17 +166,17 @@ final class RankShowcase implements Listener {
         if (paid) {
             inv.setItem(18, named(Material.PINK_DYE, "&dCosmetic perks", List.of(
                     "&7Custom name colour and three chat colours", "&7/nick, /ec and crown particles",
-                    kit.id().equals("regal") ? "&7Regal: three particles and a join message" : "&7Inherited by Ornate and Regal")));
-            if (kit.id().equals("ornate") || kit.id().equals("regal")) {
+                    top ? "&7Tier X: three particles and a join message" : "&7Tier X adds more particles and a join message")));
+            if (economy) {
                 inv.setItem(19, named(Material.EMERALD, "&aEconomy perks", List.of(
                         "&7/sellall in SMP worlds",
-                        kit.id().equals("regal") ? "&713 auction listings, 9 buy orders" : "&78 auction listings, 6 buy orders",
-                        kit.id().equals("regal") ? "&75 featured listings for 24 hours" : "&7Earn Stratas through trading")));
+                        top ? "&713 auction listings, 9 buy orders" : "&78 auction listings, 6 buy orders",
+                        top ? "&75 featured listings for 24 hours" : "&7Earn Stratas through trading")));
                 inv.setItem(20, named(Material.COMPASS, "&bTravel perk", List.of(
                         "&7/rtp in the SMP overworld", "&790-second cooldown", "&73.75-second stationary warmup")));
             }
-            if (kit.id().equals("regal")) {
-                inv.setItem(21, named(Material.ANVIL, "&5Regal commands", List.of(
+            if (top) {
+                inv.setItem(21, named(Material.ANVIL, "&5Tier X commands", List.of(
                         "&7/name for the item in hand", "&7/repair one held item every 24 hours")));
             }
         }

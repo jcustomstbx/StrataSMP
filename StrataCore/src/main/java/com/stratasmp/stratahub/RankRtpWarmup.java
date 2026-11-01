@@ -14,7 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.Plugin;
 
-/** Ornate and Regal get the same RankEssentials RTP destination with a 75-tick warmup. */
+/** Tier VIII and above get the same RankEssentials RTP destination with a 75-tick warmup. */
 final class RankRtpWarmup implements Listener {
     private final StrataHub plugin;
     private boolean broken;
@@ -41,7 +41,7 @@ final class RankRtpWarmup implements Listener {
         String raw = event.getMessage().toLowerCase(java.util.Locale.ROOT).trim();
         if ((!raw.equals("/rtp") && !raw.equals("/rankessentials:rtp"))
                 || !player.getWorld().getName().equals(plugin.getConfig().getString("smp-world", "world"))
-                || RankTier.of(player).ordinal() < RankTier.ORNATE.ordinal()
+                || RankTier.of(player).ordinal() < RankTier.TIER_VIII.ordinal()
                 || broken) return;
         Plugin rank = plugin.getServer().getPluginManager().getPlugin("RankEssentials");
         if (rank == null || !rank.isEnabled()) return;
@@ -66,7 +66,7 @@ final class RankRtpWarmup implements Listener {
                 player.sendMessage("/rtp is ready in " + Math.max(1, (remaining + 999) / 1000) + " seconds.");
                 return;
             }
-            cooldowns.put(id, now + plugin.getConfig().getLong("ornate-rtp-cooldown-seconds", 90L) * 1000L);
+            cooldowns.put(id, now + plugin.getConfig().getLong("tier8-rtp-cooldown-seconds", 90L) * 1000L);
             Location start = player.getLocation().clone();
             player.sendMessage("Teleporting in 3.75 seconds. Stay still.");
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {

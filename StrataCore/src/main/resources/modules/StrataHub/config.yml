@@ -129,7 +129,7 @@ safe-zone-mob-guard: true
 # cooldown back down to this many seconds instead (still blocks /rtp for that long, just shorter). Only
 # applies to a player typing /rtp themselves; the hub entry NPC already bypasses the cooldown entirely.
 rtp-cooldown-cap-seconds: 120
-ornate-rtp-cooldown-seconds: 90
+tier8-rtp-cooldown-seconds: 90
 messages:
   entry: "&6Off to the SMP! &7Randomly teleporting you in..."
   first-entry: "&6Welcome to the SMP! &7Randomly teleporting you in..."

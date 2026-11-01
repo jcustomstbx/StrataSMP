@@ -125,8 +125,8 @@ public final class AuctionStore implements Auctions {
 
     public int maxPerPlayer(Player player) {
         return maxPerPlayer + switch (RankTier.of(player)) {
-            case ORNATE -> 3;
-            case REGAL -> 8;
+            case TIER_VIII -> 3;
+            case TIER_X -> 8;
             default -> 0;
         };
     }
@@ -154,7 +154,7 @@ public final class AuctionStore implements Auctions {
         long featuredCount = listings.values().stream()
                 .filter(existing -> existing.seller.equals(sellerId) && existing.featuredUntil > now)
                 .count();
-        long featuredUntil = RankTier.of(seller) == RankTier.REGAL && featuredCount < 5
+        long featuredUntil = RankTier.of(seller) == RankTier.TIER_X && featuredCount < 5
                 ? now + 24L * 60L * 60L * 1000L : 0L;
         Impl l = new Impl(UUID.randomUUID(), sellerId, seller.getName(), item.clone(), price, now, featuredUntil);
         final String b64 = toB64(l.item);

@@ -78,7 +78,7 @@ public final class StrataRanks extends StrataModule implements Listener {
     @Override public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) { sender.sendMessage("Players only."); return true; }
         RankTier tier = RankTier.of(player);
-        if (tier == RankTier.NONE) { player.sendMessage("This perk requires Imperial, Ornate or Regal."); return true; }
+        if (tier == RankTier.NONE) { player.sendMessage("This perk requires Tier VI or higher."); return true; }
         switch (command.getName().toLowerCase(Locale.ROOT)) {
             case "rankstyle" -> style(player, tier, args);
             case "name" -> nameItem(player, tier, args);
@@ -124,14 +124,14 @@ public final class StrataRanks extends StrataModule implements Listener {
                 }
             }
             case "particle" -> {
-                List<String> allowed = tier == RankTier.REGAL ? List.of("crown", "aurora", "ember", "off") : List.of("crown", "off");
+                List<String> allowed = tier == RankTier.TIER_X ? List.of("crown", "aurora", "ember", "off") : List.of("crown", "off");
                 if (!allowed.contains(choice)) { player.sendMessage("Available particles: " + String.join(", ", allowed)); return; }
                 choices.set(id + ".particle", choice);
                 saveChoices();
                 player.sendMessage("Particle set to " + choice + ".");
             }
             case "join" -> {
-                if (tier != RankTier.REGAL) { player.sendMessage("Custom join messages require Regal."); return; }
+                if (tier != RankTier.TIER_X) { player.sendMessage("Custom join messages require Tier X."); return; }
                 String message = String.join(" ", Arrays.copyOfRange(args, 1, args.length)).trim();
                 if (message.equalsIgnoreCase("reset")) { choices.set(id + ".join", null); saveChoices(); player.sendMessage("Join message reset."); return; }
                 if (message.length() > 60 || message.length() < 3 || message.contains("§") || message.contains("&") || message.contains("<") || message.contains(">") || message.contains("\n")) {
@@ -147,7 +147,7 @@ public final class StrataRanks extends StrataModule implements Listener {
     }
 
     private void nameItem(Player player, RankTier tier, String[] args) {
-        if (tier != RankTier.REGAL) { player.sendMessage("/name requires Regal."); return; }
+        if (tier != RankTier.TIER_X) { player.sendMessage("/name requires Tier X."); return; }
         if (!isSmpWorld(player)) { player.sendMessage("/name is available in the SMP worlds."); return; }
         ItemStack hand = player.getInventory().getItemInMainHand();
         if (hand.getType().isAir()) { player.sendMessage("Hold the item you want to name."); return; }
@@ -163,7 +163,7 @@ public final class StrataRanks extends StrataModule implements Listener {
     }
 
     private void repair(Player player, RankTier tier, String[] args) {
-        if (tier != RankTier.REGAL) { player.sendMessage("/repair requires Regal."); return; }
+        if (tier != RankTier.TIER_X) { player.sendMessage("/repair requires Tier X."); return; }
         if (!isSmpWorld(player)) { player.sendMessage("/repair is available in the SMP worlds."); return; }
         if (args.length != 0) { player.sendMessage("/repair repairs the item in your hand."); return; }
         ItemStack hand = player.getInventory().getItemInMainHand();
@@ -186,7 +186,7 @@ public final class StrataRanks extends StrataModule implements Listener {
         Player player = event.getPlayer();
         refreshName(player);
         if (RankTier.of(player) == RankTier.NONE) removeExclusiveChatColor(player);
-        if (event.joinMessage() != null && RankTier.of(player) == RankTier.REGAL) {
+        if (event.joinMessage() != null && RankTier.of(player) == RankTier.TIER_X) {
             String message = choices.getString(player.getUniqueId() + ".join", "");
             if (!message.isBlank()) event.joinMessage(Component.text("[+] " + player.getName() + " " + message));
         }
@@ -214,7 +214,7 @@ public final class StrataRanks extends StrataModule implements Listener {
             RankTier tier = RankTier.of(player);
             if (tier == RankTier.NONE) continue;
             String choice = choices.getString(player.getUniqueId() + ".particle", "crown");
-            if (tier != RankTier.REGAL && !choice.equals("crown")) continue;
+            if (tier != RankTier.TIER_X && !choice.equals("crown")) continue;
             var at = player.getLocation().add(0, 2.15, 0);
             switch (choice) {
                 case "crown" -> player.getWorld().spawnParticle(Particle.DUST, at, 2, 0.25, 0.02, 0.25, 0,

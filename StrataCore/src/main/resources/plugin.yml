@@ -32,8 +32,8 @@ commands:
   kit: {description: Open and claim your 72-hour rank kit, usage: '/kit [preview <rank>]', aliases: [kits]}
   rankpreview: {description: Preview rank benefits, usage: '/rankpreview <rank>'}
   rankstyle: {description: Choose paid-rank cosmetic styles, usage: '/rankstyle <name|chat|particle|join> <choice>'}
-  name: {description: Name the item in hand with Regal, usage: '/name <text|reset>'}
-  repair: {description: Repair the item in hand with Regal, usage: /repair}
+  name: {description: Name the item in hand with Tier X, usage: '/name <text|reset>'}
+  repair: {description: Repair the item in hand with Tier X, usage: /repair}
   clearitems: {description: "Clear dropped items now or show the countdown", usage: "/clearitems [now|status]", permission: strata.clear, aliases: [clearlag, lagclear]}
   backup: {description: "Back up the database, data and worlds now", usage: "/backup [full|quick|status]", permission: strata.backup}
   quests: {description: "Daily, weekly and story quests", usage: "/quests [daily|weekly|story]", aliases: [quest, q]}
